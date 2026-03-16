@@ -1,0 +1,52 @@
+---
+title: "Atividade 01"
+format: pdf
+editor: visual
+---
+
+# Swirl
+
+In class you were introduced to some basic concepts of programming in R. Now it is time to practice a little more. For this activity, install the package swirl and run the following commands in R:
+
+`install.packages("swirl")` 
+
+`library(swirl)`
+
+`swirl()`
+
+When swirl starts, choose the course “R Programming: The basics of programming in R.”. Select one of the available modules and complete at least one module from beginning to end. After finishing the activity, write a short report describing what you learned. The report should be written using R Markdown (.Rmd) or Quarto (.qmd).
+
+In your report, briefly explain:
+
+which module you completed;
+what concepts or commands you practiced;
+a few examples of things you found interesting or useful during the lesson.
+Submit the rendered document (PDF or HTML) together with the source file (.Rmd or .qmd).
+
+## Resposta
+Fiz o curso 12: Looking at data. Nele são apresentados algumas funções para entender melhor como os dados estão estruturados. Para isso podemos utilizar algumas funções como:
+
+- **dim():** qual a dimensão dos dados, a saída é quantas linhas e colunas tem o data frame;
+
+- **class():** mostra qual a classe dos dados.
+
+- **nrow():** quantas linhas tem os dados.
+
+- **nrow():** quantas colunas tem os dados.
+
+- **object.size:** esaço na memória que os dados ocupam.
+
+- **names():** mostra um vetor com os nome das colunas do data frame.
+
+- **head():** mostra o cabeçalho do data frame com e seus cinco primeiros valores, por default, mas pode ser ajustado para mostrar a quantidade que quiser de valores.
+
+- **tail():** igual o `head()`, mas com os últimos valores.
+
+- **summary():** apresenta um resumo das variáveis do data frame. Para as variáveis discretas apresenta o valor mínimo, o máximo, primeiro quantil, mediana, média e terceira quantil. Para as variáveis categoricas apresenta o número de vezes cada categoria aparece.
+
+- **table():** conta quantas vezes um valor aparece nos dados.
+
+- **str():** a forma mais rápida de observar os dados, combina diversas funções para resumir o data frame, no todo da saída mostra a classe do objeto, quantas observações há nele, quantas variáveis, qual a classe de cada variável e os primeiros valores de cada uma.
+
+
+No meu dia a dia eu uso bastante o `table()` que dá para ver mais ou menos onde os dados estão desbalanceados. E o `str()` realmente é bem útil para ter um panorama geral dos dados.
