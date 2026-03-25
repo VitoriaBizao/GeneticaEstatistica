@@ -6,6 +6,7 @@ format:
     toc: true
     toc-location: left
     code-overflow: wrap
+    code-fold: true
     fig-align: center      # Centraliza no HTML
     fig-width: 10          # Aumenta a largura padrão no HTML
     grid:
@@ -37,7 +38,7 @@ Read Chapter 10 of R for Data Science and solve all exercises. Build a report us
 rm(list = ls())
 
 # Carregando vários pacotes a serem usados na sessão simultaneamente:
-pkg = c("tidyverse", "dplyr", "tidyr", "ggplot2", "gridExtra", "nycflights13")
+pkg = c("tidyverse", "dplyr", "tidyr", "ggplot2", "gridExtra", "nycflights13", "ggbeeswarm")
 sapply(pkg, require, character.only=TRUE)
 ```
 
@@ -131,6 +132,8 @@ df |>
 
 ## Exercise 3
 How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
+
+Primeiro vou visualizar a distribuição dos quilates.
 ```{r}
 #| message: false
 #| warning: false
@@ -145,13 +148,29 @@ df |>
   theme_minimal() + 
   theme(axis.title = element_text(size = 10, face = "bold"),
         plot.title = element_text(size = 12, face = "bold"))
+```
 
-df |> filter(carat == 1) |> 
-  count()
+Contagem de NAs:
+```{r}
+#| message: false
+#| warning: false
+tb <- bind_rows(df |> filter(carat == 1.00) |>
+                  count() |>
+                  mutate(carat = 1.00),
+                df |> filter(carat == 0.99) |>
+                  count() |>
+                  mutate(carat = 0.99)) |>
+  select(carat, n) 
 
-df |> filter(carat == 0.99) |> 
-  count()
+knitr::kable(tb, 
+      col.names = c("Carat", "Number of NAs"),
+      align = "cc",
+      caption = "NA Frequency: 1.00 vs 0.99 Carat")
+```
 
+```{r}
+#| message: false
+#| warning: false
 ## Loop
 # Selecting variables
 df_rn <- df |> 
@@ -251,7 +270,6 @@ What happens to missing values in a histogram? What happens to missing values in
 ```{r}
 #| message: false
 #| warning: false
-
 df_na <- diamonds |> 
   mutate(y = if_else(y < 3 | y > 20, NA, y))
 
@@ -281,8 +299,8 @@ knitr::kable(data.frame(`Metric` = c("Sum", "Mean"),
                         `With na.rm = T` = c(round(sum(df_na$y, na.rm = TRUE),2),
                                              round(mean(df_na$y, na.rm = TRUE),2))),
              col.names = c("Metric", "na.rm = F", "na.rm = T"),
-             align = "lcc")
-
+             align = "lcc",
+             caption = "na.rm = T vs. na.rm = F")
 ```
 
 ## Exercise 3
@@ -569,6 +587,38 @@ df |>  ggplot(aes(x = price, fill = cut)) +
 
 ## Exercise 8
 If you have a small dataset, it’s sometimes useful to use geom_jitter() to avoid overplotting to more easily see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
+```{r}
+# Creating a small data set for comparation
+set.seed(123)
+
+df.tiny <- diamonds |> sample_n(size = 50, replace = F)
+
+# Geom_jitter vs. beeswarm
+p1 <- df.tiny |> ggplot(aes(x = color, y = price, color = color)) +
+  geom_jitter(size = 2, alpha = 0.5) +
+  labs(title = "Jitter") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title = element_blank())
+
+p2 <- df.tiny |> ggplot(aes(x = color, y = price, color = color)) +
+  geom_beeswarm(size = 2, alpha = 0.5) +
+  labs(title = "Beeswarm",
+       color = "Color") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("Diamond price (in USD) vs. Color",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Price",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
+             bottom = grid::textGrob("Color",
+                                     gp = grid::gpar(fontsize = 10, fontface = "bold")))
+```
 
 # 10.5.2.1 Exercises
 ## Exercise 1

@@ -1,0 +1,55 @@
+---
+title: "EDA - Malawi"
+author: "Juliana, Pedro, Vitória"
+format: html
+editor: visual
+---
+Using the dataset you will use in the project, perform a comprehensive exploratory data analysis. Choose four trials and perform EDA for five traits (if available). Check the variation, detect outliers and possible errors, build histograms, density plots and boxplots; compute measures of central tendency and dispersion, and investigate the relationship between traits. Finally, perform an across trials EDA: check if there is any major changes within traits across trials.
+
+```{r}
+#| message: false
+#| warning: false
+df = read.csv("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv", sep = ';')
+
+str(df)
+
+df <- df |> filter(COUNTRY == "Malawi")
+
+str(df)
+
+table(df$rep, df$gen)
+
+vars <- c("PL_EMERG_COUNT", "OIL", "PROT", "GY", "R6_CLB_Sev")
+
+sum(is.na(df$PL_EMERG_COUNT))
+sum(is.na(df$OIL))
+sum(is.na(df$PROT))
+sum(is.na(df$GY))
+sum(is.na(df$R6_CLB_Sev))
+
+df |> ggplot(aes(x = as.factor(YEAR), y = PROT)) +
+  geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
+  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  theme_bw() + 
+  theme(text = element_text(size = 18)) + 
+  labs(x = "Year", y = "Seed protein content (g/kg)")
+
+df |> ggplot(aes(x = as.factor(rep), y = PROT)) +
+  geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
+  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  theme_bw() + 
+  theme(text = element_text(size = 18)) + 
+  labs(x = "Replication", y = "Seed protein content (g/kg)")
+
+df |> ggplot(aes(x = as.factor(gen), y = PROT)) +
+  geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
+  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  theme_bw() + 
+  theme(text = element_text(size = 18)) + 
+  labs(x = "Replication", y = "Seed protein content (g/kg)")
+
+tapply(df$GY, df$gen, function(x) mean(x, na.rm = TRUE))
+
+GGally::ggpairs(df, vars)
+```
+
