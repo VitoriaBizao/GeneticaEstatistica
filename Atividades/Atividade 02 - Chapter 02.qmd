@@ -1,38 +1,62 @@
 ---
-title: "Atividade 2 - Chapter 10"
+title: "Genética-Estatística I"
 author: "Vitória Bizão Murakami"
-format: pdf
-editor: visual
+format:
+  html:
+    toc: true
+    toc-location: left
+    code-overflow: wrap
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px
+      body-width: 1000px   # Já está bom, permite figuras largas
+      margin-width: 250px
+      gutter-width: 1.5rem
+  pdf:
+    fig-align: center      # Centraliza no PDF
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global (em polegadas)
+  fig-height: 6
 ---
 
-# R for Data Science
+# Task 2
 Read Chapter 10 of R for Data Science and solve all exercises. Build a report using Quarto or R Markdown and render it in pdf or html. 
 
 ```{r}
 #| message: false
 #| warning: false
+#| include: false
 # Limpando o ambiente:
 rm(list = ls())
 
 # Carregando vários pacotes a serem usados na sessão simultaneamente:
 pkg = c("tidyverse", "dplyr", "tidyr", "ggplot2", "gridExtra", "nycflights13")
 sapply(pkg, require, character.only=TRUE)
-
-# Carregando o dataset
-df <- diamonds
 ```
 
 # 10.3.3 Exercises
-## 1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
+## Exercise 1
+
+Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
 
 ```{r}
 #| message: false
 #| warning: false
 # X
+# Loading dataset
+df <- diamonds
+
 x <- df |>  
   ggplot(aes(x = x)) +
-  geom_freqpoly(binwidth = 0.05, size = 1, color = "#cb73fa") +
-  scale_x_continuous(breaks = seq(0,10,0.5), limits = c(0,10)) +
+  geom_freqpoly(binwidth = 0.05, size = .8, color = "#cb73fa") +
+  scale_x_continuous(breaks = seq(0,10,1), limits = c(0,10)) +
   labs(x = "Length",
        y = "Count", 
        title = "Frequency of diamond length (in mm)",
@@ -40,13 +64,13 @@ x <- df |>
   theme_classic() +
   theme(axis.title = element_blank(),
         title = element_blank(),
-        plot.tag = element_text(face = "bold"))
+        plot.tag = element_text(size = 9))
 # Y
 y <- df |> 
   filter(y > 3.5 & y < 15) %>% 
   ggplot(aes(x = y)) +
-  geom_freqpoly(binwidth = 0.05, linewidth = 1, color = "purple") +
-  scale_x_continuous(breaks = seq(0,10,0.5), limits = c(0,10)) +
+  geom_freqpoly(binwidth = 0.05, linewidth = .8, color = "purple") +
+  scale_x_continuous(breaks = seq(0,10,1), limits = c(0,10)) +
   labs(x = "Width",
        y = "Count", 
        title = "Frequency of diamond length (in mm)",
@@ -54,12 +78,12 @@ y <- df |>
   theme_classic() +
   theme(axis.title = element_blank(),
         title = element_blank(),
-        plot.tag = element_text(face = "bold"))
+        plot.tag = element_text(size = 9))
 # Z 
 z <- df |> 
   ggplot(aes(x = z)) +
-  geom_freqpoly(binwidth = 0.05, size = 1, color = "purple4") +
-  scale_x_continuous(breaks = seq(0,10,0.5), limits = c(0,10)) +
+  geom_freqpoly(binwidth = 0.05, size = .8, color = "purple4") +
+  scale_x_continuous(breaks = seq(0,10,1), limits = c(0,10)) +
   labs(x = "Depth",
        y = "Count", 
        title = "Frequency of diamond length (in mm)",
@@ -67,22 +91,23 @@ z <- df |>
   theme_classic() +
   theme(axis.title = element_blank(),
         title = element_blank(),
-        plot.tag = element_text(face = "bold"))
+        plot.tag = element_text(size = 9))
 
 xyz <- grid.arrange(x, y, z, 
                     ncol = 1,
                     top = grid::textGrob("Diamond dimensions (in mm) - frequency plots",
-                                         gp = grid::gpar(fontsize = 14, fontface = "bold")),
+                                         gp = grid::gpar(fontsize = 12, fontface = "bold")),
                     left = grid::textGrob("Count",
                                           rot = 90,
-                                          gp = grid::gpar(fontsize = 12, fontface = "bold")),
+                                          gp = grid::gpar(fontsize = 10, fontface = "bold")),
                     bottom = grid::textGrob("Millimeters (mm)",
-                                            gp = grid::gpar(fontsize = 12, fontface = "bold")))
+                                            gp = grid::gpar(fontsize = 10, fontface = "bold")))
 
 plot(xyz)
 ```
 
-## 2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
+## Exercise 2
+Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
 ```{r}
 #| message: false
 #| warning: false
@@ -92,18 +117,20 @@ df |>
                  color = "black",
                  fill = "#cb73fa") +
   geom_density(aes(y = after_stat(count * 100)), 
-               color = "black", linewidth = 0.75) +
+               color = "black",
+               linewidth = 0.75) +
   labs(x = "Price (in USD)",
        y = "Frequency",
        title = "Diamond price") +
   scale_x_continuous(breaks = seq(0,20000,2500)) +
-  scale_y_continuous(breaks = seq(0,3000,500)) +
-  theme_light() + 
-  theme(axis.title = element_text(size = 12, face = "bold"),
-        plot.title = element_text(size = 14, face = "bold"))
+  scale_y_continuous(breaks = seq(0,5000,500)) +
+  theme_minimal() + 
+  theme(axis.title = element_text(size = 10, face = "bold"),
+        plot.title = element_text(size = 12, face = "bold"))
 ```
 
-## 3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
+## Exercise 3
+How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
 ```{r}
 #| message: false
 #| warning: false
@@ -115,9 +142,9 @@ df |>
   xlab("Weight of the diamond") +
   ylab("Frequency") +
   ggtitle("Diamond carat") +
-  theme_light() + 
-  theme(axis.title = element_text(size = 12, face = "bold"),
-        plot.title = element_text(size = 14, face = "bold"))
+  theme_minimal() + 
+  theme(axis.title = element_text(size = 10, face = "bold"),
+        plot.title = element_text(size = 12, face = "bold"))
 
 df |> filter(carat == 1) |> 
   count()
@@ -126,7 +153,7 @@ df |> filter(carat == 0.99) |>
   count()
 
 ## Loop
-# 1. Slecionando as variáveis
+# Selecting variables
 df_rn <- df |> 
   rename("Total Depth" = depth, "Table" = table, "Price" = price, "Length" = x, "Width" = y, "Depth" = z)
 
@@ -135,30 +162,31 @@ y_vars <- df_rn |>
   names() |> 
   setdiff("carat")
 
-# 2. Criar uma lista vazia para guardar os gráficos
+# Null list to store data
 plot_list <- list()
 
-# 3. Rodar o loop
+# Runing loop
 for (y_var in y_vars) {
   plot_list[[y_var]] <- ggplot(df_rn, aes(x = carat, y = .data[[y_var]])) + 
     geom_jitter(color = "gray20", size = 0.75, alpha = 0.1) + 
     geom_smooth(method = "auto", se = TRUE, color = "#cb73fa") +
     labs(y = y_var) + 
     theme_classic() + 
-    theme(axis.title = element_text(size = 12, face = "bold"),
+    theme(axis.title = element_text(size = 10, face = "bold"),
           axis.title.x = element_blank())
 }
 
-# 4. Grid com todos os gráfico
+# Grid with all graphics
 do.call(grid.arrange, c(plot_list, 
                         list(ncol = 3, 
                              top = grid::textGrob("Diamond carat VS other variables", 
-                                                  gp = grid::gpar(fontsize = 14, fontface = "bold")),
+                                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
                              bottom = grid::textGrob("Carat",
-                                            gp = grid::gpar(fontsize = 12, fontface = "bold")))))
+                                            gp = grid::gpar(fontsize = 10, fontface = "bold")))))
 ```
 
-## 4. Compare and contrast coord_cartesian() vs. xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
+## Exercise 4
+Compare and contrast coord_cartesian() vs. xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
 ```{r}
 #| message: false
 #| warning: false
@@ -168,9 +196,10 @@ p1 <- ggplot(df, aes(x = y)) +
   geom_histogram(color = "black",
                  fill = "#cb73fa") +
   coord_cartesian(ylim = c(0, 30000)) +
-  labs(tag = "A") +
-  theme_bw() +
-  theme(axis.title = element_blank())
+  labs(title = "Unset") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        title = element_text(size = 8))
 
 # Setting binwidth
 p2 <- ggplot(df, aes(x = y)) + 
@@ -178,9 +207,10 @@ p2 <- ggplot(df, aes(x = y)) +
                  fill = "#cb73fa",
                  binwidth = .5) +
   coord_cartesian(ylim = c(0, 30000)) +
-  labs(tag = "B") +
-  theme_bw() +
-  theme(axis.title = element_blank())
+  labs(title = "binwidth = 0.5") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        title = element_text(size = 8))
 
 # Setting binwidth
 p3 <- ggplot(df, aes(x = y)) + 
@@ -189,42 +219,35 @@ p3 <- ggplot(df, aes(x = y)) +
                  binwidth = 0.5) +
   coord_cartesian(ylim = c(0, 2.5),
                   xlim = c(10, 40)) +
-  labs(tag = "C") +
-  theme_bw() +
-  theme(axis.title = element_blank())
+  labs(title = "bin, y and xlim set") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        title = element_text(size = 8))
 
 # Binwidth unset
 p4 <- ggplot(df, aes(x = y)) + 
   geom_histogram(color = "black",
                  fill = "#cb73fa") +
   coord_cartesian(xlim = c(0, 15)) +
-  labs(tag = "D") +
-  theme_bw() +
-  theme(axis.title = element_blank())
+  labs(title = "xlim = c(0, 15)") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        title = element_text(size = 8))
 
-# Setting binwidth
-p5 <- ggplot(df, aes(x = y)) + 
-  geom_histogram(color = "black",
-                 fill = "#cb73fa",
-                 binwidth = 0.5) +
-  coord_cartesian(xlim = c(0, 15)) +
-  labs(tag = "E") +
-  theme_bw() + 
-  theme(axis.title = element_blank())
-
-grid.arrange(p1, p2, p3, p4, p5,
+grid.arrange(p1, p2, p3, p4,
              ncol = 2,
              top = grid::textGrob("Testing coord_cartesian() Vs. xlim() and ylim()",
-                                   gp = grid::gpar(fontsize = 14, fontface = "bold")),
+                                   gp = grid::gpar(fontsize = 12, fontface = "bold")),
              left = grid::textGrob("Count",
                                    rot = 90,
-                                   gp = grid::gpar(fontsize = 12, fontface = "bold")),
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
              bottom = grid::textGrob("Width (in mm)",
-                                   gp = grid::gpar(fontsize = 12, fontface = "bold")))
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")))
 ```
 
 # 10.4.1 Exercises
-## 1. What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference in how missing values are handled in histograms and bar charts?
+## Exercise 1 
+What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference in how missing values are handled in histograms and bar charts?
 ```{r}
 #| message: false
 #| warning: false
@@ -241,29 +264,29 @@ df_na |> ggplot(aes(x = y)) +
   labs(x = "Width",
        y = "Frequency",
        title = "Diamond width in mm") +
-  scale_x_continuous(breaks = seq(0,12,.5)) +
-  scale_y_continuous(breaks = seq(0,8000,500)) +
-  theme_light() + 
-  theme(axis.title = element_text(size = 12, face = "bold"),
-        plot.title = element_text(size = 14, face = "bold"))
+  scale_x_continuous(breaks = seq(0,10,1)) +
+  scale_y_continuous(breaks = seq(0,8000,1000)) +
+  theme_minimal() + 
+  theme(axis.title = element_text(size = 10, face = "bold"),
+        plot.title = element_text(size = 12, face = "bold"))
 ```
 
-## 2. What does na.rm = TRUE do in mean() and sum()?
+## Exercise 2
+hat does na.rm = TRUE do in mean() and sum()?
 ```{r}
-# Sem na.rm
-sum(df_na$y)
+#| message: false
+#| warning: false
+knitr::kable(data.frame(`Metric` = c("Sum", "Mean"),
+                        `Without na.rm` = c(sum(df_na$y), mean(df_na$y)),
+                        `With na.rm = T` = c(round(sum(df_na$y, na.rm = TRUE),2),
+                                             round(mean(df_na$y, na.rm = TRUE),2))),
+             col.names = c("Metric", "na.rm = F", "na.rm = T"),
+             align = "lcc")
 
-# Com na.rm
-sum(df_na$y, na.rm = T)
-
-# Sem na.rm
-mean(df_na$y)
-
-# Com na.rm
-mean(df_na$y, na.rm = T)
 ```
 
-## 3. Recreate the frequency plot of scheduled_dep_time colored by whether the flight was cancelled or not. Also facet by the cancelled variable. Experiment with different values of the scales variable in the faceting function to mitigate the effect of more non-cancelled flights than cancelled flights.
+## Exercise 3
+Recreate the frequency plot of scheduled_dep_time colored by whether the flight was cancelled or not. Also facet by the cancelled variable. Experiment with different values of the scales variable in the faceting function to mitigate the effect of more non-cancelled flights than cancelled flights.
 ```{r}
 #| message: false
 #| warning: false
@@ -280,7 +303,9 @@ p_fli <- df_fli |>
        x = "",
        y = "",
        color = "Canceled?") +
-  theme(title = element_text(size = 10, face = "plain"))
+  theme(strip.text = element_text(face = "bold", size = 8),
+        title = element_text(size = 8, face = "plain"),
+        legend.title = element_text(face = "plain", size = 6))
 
 pr_fli <- df_fli |>
   mutate(cancelled = is.na(dep_time),
@@ -294,24 +319,24 @@ pr_fli <- df_fli |>
        x = "",
        y = "",
        color = "Canceled?") +
-  theme_light() +
-  theme(strip.text = element_text(face = "bold"),
-        title = element_text(size = 10, face = "plain"),
-        legend.title = element_text(face = "plain", size = 10))
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold", size = 8),
+        title = element_text(size = 8, face = "plain"),
+        legend.title = element_text(face = "plain", size = 6))
 
 grid.arrange(p_fli, pr_fli, nrow = 2,
              top = grid::textGrob("Fligths frequency by schedule time",
-                                   gp = grid::gpar(fontsize = 14, fontface = "bold")),
+                                   gp = grid::gpar(fontsize = 12, fontface = "bold")),
              left = grid::textGrob("Fligth count",
                                    rot = 90,
-                                   gp = grid::gpar(fontsize = 12, fontface = "bold")),
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
              bottom = grid::textGrob("Departure schedule time",
-                                   gp = grid::gpar(fontsize = 12, fontface = "bold")))
-
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")))
 ```
 
 # 10.5.1.1 Exercises
-## 1. Use what you’ve learned to improve the visualization of the departure times of cancelled vs. non-cancelled flights.
+## Exercise 1
+Use what you’ve learned to improve the visualization of the departure times of cancelled vs. non-cancelled flights.
 ```{r}
 #| message: false
 #| warning: false
@@ -328,14 +353,18 @@ df_fli |>
        y = "Fligth count",
        color = "Canceled?") +
   theme_light() +
-  theme(strip.text = element_blank(),
-        title = element_text(size = 14, face = "bold"),
-        axis.title = element_text(size = 12, face = "bold"),
-        legend.title = element_text(face = "plain", size = 10))
+  theme(legend.position = "top",
+        strip.text = element_blank(),
+        title = element_text(size = 12, face = "bold"),
+        axis.title = element_text(size = 10, face = "bold"),
+        legend.title = element_text(face = "plain", size = 8))
 ```
 
-## 2. Based on EDA, what variable in the diamonds dataset appears to be most important for predicting the price of a diamond?  
+## Exercise 2
+Based on EDA, what variable in the diamonds dataset appears to be most important for predicting the price of a diamond?  
 ```{r}
+#| message: false
+#| warning: false
 ## Loop
 # 1. Slecionando as variáveis
 df_rn <- df |> 
@@ -356,7 +385,7 @@ for (y_var in y_vars) {
     geom_smooth(method = "auto", se = TRUE, color = "#cb73fa") +
     labs(y = y_var) +
     theme_classic() + 
-    theme(axis.title = element_text(size = 12, face = "bold"),
+    theme(axis.title = element_text(size = 8, face = "bold"),
           axis.title.x = element_blank())
 }
 
@@ -364,24 +393,31 @@ for (y_var in y_vars) {
 do.call(grid.arrange, c(plot_list, 
                         list(ncol = 3, 
                              top = grid::textGrob("Diamond price VS other variables", 
-                                                  gp = grid::gpar(fontsize = 14, fontface = "bold")),
+                                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
                              bottom = grid::textGrob("Price",
-                                            gp = grid::gpar(fontsize = 12, fontface = "bold")))))
+                                            gp = grid::gpar(fontsize = 10, fontface = "bold")))))
 ```
 
-## 3. How is that variable correlated with cut?
+## Exercise 3
+How is that variable correlated with cut?
 ```{r}
+#| message: false
+#| warning: false
 df |>  ggplot(aes(x = price, y = carat, color = cut)) +
   geom_jitter(size = 1.2, alpha = 0.7) +
   scale_color_brewer(palette = "PuOr") +
   geom_smooth(method = "auto", se = TRUE, color = "black") +
-  theme_bw() +
+  theme_minimal() +
   labs(y = "Price",
        x = "Carat",
-       color = "Cut")
+       color = "Cut",
+       title = "Price vs. Carat by Cut") +
+  theme(title = element_text(face = "bold", size = 10),
+        plot.title = element_text(size = 12))
 ```
 
-## 4. Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
+## Exercise 4
+Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
 ```{r}
 # Prices vs. the discrete variables
 ## Cut
@@ -393,7 +429,7 @@ cut <- df |> ggplot(aes(x = cut, y = price, fill = cut)) +
   labs(x = "Cut",
        y = "Price",
        title = "Price by cut distribuition") +
-  theme_bw()
+  theme_minimal()
 
 ## Clarity
 clrt <- df |> ggplot(aes(x = clarity, y = price, fill = clarity)) +
@@ -403,7 +439,7 @@ clrt <- df |> ggplot(aes(x = clarity, y = price, fill = clarity)) +
   labs(x = "Clarity",
        y = "Price",
        title = "Price by clarity distribuition") +
-  theme_bw()
+  theme_minimal()
 
 ## Color
 clr <- df |> ggplot(aes(x = color, y = price, fill = color)) +
@@ -413,7 +449,7 @@ clr <- df |> ggplot(aes(x = color, y = price, fill = color)) +
   labs(x = "Color",
        y = "Price",
        title = "Price by color") +
-  theme_bw()
+  theme_minimal()
 
 crct <- df |> ggplot(aes(x = cut, y = carat, fill = cut)) +
   geom_boxplot(color = "black", alpha = 0.7, show.legend = FALSE) +
@@ -422,13 +458,14 @@ crct <- df |> ggplot(aes(x = cut, y = carat, fill = cut)) +
   labs(x = "Cut",
        y = "Carat",
        title = "Carat by cut distribuition") +
-  theme_bw()
+  theme_minimal()
 
 grid.arrange(crct, cut, clrt, clr, 
              ncol = 2)
 ```
 
-## 5. Instead of exchanging the x and y variables, add coord_flip() as a new layer to the vertical boxplot to create a horizontal one. How does this compare to exchanging the variables?
+## Exercise 5
+Instead of exchanging the x and y variables, add coord_flip() as a new layer to the vertical boxplot to create a horizontal one. How does this compare to exchanging the variables?
 ```{r}
 # Changing variables
 change <- df |> ggplot(aes(x = carat, y = cut, fill = cut)) +
@@ -454,7 +491,8 @@ flip <- df |> ggplot(aes(x = cut, y = carat, fill = cut)) +
 grid.arrange(change, flip, ncol = 2)
 ```
 
-## 6. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs. cut. What do you learn? How do you interpret the plots?
+## Exercise 6
+One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs. cut. What do you learn? How do you interpret the plots?
 ```{r}
 #install.packages("lvplot")
 library(lvplot)
@@ -469,68 +507,91 @@ df |> ggplot(aes(x = reorder(cut, price, FUN = median), y = price, fill = cut)) 
        y = "Price")
 ```
 
-## 7. Create a visualization of diamond prices vs. a categorical variable from the diamonds dataset using geom_violin(), then a faceted geom_histogram(), then a colored geom_freqpoly(), and then a colored geom_density(). Compare and contrast the four plots. What are the pros and cons of each method of visualizing the distribution of a numerical variable based on the levels of a categorical variable?
+## Exercise 7
+Create a visualization of diamond prices vs. a categorical variable from the diamonds dataset using
+### geom_violin()
 ```{r}
+#| message: false
+#| warning: false
 # geom_violin()
-p1 <- df |> ggplot(aes(x = cut, y = price, fill = cut)) +
+df |> ggplot(aes(x = cut, y = price, fill = cut)) +
   geom_violin(alpha = 0.7, show.legend = FALSE) +
   scale_fill_brewer(palette = "BuPu") +
-  theme_bw() +
-  labs(title = "Violin Plot",
+  theme_minimal() +
+  labs(title = "Violin Plot - Cut vs. Price",
        x = "Cut",
        y = "Price")
+```
 
+### geom_histogram()
+```{r}
+#| message: false
+#| warning: false
 # geom_histogram()
-p2 <- df |> ggplot(aes(x = price, fill = cut)) +
+df |> ggplot(aes(x = price, fill = cut)) +
   geom_histogram(bins = 30, show.legend = FALSE) +
   facet_wrap(~cut, scales = "free_y") +
   scale_fill_brewer(palette = "BuPu") +
   theme_minimal() +
-  labs(title = "Faceted Histogram",
+  labs(title = "Faceted Histogram - Price distribuition",
        x = "Price",
        y = "Count")
+```
 
+### geom_freqpoly()
+```{r}
+#| message: false
+#| warning: false
 # geom_freqpoly()
-p3 <- df |>  ggplot(aes(x = price, color = cut)) +
+df |>  ggplot(aes(x = price, color = cut)) +
   geom_freqpoly(binwidth = 500, linewidth = 1) +
   scale_color_brewer(palette = "BuPu") +
   theme_minimal() +
-  labs(title = "Frequency Polygon",
+  labs(title = "Frequency Polygon - Price frequency",
        x = "Price",
        y = "Count")
-
+```
+### colored geom_density()
+```{r}
+#| message: false
+#| warning: false
 # geom_density()
-p4 <- df |>  ggplot(aes(x = price, fill = cut)) +
+df |>  ggplot(aes(x = price, fill = cut)) +
   geom_density(alpha = 0.4) +
   scale_fill_brewer(palette = "BuPu") +
   theme_minimal() +
-  labs(title = "Density Plot",
+  labs(title = "Density Plot - Price Density",
        x = "Price",
        y = "Density")
-
-grid.arrange(p1, p2, p3, p4,
-             ncol = 2)
 ```
 
-## 8. If you have a small dataset, it’s sometimes useful to use geom_jitter() to avoid overplotting to more easily see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
-```{r}
+### Compare and contrast the four plots. What are the pros and cons of each method of visualizing the distribution of a numerical variable based on the levels of a categorical variable?
 
-```
+## Exercise 8
+If you have a small dataset, it’s sometimes useful to use geom_jitter() to avoid overplotting to more easily see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
 
 # 10.5.2.1 Exercises
-## 1. How could you rescale the count dataset above to more clearly show the distribution of cut within color, or color within cut?
+## Exercise 1
+How could you rescale the count dataset above to more clearly show the distribution of cut within color, or color within cut?
 
-## 2. What different data insights do you get with a segmented bar chart if color is mapped to the x aesthetic and cut is mapped to the fill aesthetic? Calculate the counts that fall into each of the segments.
+## Exercise 2
+What different data insights do you get with a segmented bar chart if color is mapped to the x aesthetic and cut is mapped to the fill aesthetic? Calculate the counts that fall into each of the segments.
 
-## 3. Use geom_tile() together with dplyr to explore how average flight departure delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?
+## Exercise 3
+Use geom_tile() together with dplyr to explore how average flight departure delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?
 
 # 10.5.3.1 Exercises
-## 1. Instead of summarizing the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using cut_width() vs. cut_number()? How does that impact a visualization of the 2d distribution of carat and price?
+## Exercise 1
+Instead of summarizing the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using cut_width() vs. cut_number()? How does that impact a visualization of the 2d distribution of carat and price?
 
-## 2. Visualize the distribution of carat, partitioned by price.
+## Exercise 2
+Visualize the distribution of carat, partitioned by price.
 
-## 3. How does the price distribution of very large diamonds compare to small diamonds? Is it as you expect, or does it surprise you?
+## Exercise 3
+How does the price distribution of very large diamonds compare to small diamonds? Is it as you expect, or does it surprise you?
 
-## 4. Combine two of the techniques you’ve learned to visualize the combined distribution of cut, carat, and price.
+## Exercise 4
+Combine two of the techniques you’ve learned to visualize the combined distribution of cut, carat, and price.
 
-## 5. Two dimensional plots reveal outliers that are not visible in one dimensional plots. For example, some points in the following plot have an unusual combination of x and y values, which makes the points outliers even though their x and y values appear normal when examined separately. Why is a scatterplot a better display than a binned plot for this case?
+## Exercise 5
+Two dimensional plots reveal outliers that are not visible in one dimensional plots. For example, some points in the following plot have an unusual combination of x and y values, which makes the points outliers even though their x and y values appear normal when examined separately. Why is a scatterplot a better display than a binned plot for this case?
