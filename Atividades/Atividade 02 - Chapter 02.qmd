@@ -38,7 +38,9 @@ Read Chapter 10 of R for Data Science and solve all exercises. Build a report us
 rm(list = ls())
 
 # Carregando vários pacotes a serem usados na sessão simultaneamente:
-pkg = c("tidyverse", "dplyr", "tidyr", "ggplot2", "gridExtra", "nycflights13", "ggbeeswarm")
+pkg = c("tidyverse", "dplyr", "tidyr", "ggplot2",
+        "gridExtra", "nycflights13", "ggbeeswarm",
+        "hexbin")
 sapply(pkg, require, character.only=TRUE)
 ```
 
@@ -527,7 +529,8 @@ df |> ggplot(aes(x = reorder(cut, price, FUN = median), y = price, fill = cut)) 
 
 ## Exercise 7
 Create a visualization of diamond prices vs. a categorical variable from the diamonds dataset using
-### geom_violin()
+
+### 7.1 geom_violin()
 ```{r}
 #| message: false
 #| warning: false
@@ -541,7 +544,7 @@ df |> ggplot(aes(x = cut, y = price, fill = cut)) +
        y = "Price")
 ```
 
-### geom_histogram()
+### 7.2 geom_histogram()
 ```{r}
 #| message: false
 #| warning: false
@@ -556,7 +559,7 @@ df |> ggplot(aes(x = price, fill = cut)) +
        y = "Count")
 ```
 
-### geom_freqpoly()
+### 7.3 geom_freqpoly()
 ```{r}
 #| message: false
 #| warning: false
@@ -569,7 +572,7 @@ df |>  ggplot(aes(x = price, color = cut)) +
        x = "Price",
        y = "Count")
 ```
-### colored geom_density()
+### 7.4 colored geom_density()
 ```{r}
 #| message: false
 #| warning: false
@@ -583,15 +586,18 @@ df |>  ggplot(aes(x = price, fill = cut)) +
        y = "Density")
 ```
 
-### Compare and contrast the four plots. What are the pros and cons of each method of visualizing the distribution of a numerical variable based on the levels of a categorical variable?
+### 7.5 Compare and contrast the four plots.
+What are the pros and cons of each method of visualizing the distribution of a numerical variable based on the levels of a categorical variable?
 
 ## Exercise 8
 If you have a small dataset, it’s sometimes useful to use geom_jitter() to avoid overplotting to more easily see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
 ```{r}
+#| message: false
+#| warning: false
 # Creating a small data set for comparation
 set.seed(123)
 
-df.tiny <- diamonds |> sample_n(size = 50, replace = F)
+df.tiny <- diamonds |> sample_n(size = 100, replace = F)
 
 # Geom_jitter vs. beeswarm
 p1 <- df.tiny |> ggplot(aes(x = color, y = price, color = color)) +
@@ -611,7 +617,33 @@ p2 <- df.tiny |> ggplot(aes(x = color, y = price, color = color)) +
 
 grid.arrange(p1, p2,
              ncol = 2,
-             top = grid::textGrob("Diamond price (in USD) vs. Color",
+             top = grid::textGrob("Diamond price vs. Color - Tiny dataset (n = 50)",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Price",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
+             bottom = grid::textGrob("Color",
+                                     gp = grid::gpar(fontsize = 10, fontface = "bold")))
+
+# Geom_jitter vs. beeswarm
+p1 <- df |> ggplot(aes(x = color, y = price, color = color)) +
+  geom_jitter(size = 2, alpha = 0.5) +
+  labs(title = "Jitter") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title = element_blank())
+
+p2 <- df |> ggplot(aes(x = color, y = price, color = color)) +
+  geom_beeswarm(size = 2, alpha = 0.5) +
+  labs(title = "Beeswarm",
+       color = "Color") +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        legend.position = "none")
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("Diamond price vs. Color - Big dataset (n = 53940)",
                                   gp = grid::gpar(fontsize = 12, fontface = "bold")),
              left = grid::textGrob("Price",
                                    rot = 90,
@@ -623,25 +655,314 @@ grid.arrange(p1, p2,
 # 10.5.2.1 Exercises
 ## Exercise 1
 How could you rescale the count dataset above to more clearly show the distribution of cut within color, or color within cut?
+```{r}
+#| message: false
+#| warning: false
+# Using geom_bar
+p1 <- df |> ggplot(aes(x = cut, fill = color)) + 
+  geom_bar(position = "dodge") +
+  scale_fill_brewer(palette = "BuPu") +
+  labs(x = "",
+       y = "", 
+       title = "geom_bar()",
+       fill = "Color") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+# Adding a color parameter
+p2 <- df |> ggplot(aes(x = cut, y = color, color = color)) + 
+  geom_jitter(alpha = 0.5) +
+  scale_color_brewer(palette = "BuPu", direction = -1) +
+  labs(x = "",
+       y = "", 
+       title = "geom_jitter() with color parameter",
+       color = "Color") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("Cut vs. Color",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Color",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
+             bottom = grid::textGrob("Cut",
+                                     gp = grid::gpar(fontsize = 10, fontface = "bold")))
+```
 
 ## Exercise 2
 What different data insights do you get with a segmented bar chart if color is mapped to the x aesthetic and cut is mapped to the fill aesthetic? Calculate the counts that fall into each of the segments.
+```{r}
+#| message: false
+#| warning: false
+# Using fill = color
+p1 <- df |> ggplot(aes(x = cut, fill = color)) + 
+  geom_bar(position = "dodge") +
+  scale_fill_brewer(palette = "BuPu") +
+  labs(x = "Cut",
+       y = "", 
+       title = "fill = color",
+       fill = "Color") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+# Using fill = cut
+p2 <- df |> ggplot(aes(x = color, fill = cut)) + 
+  geom_bar(position = "dodge") +
+  scale_fill_brewer(palette = "BuPu") +
+  labs(x = "Color",
+       y = "", 
+       title = "fill = cut",
+       fill = "Cut") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("Cut vs. Color",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Count",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10)))
+```
 
 ## Exercise 3
 Use geom_tile() together with dplyr to explore how average flight departure delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?
+```{r}
+#| message: false
+#| warning: false
+df_fli <- nycflights13::flights
+
+df_fli <- df_fli |>
+  group_by(dest, month) |>
+  summarise(avg_dep_delay = mean(dep_delay, na.rm = TRUE), .groups = "drop")
+
+p1 <- df_fli |> 
+  ggplot(aes(x = factor(month), y = dest, fill = avg_dep_delay)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "magma", direction = -1) +
+  theme_minimal() +
+  labs(title = "Whole dataset",
+       x = "",
+       y = "",
+       fill = "Delay (min)") +
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(size = 10),
+        legend.position = "none")
+
+# Selection of the top 30 destinations
+top_dest <- flights |> 
+  count(dest) |> 
+  slice_max(n, n = 30) |> 
+  pull(dest)
+
+p2 <- df_fli |> filter(dest %in% top_dest) |> 
+  mutate(dest = reorder(dest, avg_dep_delay, na.rm = TRUE)) |> 
+  ggplot(aes(x = factor(month), y = dest, fill = avg_dep_delay)) +
+  geom_tile(color = "white", size = 0.1) + 
+  scale_fill_viridis_c(option = "magma", direction = -1) +
+  theme_minimal() +
+  labs(title = "Top 30 destination delay",
+       x = "",
+       y = "",
+       fill = "Delay (min)") +
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(size = 10)) +
+  guides(fill = guide_colorbar(barheight = unit(6, "cm"),
+                               title.position = "left",
+                               title.theme = element_text(angle = 90),
+                               title.hjust = 0.5))
+
+get_legend <- function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
+mylegend <- get_legend(p2)
+p2 <- p2 + theme(legend.position = "none")
+
+grid.arrange(p1, p2, mylegend, 
+             layout_matrix = rbind(c(1, 2, NA),
+                                   c(1, 2, 3)),
+             widths = c(3, 3, 1),
+             top = grid::textGrob("Avarage delay by destiny and month",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Destination",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
+             bottom = grid::textGrob("Month",
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")))
+
+```
 
 # 10.5.3.1 Exercises
 ## Exercise 1
 Instead of summarizing the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using cut_width() vs. cut_number()? How does that impact a visualization of the 2d distribution of carat and price?
+```{r}
+#| message: false
+#| warning: false
+p1 <- df |> ggplot(aes(x = price, color = cut_width(carat, 0.5))) +
+  geom_freqpoly(binwidth = 500) +
+  scale_color_brewer(palette = "BuPu", direction = -1) +
+  labs(title = "cut_width(carat, 0.5)",
+       color = "Carat",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+p2 <- df |> ggplot(aes(x = price, color = cut_number(carat, 5))) +
+  geom_freqpoly(binwidth = 500) +
+  scale_color_brewer(palette = "BuPu", direction = -1) +
+  labs(title = "cut_number(carat, 5)",
+       color = "Carat",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("cut_width() vs. cut_number()",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Count",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")),
+             bottom = grid::textGrob("Price",
+                                   gp = grid::gpar(fontsize = 10, fontface = "bold")))
+```
 
 ## Exercise 2
 Visualize the distribution of carat, partitioned by price.
+```{r}
+#| message: false
+#| warning: false
+df |> ggplot(aes(x = carat, color = cut_number(price, 5))) + 
+  geom_boxplot() +
+  scale_color_brewer(palette = "BuPu") +
+  labs(title = "Carat distribution (cut_number)",
+       x = "Carat") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 10))
+```
 
 ## Exercise 3
 How does the price distribution of very large diamonds compare to small diamonds? Is it as you expect, or does it surprise you?
 
 ## Exercise 4
 Combine two of the techniques you’ve learned to visualize the combined distribution of cut, carat, and price.
+```{r}
+#| message: false
+#| warning: false
+#| fig-width: 10
+p1 <- df |> ggplot(aes(x = carat, y = price)) +
+  geom_hex(binwidth = c(0.05,250)) + 
+  facet_wrap(~ cut) +
+  scale_fill_viridis_c(option = "magma") +
+  labs(title = "geom_hex(binwidth = c(0.05,250))",
+       x = "Carat",
+       y = "Price (USD)",
+       fill = "Frequency") +
+  theme_minimal() +
+  theme(title = element_text(size = 10),
+        legend.position = "inside",
+        legend.position.inside = c(0.85, 0.2),
+        legend.direction = "vertical")
+
+p2 <- df |> ggplot(aes(x = cut_number(carat, 5), y = price, fill = cut)) +
+  geom_boxplot() +
+  labs(title = "cut_number(carat, 5)",
+       x = "Carat intervals",
+       y = "Price",
+       fill = "Cut") +
+  scale_fill_brewer(palette ="BuPu") +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+  
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("Combined distribution of cut, carat, and price",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")))
+```
 
 ## Exercise 5
 Two dimensional plots reveal outliers that are not visible in one dimensional plots. For example, some points in the following plot have an unusual combination of x and y values, which makes the points outliers even though their x and y values appear normal when examined separately. Why is a scatterplot a better display than a binned plot for this case?
+```{r}
+#| message: false
+#| warning: false
+help(diamonds)
+p1 <- df |> 
+  filter(x >= 4) |> 
+  ggplot(aes(x = x, y = y)) +
+  geom_bin2d(binwidth = c(0.1, 0.1)) + 
+  scale_fill_viridis_c(option = "magma") +
+    labs(title = "geom_bin2d()",
+       x = "Length (in mm)",
+       y = "width (in mm)",
+       fill = "Count") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(4, 11),
+                  ylim = c(4, 11)) +
+  theme(title = element_text(size = 10))
+
+p2 <- df |> 
+  filter(x >= 4) |> 
+  ggplot(aes(x = x,
+             y = y)) +
+  geom_point(size = 1, alpha = 0.3, color = "purple3") +
+    labs(title = "geom_point()",
+       x = "Length (in mm)",
+       y = "Width (in mm)",
+       fill = "Count") +
+  coord_cartesian(xlim = c(4, 11),
+                  ylim = c(4, 11)) +
+  theme_minimal() +
+  theme(title = element_text(size = 10))
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("geom_bin2d() vs. geom_point()",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")))
+```
+
+## Exercise 6
+Instead of creating boxes of equal width with cut_width(), we could create boxes that contain roughly equal number of points with cut_number(). What are the advantages and disadvantages of this approach?
+```{r}
+#| message: false
+#| warning: false
+# Creating a small data set for comparation
+set.seed(123)
+
+df.tiny <- diamonds |> sample_n(size = 500, replace = F)
+
+p1 <- df.tiny |> ggplot(aes(x = carat, y = price)) + 
+  geom_boxplot(aes(group = cut_number(carat, 20)), orientation = "x") +
+  theme_minimal() +
+  theme(title = element_text(size = 10)) +
+    labs(title = "cut_number()",
+       x = "",
+       y = "")
+
+p2 <- df.tiny |> ggplot(aes(x = carat, y = price)) + 
+  geom_boxplot(aes(group = cut_width(carat, 0.1)), orientation = "x") +
+  theme_minimal() +
+  theme(title = element_text(size = 10)) +
+    labs(title = "cut_width()",
+       x = "",
+       y = "")
+
+
+grid.arrange(p1, p2,
+             ncol = 2,
+             top = grid::textGrob("cut_width() vs. cut_number()",
+                                  gp = grid::gpar(fontsize = 12, fontface = "bold")),
+             left = grid::textGrob("Price",
+                                   rot = 90,
+                                   gp = grid::gpar(fontsize = 10)),
+             bottom = grid::textGrob("Carat",
+                                   gp = grid::gpar(fontsize = 10)))
+```
+
