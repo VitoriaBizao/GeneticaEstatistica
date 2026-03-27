@@ -1,7 +1,7 @@
 ---
 title: "EDA - Malawi"
 author: 
-  - name: "Grupo 3: Juliana Oliveira, Vitoria Murakami, Pedro Araújo"
+  - name: "Grupo 3: Juliana Oliveira, Vitoria Murakami, Pedro H. de Araujo"
     affiliation:
       - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
         city: Piracicaba, São Paulo, Brazil
@@ -14,34 +14,35 @@ format:
       dark: darkly
 ---
 
+
 **Using the dataset you will use in the project, perform a comprehensive exploratory data analysis. Choose four trials and perform EDA for five traits (if available). Check the variation, detect outliers and possible errors, build histograms, density plots and boxplots; compute measures of central tendency and dispersion, and investigate the relationship between traits. Finally, perform an across trials EDA: check if there is any major changes within traits across trials.**
 
 # 1) Seleção dos Ensaios e Características Avaliadas
 
 Os dados a seguir são resultantes de ensaios que foram conduzidos com genótipos de soja no país Malawi (África), provenientes dos Ensaios Pan-Africanos (PATs), coordenados pelo Laboratório de Inovação em Soja (SIL) (Araújo *et al.*, 2025).
 
-```{r message=FALSE, warning=FALSE}
+```{R}
+#Importing the dataset
+read.csv
 df = read.csv("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv", sep = ';')
-
+#checking dataset
 str(df)
 
-length(df$gen)
-
-df <- df |> filter(df$COUNTRY == "Malawi")
-
+datsub <- df |> subset(df$COUNTRY == "Malawi")
+#Checking if variable types are correct
 str(df)
 
 ```
 
 De acordo com o gráfico abaixo, foram selecionados os anos de 2021 a 2024 para a realização das análises e escolha dos ensaios. Essa seleção foi baseada no fato de serem os anos mais recentes disponíveis, além de ainda incluírem genótipos que já vinham sendo avaliados em anos anteriores, conforme relatado no gráfico a seguir.
 
-```{r message=FALSE, warning=FALSE}
-
-require(ggplot2)
+```{R}
+#importing packages
+library(ggplot2)
 library(dplyr)
 library(tidyr)
 
-df$gen <- factor(df$gen, levels = unique(df$gen)) # fator ordenado
+datsub$gen <- factor(datsub$gen, levels = unique(datsub$gen)) # fator ordenado
 
 dados_completo <- df %>%
   distinct(gen, YEAR) %>%          # garante 1 linha por combinação
@@ -50,17 +51,19 @@ dados_completo <- df %>%
 
 dados_completo$Presenca <- factor(dados_completo$Presenca) # transformar em fator para usar no ggplot
 
-ggplot(dados_completo, aes(x = gen, y = factor(YEAR), fill = factor(Presenca))) +
+ggplot(data = dados_completo, aes(x = gen, y = factor(YEAR), fill = factor(Presenca))) +
   geom_tile() +
   scale_fill_manual(values = c("0" = "gray", "1" = "purple")) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 90, size = 5, vjust = 0.5, hjust = 1)
   )
+#cleaning the enviroment
+rm(dados_completo)
 ```
 
 Em seguida, foram analisados os ensaios dentro de cada um dos quatro anos selecionados.
-```{r message=FALSE, warning=FALSE}
+```{r}
 dados_plot <- df %>%
   filter(YEAR %in% c(2021, 2022, 2023, 2024)) %>% # filtrar ano
   distinct(gen, env, YEAR) %>%
@@ -88,7 +91,7 @@ dados_plot$gen <- factor(dados_plot$gen, levels = unique(dados_plot$gen)) # tran
 
 ggplot(dados_plot, aes(x = gen, y = env_year, fill = factor(Presenca))) +
   geom_tile() +
-  scale_fill_manual(values = c("0" = "white", "1" = "darkgreen")) +
+  scale_fill_manual(values = c("0" = "white", "1" = "purple")) +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 90, size = 5),
@@ -100,16 +103,17 @@ ggplot(dados_plot, aes(x = gen, y = env_year, fill = factor(Presenca))) +
     y = "Ensaio / Ano",
     fill = ""
   )
+rm(dados_plot)
 ```
 Observando o gráfico acima, foram selecionados os quatro ensaios conduzidos em 2022 (E0248, E0249, E0250 e E0251), pois todos avaliam os mesmos genótipos, o que facilita a comparação e a análise exploratória descritiva proposta neste relatório inicial.
 
 A partir disso, foram escolhidas cinco características que estavam disponíveis em todos esses ensaios. Para essa verificação, optou-se pela utilização de uma tabela de presença (1) e ausência (0).
-```{r message=FALSE, warning=FALSE}
-ensaios_interesse <- c("E0248", "E0249", "E0250", "E0251")
+```{r}
+trials <- c("E0248", "E0249", "E0250", "E0251")
 
 # tabela presença/ausência
 tabela_pa <- df %>%
-  filter(env %in% ensaios_interesse) %>%
+  filter(env %in% trials) %>%
   pivot_longer(
     cols = where(is.numeric),   # só variáveis numéricas
     names_to = "variavel",
@@ -145,8 +149,11 @@ Assim, as características avaliadas selecionadas para análise descritiva foram
 
 ### 2.1.1) Produtividade de grãos (GY, kg/ha)
 
-```{r message=FALSE, warning=FALSE}
-ggplot(data = dat_sub, aes(x = GY)) + 
+```{r}
+dat_sub = subset(df, env %in% c("E0248", "E0249", "E0250", "E0251"))
+# operador %in% verifica se cada valor de uma coluna pertence a um conjunto de valores.
+
+ggplot(dat_sub, aes(x = GY)) + 
   geom_histogram(bins = 25, color = 'black', fill="#10342d",
                  aes(y=after_stat(density))) + 
   geom_density(fill = "#10342d", alpha = .4, color = "black")+
@@ -157,7 +164,7 @@ ggplot(data = dat_sub, aes(x = GY)) +
 Para os ensaios analisados, há uma maior concentração de produtividade entre, aproximadamente, 1000 e 3000 kg/ha. A presença de alguns valores acima de 5000 kg/ha "puxam" a cauda da distribuição, permitindo observar uma distribuição assimétrica a direit. Essa situação pode indicar ambientes (ensaios) muito favoráveis, genótipos com alta capacidade produtiva ou, como vai ser discutido futuramente, possíveis *outliers*.
 
 ### 2.1.2) Contagem de Plântulas Emergentes (PL_EMERG_COUNT)
-```{r message=FALSE, warning=FALSE}
+```{R}
 ggplot(data = dat_sub, aes(x = PL_EMERG_COUNT)) + 
   geom_histogram(bins = 25, color = 'black', fill="#10342d",
                  aes(y=after_stat(density))) + 
@@ -177,6 +184,8 @@ Assim, observando o gráfico acima, percebe-se uma grande concentração de valo
 
 * Severidade de *Phakopsora pachyrhizi* (R6_RUST_Sev): indicador do nível de infecção da doença conhecida como ferrugem asiática.
 ```{r message=FALSE, warning=FALSE}
+
+library(gridExtra)
 a = ggplot(data = dat_sub, aes(x = R6_FELS_Sev)) + 
   geom_histogram(bins = 25, color = 'black', fill="#10342d",
                  aes(y=after_stat(density))) + 
@@ -208,8 +217,14 @@ As análises de severidade de doenças foram avaliadas no estádio R6 e categori
 
 ## 2.2) EDA para repetições
 Para observar a presença de valores destoantes entre as repetições (*outliers*), optamos por avaliar as repetições dentro de cada ensaio para a característica produtividade, visto que ocorreram em ambientes diferentes, como mostra nos gráficos a seguir.
-```{r message=FALSE, warning=FALSE}
+```{R}
 # ensaio dat_0248
+dat_E0248 = subset(df, env == "E0248")
+dat_E0249 = subset(df, env == "E0249")
+dat_E0250 = subset(df, env == "E0250")
+dat_E0251 = subset(df, env == "E0251")
+dat_sub = subset(df, env %in% c("E0248", "E0249", "E0250", "E0251"))
+# operador %in% verifica se cada valor de uma coluna pertence a um conjunto de valores.
 d = ggplot(data = dat_E0248, aes(x = as.factor(rep), y = GY)) +
   geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
   geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
@@ -252,29 +267,31 @@ Todos os ensaios apresentaram variação na produtividade entre repetições, in
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = dat_sub, aes(x = as.factor(gen), y = GY)) +
   geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
-  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  stat_summary(fun = "mean", geom = "point", shape = 4, color = "white") +
   theme_bw() + 
   theme(text = element_text(size = 10), 
         axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)) + 
   labs(x = "Genótipos", y = "Produtividade (kg/ha)")
 ```
+Analisando os dados de produtividade, através do gráfico, em geral, grande dispersões pronunciadas, excetuando-se G147, 137, G314, e assimetria entre quartis para a maioria dos genótipos. A amplitude variou à depender do material, de pequena à bastante pronunciada como no caso do G91. Além disso é possível indentificar possíveis outliers, que poderiam estar deslocando a média, o G238 apresentou uma leitura acima da marca dos 7.000kg/ha, o qual provavelmente valha a pena investigar futuramente
 
 ### 2.3.2) Contagem de Plântulas Emergentes (PL_EMERG_COUNT)
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = dat_sub, aes(x = as.factor(gen), y = PL_EMERG_COUNT)) +
   geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
-  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  stat_summary(fun = "mean", geom = "point", shape = 4, color = "white") +
   theme_bw() + 
   theme(text = element_text(size = 10), 
         axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)) + 
   labs(x = "Genótipos", y = "Plântulas Energentes")
 ```
+O gráfico de contagem de plântulas emergentes apresentou comporttamento semelhandte ao de produtividade, com alguns outliers identificados em alguns genótipos, médias proximas as medianas, e amplitude prounciada em alguns materiais, nota-se uma grande dispersão na esmagadora maioria dos genótipos, indicando que futuramente pode ser fortúito uma análise das variáveis relacionadas ao componente ambiental. Um genotipo que chamou atenção foi o G068 pela proporção do quartil inferior em relação ao superior, de maneira que é de se esperar que talvez não obtenhamos uma distribuição normal dos dados para esse caractere.
+
 
 ### 2.3.3) Doenças foliares 
 ```{r}
 gg1 = ggplot(data = dat_sub, aes(x = as.factor(gen), y = R6_FELS_Sev)) +
-  geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
-  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  geom_bar(fill = "#10342d", color = "black", alpha = .6) +
   theme_bw() + 
   theme(text = element_text(size = 10), 
         axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)) + 
@@ -282,15 +299,13 @@ gg1 = ggplot(data = dat_sub, aes(x = as.factor(gen), y = R6_FELS_Sev)) +
 
 gg2 = ggplot(data = dat_sub, aes(x = as.factor(gen), y = R6_CLB_Sev)) +
   geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
-  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
   theme_bw() + 
   theme(text = element_text(size = 10), 
         axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)) + 
   labs(x = "Genótipos", y = "Cercospora kikuchii")
   
 gg3 = ggplot(data = dat_sub, aes(x = as.factor(gen), y = R6_RUST_Sev)) +
-  geom_boxplot(fill = "#10342d", color = "black", alpha = .6) +
-  geom_jitter(width = .2, size = 2, alpha = .75, color = "black") +
+  geom_bar(fill = "#10342d", color = "black", alpha = .6) +
   theme_bw() + 
   theme(text = element_text(size = 10), 
         axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)) + 
@@ -312,6 +327,7 @@ pp1 = ggplot(data = dat_sub, aes(x = as.factor(gen), y = GY)) +
         axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1)) + 
   scale_fill_manual(values = c("#10342d", "#b2bc63"))+
   labs(x = "Genótipos", y = "Produtividade (kg/ha)")
+pp1
 ```
 
 ### 2.4.2) Contagem de Plântulas Emergentes (PL_EMERG_COUNT)
@@ -417,10 +433,11 @@ dd3 = ggplot(dat_sub, aes(x = as.factor(env), y = R6_RUST_Sev, color = env)) +
 
 dd1 / dd2 / dd3
 ```
+Através do dotplot, podemos notar a representatividade 
 
 ## 2.6) Relação entre as características avaliadas
 ```{r message=FALSE, warning=FALSE}
 vars <- c("GY", "PL_EMERG_COUNT", "R6_FELS_Sev", "R6_CLB_Sev", "R6_RUST_Sev")
 GGally::ggpairs(dat_sub, vars)
 ```
-
+A análise da matriz de correlação demonstra correlação moderada e positiva entre severidade de Cercospora kikuchii x severidade de  Phakopsora pachyrhizi; severidade de Cercospora Sojina x severidade  Cercospora kikuchii; Contagem de emergência de plântulas x Produtividade de Grãos. Correlação moderada e negativa entre Severidade de Phakopsora pachyrhizix produtividade de grãos. Correlação fraca entre Severidade de Phakopsora pachyrhizi x Emergência de plantulas, e entre Severidade de Cercospora kikuchii  x Emergência de Plantas; as demais correlações foram nulas/despresíveis.
