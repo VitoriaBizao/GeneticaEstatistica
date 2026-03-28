@@ -3,6 +3,7 @@ title: "Genética-Estatística I"
 author: "Vitória Bizão Murakami"
 format:
   html:
+    embed-resources: true
     toc: true
     toc-location: left
     code-overflow: wrap
