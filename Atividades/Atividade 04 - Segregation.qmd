@@ -1,0 +1,46 @@
+---
+title: "Atividade 04 - Segregation test"
+author: "Vitória Bizão Murakami"
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    code-fold: true        # Esconde o código
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+# Segregation test in maize RIL population
+
+Using the provided dataset, describe the hypothesis test and perform the segregation tests in each marker.  Using five randomly picked markers, plot the theoretical distribution and the corresponding significance level and p-value.
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+# Carregando pacotes
+pkg = c("tidyverse", "readxl", "gridExtra", "ggbeeswarm", "grid", "ggtext", "cowplot")
+sapply(pkg, require, character.only=TRUE)
+
+# Carregando os dados
+df <- read.csv("Atividade 04 - Z009.csv")
+```
+

@@ -1,0 +1,156 @@
+---
+title: "Example document in PDF"
+author: 
+  - name: Prof. Saulo Chaves
+    orcid: 0000-0002-0694-1798
+    email: saulochaves@usp.br
+    affiliation:
+      - name: Department of Genetics, ESALQ-USP
+        city: Piracicaba, São Paulo, Brazil
+format: 
+  pdf:
+    toc: true
+    bibliography: ../../Misc/references.bib
+    embed-resources: true
+---
+
+Only once, install `tinytex` using 
+
+```
+quarto install tinytex
+```
+
+
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4 
+
+##### Heading 5
+
+###### Heading 6
+
+# Markdown syntax
+
+*italics*, **bold**, ***bold italics***
+
+superscript^2^ / subscript~2~
+
+~~strikethrough~~
+
+`verbatim code`
+
+# Link & Images
+
+<https://www.esalq.usp.br/pg/programas/genetica/>
+
+[PPG Genética e Melhoramento de Plantas](https://www.esalq.usp.br/pg/programas/genetica/)
+
+![Angry Bateson](../../Misc/bateson2.png)
+
+[![Araújo et al.](../../Misc/araujo.png)](https://www.nature.com/articles/s41597-025-06190-3)
+
+
+# Lists
+
+* unordered list
+  + sub-item 1
+  + sub-item 2
+    - sub-sub-item 1
+
+
+*   item 2
+
+    Continued (indent 4 spaces)
+
+
+1. ordered list
+2. item 2
+   i) sub-item 1
+      A.  sub-sub-item 1
+      
+      
+1. ordered list
+2. item 2
+
+   ```r
+   print("Hello, World!")
+   ```
+
+   A.  sub-sub-item 1
+
+
+- [ ] Task 1
+- [x] Task 2
+
+
+term
+: definition
+
+
+# Tables
+
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+
+<https://www.tablesgenerator.com/>
+
+
+# Source code
+
+```{r}
+a = c(1,2,3,4)
+b = c(5,6,7,8)
+c = c(9,10,11,12)
+d = c(13,14,15,16)
+mat2 = rbind(a,b,c,d)
+mat2
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+library(tidyverse)
+
+plot(penguins$bill_len, penguins$bill_dep)
+```
+
+
+# Source code
+
+inline math: $P = G + E + G \times E$
+
+display math:
+
+$$
+\sigma^2_P = \sigma^2_G + \sigma^2_E + \sigma^2_{G\times E}
+$$
+
+# Citations
+
+-   Build a `.bib` file with proper formatting. For example:
+
+```
+@book{wickham2017r,
+  title={R for data science},
+  author={Wickham, Hadley and Grolemund, Garrett and others},
+  volume={2},
+  year={2017},
+  publisher={O'Reilly Sebastopol}
+}
+```
+
+Then cite @wickham2017r or [@wickham2017r]
+
+# References
+
+
+
+
