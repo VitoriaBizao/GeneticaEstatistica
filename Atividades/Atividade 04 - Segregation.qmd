@@ -35,12 +35,188 @@ Using the provided dataset, describe the hypothesis test and perform the segrega
 #| message: false
 #| warning: false
 #| include: false
-
 # Carregando pacotes
-pkg = c("tidyverse", "readxl", "gridExtra", "ggbeeswarm", "grid", "ggtext", "cowplot")
-sapply(pkg, require, character.only=TRUE)
+pkg = c("tidyverse", "readxl", "gridExtra", "ggbeeswarm",
+        "grid", "ggtext", "cowplot", "DT")
+sapply(pkg, require, character.only = TRUE)
 
 # Carregando os dados
 df <- read.csv("Atividade 04 - Z009.csv")
+# str(df)
+
+# Sortear 5 marcadores aleatórios
+set.seed(11480230) 
+cols_sorteadas <- sample(names(df), 5)
+df_sub <- df[, cols_sorteadas]
+#str(df_sub)
+
 ```
 
+## Segregação 1:2:1
+Vamos testar que os marcadores com valores 0, 1 e 2 do `data.frame` segue uma segregação de 1:2:1, em que 0 ele não tem nenhuma dose daquele alelo naquele marcador, 1 tem uma dose e 2 tem duas doses.
+
+```{r}
+#| message: false
+#| warning: false
+# Função para análise por marcador
+analise_marcador <- function(nome_col) {
+  dados <- df_sub[[nome_col]]
+
+  obs_tab <- table(factor(dados, levels = c(0, 1, 2))) # Genótipos observados (0, 1, 2)
+  n_total <- sum(obs_tab)
+  
+  prob_esp <- c(0.25, 0.5, 0.25)  # Frequência esperada
+  freq_esp <- prob_esp * n_total  # Genótipos esperados 
+
+  teste <- chisq.test(obs_tab, p = prob_esp) # Teste Qui-Quadrado
+  p_val <- teste$p.value # p-valor
+  
+  # Agrupando os resultados em um df
+  df_plot <- data.frame(Genotipo = factor(c(0, 1, 2), levels = c(0, 1, 2)),
+                        Observado = as.numeric(obs_tab) / n_total,
+                        Esperado = prob_esp,
+                        Marcador = nome_col,
+                        P_Value = p_val)
+  
+  return(df_plot)
+}
+
+#debug(analise_marcador)
+#(analise_marcador("PZA00986.1"))
+#undebug(analise_marcador)
+
+# Para os 5 marcadores
+resultados <- bind_rows(lapply(cols_sorteadas, analise_marcador))
+# View(resultados)
+
+datatable(resultados, 
+          colnames = c("Genótipo", "Observado", "Esperado", "Marcador", "p-valor"),
+          caption = "Segregação 1:1",
+          options = list(pageLength = 4,
+                         lengthMenu = c(3, 10, 20),
+                         dom = 'tp')) %>%
+  formatRound(columns = c('Observado', 'Esperado', 'P_Value'), digits = 3)
+```
+
+Observando o teste de Qui-quadrado observamos que os marcadores tem p-valor que tende a 0, e que provavelmente não é essa a segregação que ele segue. Mas, vamos olhar o gráfico de frequência das doses marcadores observadas contra as esperadas caso a segregração fosse 1:2:1.
+
+```{r}
+#| message: false
+#| warning: false
+
+# Oraganização dados
+resultados_long <- resultados %>%
+  pivot_longer(cols = c(Observado, Esperado), 
+               names_to = "Tipo", 
+               values_to = "Frequencia") %>%
+  mutate(Genotipo_num = as.numeric(as.character(Genotipo)))
+# View(resultados_long)
+
+# Gráfico
+ggplot(resultados_long, aes(x = Genotipo_num, y = Frequencia, fill = Tipo)) +
+  geom_histogram(stat = "identity",
+                 position = "identity",
+                 alpha = 0.5,
+                 color = "black",
+                 binwidth = 0.6) +
+  facet_wrap(~ Marcador, scales = "free_y") +
+  scale_x_continuous(breaks = c(0, 1, 2)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1)) +
+  scale_fill_manual(values = c("Observado" = "green3",
+                               "Esperado" = "purple3")) +
+  labs(title = "Histograma de Segregação (1:2:1)",
+       y = "Frequência",
+       x = "Genótipo (0=aa, 1=Aa, 2=AA)",
+       fill = "Genótipo:") +
+  theme_minimal() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.75, 0.35),
+        legend.key.spacing.y = unit(0.3, "cm"),
+        strip.background = element_rect(fill = "#f0f0f0", color = NA),
+        strip.text = element_text(face = "bold"),
+        title = element_text(size = 12, face = "bold"))
+```
+
+Os gráficos também corroboram para que a proporção de segregação não seja 1:2:1. Então, podemos criar a hipótese de que essa população de RILs já está avançada o bastante para estar em homozigose. Dessa forma, a segregação que eu espero é de 1:1. Vamos testar-la:
+
+## Segregação 1:1
+```{r}
+#| message: false
+#| warning: false
+df_sub[df_sub == 1] = NA
+
+# Função para análise por marcador
+analise_marcador <- function(nome_col) {
+  dados <- df_sub[[nome_col]]
+
+  obs_tab <- table(factor(dados, levels = c(0, 2))) # Genótipos observados (0, 1, 2)
+  n_total <- sum(obs_tab)
+  
+  prob_esp <- c(0.5, 0.5)  # Frequência esperada
+  freq_esp <- prob_esp * n_total  # Genótipos esperados 
+
+  teste <- chisq.test(obs_tab, p = prob_esp) # Teste Qui-Quadrado
+  p_val <- teste$p.value # p-valor
+  
+  # Agrupando os resultados em um df
+  df_plot <- data.frame(Genotipo = factor(c(0, 2), levels = c(0, 2)),
+                        Observado = as.numeric(obs_tab) / n_total,
+                        Esperado = prob_esp,
+                        Marcador = nome_col,
+                        P_Value = p_val)
+  
+  return(df_plot)
+}
+
+# Para os 5 marcadores
+resultados11 <- bind_rows(lapply(cols_sorteadas, analise_marcador))
+# View(resultados)
+
+datatable(resultados11, 
+          colnames = c("Genótipo", "Observado", "Esperado", "Marcador", "p-valor"),
+          caption = "Segregação 1:1",
+          options = list(pageLength = 4,
+                         lengthMenu = c(3, 10, 20),
+                         dom = 'tp')) %>%
+  formatRound(columns = c('Observado', 'Esperado', 'P_Value'), digits = 3)
+```
+
+A partir dos p-valores calculados eu não rejeito a hipótese de segregação de 1:1, pois as diferenças entre as frequências observadas e esperadas são pequenas o suficiente para serem explicadas pelo acaso. Vamos olhar também o histograma dos dados observados e esperados.
+
+```{r}
+#| message: false
+#| warning: false
+# Oraganização dados
+resultados_long11 <- resultados11 %>%
+  pivot_longer(cols = c(Observado, Esperado), 
+               names_to = "Tipo", 
+               values_to = "Frequencia") %>%
+  mutate(Genotipo_num = as.numeric(as.character(Genotipo)))
+# View(resultados_long)
+
+# Gráfico
+ggplot(resultados_long11, aes(x = Genotipo_num, y = Frequencia, fill = Tipo)) +
+  geom_histogram(stat = "identity",
+                 position = "identity",
+                 alpha = 0.65,
+                 color = "black",
+                 binwidth = 0.6) +
+  facet_wrap(~ Marcador, scales = "free_y") +
+  scale_x_continuous(breaks = c(0, 2)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1)) +
+  scale_fill_manual(values = c("Observado" = "green3",
+                               "Esperado" = "purple3")) +
+  labs(title = "Histograma de Segregação (1:1)",
+       y = "Frequência",
+       x = "Genótipo (0=aa, 2=AA)",
+       fill = "Genótipo:") +
+  theme_minimal() +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.75, 0.35),
+        legend.key.spacing.y = unit(0.3, "cm"),
+        strip.background = element_rect(fill = "#f0f0f0", color = NA),
+        strip.text = element_text(face = "bold"),
+        title = element_text(size = 12, face = "bold"))
+```
+
+Aqui podemos ver que o observado se comporta mais com o que eu espero de uma população de RILs.

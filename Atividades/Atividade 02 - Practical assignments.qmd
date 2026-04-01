@@ -28,7 +28,8 @@ execute:
   fig-height: 6            # Altura padrão global
 ---
 
-# Using your USP number as seed, simulate phenotypic values (don’t forget, P=G+E) using the normal distribution (rnorm). Then, compute the mean and the variance of P, G and E, and build a histogram, a density plot, a box plot and a scatter plot depicting the relationship between P and G. Do it for three different sample sizes: 10, 100 and 1000.
+# Assignment 01
+Using your USP number as seed, simulate phenotypic values (don’t forget, P=G+E) using the normal distribution (rnorm). Then, compute the mean and the variance of P, G and E, and build a histogram, a density plot, a box plot and a scatter plot depicting the relationship between P and G. Do it for three different sample sizes: 10, 100 and 1000.
 
 ```{r}
 #| message: false
@@ -268,7 +269,8 @@ plot(output$plots[[2]])
 plot(output$plots[[3]])
 ```
 
-# Choose a random trial and perform exploratory data analysis with three traits: GY, PH and NDM. Then, compute the correlation between these traits and build pairwise scatter plots.
+# Assignment 02
+Choose a random trial and perform exploratory data analysis with three traits: GY, PH and NDM. Then, compute the correlation between these traits and build pairwise scatter plots.
 
 ```{r}
 #| message: false
