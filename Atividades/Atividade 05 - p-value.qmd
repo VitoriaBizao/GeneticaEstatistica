@@ -1,0 +1,55 @@
+---
+title: "Atividade 05 - On p-values"
+author: "Vitória Bizão Murakami"
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    code-fold: true        # Esconde o código
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+## On p-values
+**All students must read the foundational paper, "Moving Beyond p < 0.05." Then, each student is required to write a summary of the specific paper assigned to their group (see the list below). Summaries should be a maximum of 750 words. Please note that while the summary is an individual task, the paper you summarize is determined by your group assignment.**
+
+O artigo [`The Role of Expert Judgment in Statistical Inference and Evidence-Based Decision-Making`](https://www.tandfonline.com/doi/full/10.1080/00031305.2018.1529623) discute a importância do julgamento especializado em diversas partes de uma pesquisa científica, desde o planejamento à tomada de decisões. O artigo argumenta que mesmo que ainda que haja subjetividade em vários momentos de decidir o rumo da pesquisa (definição da pergunta ser respondida, o delimeamento, a metodologia, o parâmetro, o modelo de estimação, de validação e de interpretação) é preciso ter objetividade. 
+
+A partir disso, o artigo apresenta quatro fases da pesquisa científica e onde o papel especializado deve ser utilizado:
+
+- Pergunta: quando está se definindo qual questão a pesquisa quer responder. É preciso que o especialista para identificar lacunas no colhecimento, enquanto que o estatítico traduza essas questões em medidas com confiabilidade.
+
+- Estudo: o especialista e o estatítico devem definir qual delineamento experimental, desenvolvimento de protocolos e planos de análises de acordo com os recursos melhor permitirem. Nessa fase é importante que haja documentação dos planos para se proteger contra más práticas. 
+
+- Interpretação: o esecilista tem função na contextualização dos resultados e qual sua significânci clínica, e o estatístico protege a pesquisa contra confusões de interpretação estatítica ou erros de associação e causalidade.
+
+- Informar: os resultados são informados seja para revisão pareada ou para os financiadores. Nesse ponto é preciso transparência máxima e comunicação efetiva.
+
+
+Após uma discussão sobre subjetividade na ciência, os autores apresentam três estudos de caso para exemplificar o uso do julgamento especializado.
+
+- **Caso 01 - Block HF:** estudo para testar dois tipos de marca-passo em pacientes cardíacos que usou critérios bayesianos para decidir se o estudo deveria continuar ou não. 
+
+- **Caso 02 - TOXO:** estudo para tesstar o efeito de uma medicação contra toxoplasmose em pacientes soro positivos. Cinco tipos de especialistas foram consultados se julgavam se o efeito da medicação positivo. O estudo foi interrompido antes por um comitê que percebeu mortes elevadas nos usuários da medicação testada. Nesse estudo, é apresentado que apesar das prioris serem úteis, se elas são muito otimistas elas podem acabar atrapalhando. Nesse caso, olhando apenas a priori, o estudo teria continuado e possivelemente mais pacientes teriam falecido.
+
+- **Caso 03 - SDGVM:** estudo de estimativa de fluxo de carbono do Reino Unido. Nele as estimativas diferiam do valor estatístico esperado, mostrando que incertezas não devem ser ignoradas.
+
+Por fim, os autores concluem que o conhecimento especializado não deve ser ignorado; o rigor científico deve ser aplicado e documentado de forma transparente e que os estatíticos sejam proativos.
