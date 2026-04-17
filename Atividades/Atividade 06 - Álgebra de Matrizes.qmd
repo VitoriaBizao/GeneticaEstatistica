@@ -1,0 +1,1121 @@
+---
+title: "Atividade 06 - Álgebra de Matrizes"
+author: "Vitória Bizão Murakami"
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    code-fold: true        # Esconde o código
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+# Álgebra de matrizes
+
+**Instruções:**
+
+Resolva as questões apresentando o desenvolvimento passo a passo dos cálculos matriciais. Não apresente
+apenas o resultado final. Em cada item, mostre as operações realizadas, de modo que seja possível acompanhar o raciocínio utilizado.
+Após a resolução manual, confira os resultados utilizando o R. Inclua no arquivo o código utilizado e também
+o resultado obtido no R, para que seja possível comparar a resolução analítica com a computacional.
+O relatório deverá ser elaborado em R Markdown ou Quarto. Para auxiliar na escrita das matrizes em LATEX,
+pode ser utilizado o editor disponível em https://latexeditor.lagrida.com/.
+
+# 1.  Considere as matrizes A e B:
+
+$$
+\mathbf{A} = \begin{bmatrix} 
+10 & 20 & 30 & 40 \\ 
+5 & 8 & 15 & 5 \\ 
+5 & 5 & 25 & 35 \\ 
+1 & 2 & 3 & 12 
+\end{bmatrix} 
+\quad \text{e} \quad
+\mathbf{B} = \begin{bmatrix} 
+1 & 2 & 10 & 6 \\ 
+5 & 8 & 4 & 2 \\ 
+9 & 3 & 7 & 5 
+\end{bmatrix}
+$$
+
+Com base nas definições de álgebra matricial, calcule:
+
+## a) AB
+A operação não pode ser feita, pois o número de colunas da matriz A (4) é diferente do número de linhas da matriz B (3). Portanto, não há conformidade das matrizes para realizar a operação.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+#| error: true
+# Matriz A 
+A <- matrix(c(10, 20, 30, 40,
+               5,  8, 15,  5,
+               5,  5, 25, 35,
+               1,  2,  3, 12), 
+            nrow = 4, ncol = 4, byrow = TRUE)
+
+# Matriz B 
+B <- matrix(c(1, 2, 10, 6,
+              5, 8,  4, 2,
+              9, 3,  7, 5), 
+            nrow = 3, ncol = 4, byrow = TRUE)
+
+A%*%B
+```
+
+## b) BA
+
+$$\mathbf{A}\mathbf{B} = \begin{bmatrix}
+1 & 2 & 10 & 6 \\
+5 & 8 & 4 & 2 \\
+9 & 3 & 7 & 5
+\end{bmatrix}
+\begin{bmatrix} 
+10 & 20 & 30 & 40 \\
+5 & 8 & 15 & 5 \\
+5 & 5 & 25 & 35 \\
+1 & 2 & 3 & 12
+\end{bmatrix} =$$
+
+$$\begin{bmatrix}
+(1)(10) + (2)(5) + (10)(5) + (6)(1) & (1)(20) + (2)(8) + (10)(5) + (6)(2) & (1)(30) + (2)(15) + (10)(25) + (6)(3) & (1)(40) + (2)(5) + (10)(35) + (6)(12) \\ (5)(10) + (8)(5) + (4)(5) + (2)(1) & (5)(20) + (8)(8) + (4)(5) + (2)(2) & (5)(30) + (8)(15) + (4)(25) + (2)(3) & (5)(40) + (8)(5) + (4)(35) + (2)(12) \\ (9)(10) + (3)(5) + (7)(5) + (5)(1) & (9)(20) + (3)(8) + (7)(5) + (5)(2) & (9)(30) + (3)(15) + (7)(25) + (5)(3) & (9)(40) + (3)(5) + (7)(35) + (5)(12) \end{bmatrix} =$$
+
+$$\begin{bmatrix} 76 & 98 & 328 & 472 \\ 112 & 188 & 376 & 404 \\ 145 & 249 & 505 & 680 \end{bmatrix}$$
+
+### R Check
+```{r}
+#BA
+B%*%A
+```
+
+
+# 2. Seja a matriz:
+
+$$
+\mathbf{X} = \begin{bmatrix}
+1 & 1 & 0 \\
+1 & 1 & 0 \\
+1 & 0 & 1 \\
+1 & 0 & 1 \end{bmatrix}
+$$
+
+## a) Determine a matriz transposta de X, denotada por X′.
+As linhas viram colunas:
+
+$$
+\mathbf{X'} = \begin{bmatrix} 
+1 & 1 & 1 & 1 \\ 
+1 & 1 & 0 & 0 \\ 
+0 & 0 & 1 & 1 
+\end{bmatrix}
+$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+X <- matrix(c(1, 1, 0,
+              1, 1, 0,
+              1, 0, 1,
+              1, 0, 1), 
+            nrow = 4, ncol = 3, byrow = TRUE)
+X_l <- t(X)
+X_l
+```
+
+## b) Calcule o produto matricial X′X.
+
+$$ \mathbf{A}\mathbf{B} = \begin{bmatrix} 
+1 & 1 & 1 & 1 \\
+1 & 1 & 0 & 0 \\
+0 & 0 & 1 & 1
+\end{bmatrix}
+\begin{bmatrix} 
+1 & 1 & 0 \\
+1 & 1 & 0 \\
+1 & 0 & 1 \\ 
+1 & 0 & 1 
+\end{bmatrix} =$$
+$$\begin{bmatrix}
+(1)(1) + (1)(1) + (1)(1) + (1)(1) & (1)(1) + (1)(1) + (1)(0) + (1)(0) & (1)(0) + (1)(0) + (1)(1) + (1)(1) \\ (1)(1) + (1)(1) + (0)(1) + (0)(1) & (1)(1) + (1)(1) + (0)(0) + (0)(0) & (1)(0) + (1)(0) + (0)(1) + (0)(1) \\ (0)(1) + (0)(1) + (1)(1) + (1)(1) & (0)(1) + (0)(1) + (1)(0) + (1)(0) & (0)(0) + (0)(0) + (1)(1) + (1)(1) 
+\end{bmatrix} =$$ 
+
+$$\begin{bmatrix}
+4 & 2 & 2 \\
+2 & 2 & 0 \\
+2 & 0 & 2
+\end{bmatrix} $$
+
+### R Check
+
+```{r}
+#| message: false
+#| warning: false
+X <- matrix(c(1, 1, 0,
+              1, 1, 0,
+              1, 0, 1,
+              1, 0, 1), 
+            nrow = 4, ncol = 3, byrow = TRUE)
+X_l <- t(X)
+
+X_l%*%X
+```
+
+## c) Determine a dimensão de X.
+A matriz tem quatro linhas e três colunas, portanto é uma matriz 4x3.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+dim(X)
+```
+
+## d) Identifique as linhas e as colunas de X.
+Linha 1: $\begin{bmatrix} 1 & 1 & 0 \end{bmatrix}$ \
+Linha 2: $\begin{bmatrix} 1 & 1 & 0 \end{bmatrix}$ \
+Linha 3: $\begin{bmatrix} 1 & 0 & 1 \end{bmatrix}$ \
+Linha 4: $\begin{bmatrix} 1 & 0 & 1 \end{bmatrix}$ \
+
+Coluna 1: $\begin{bmatrix} 1 & 1 & 1 & 1 \end{bmatrix}'$ \
+Coluna 2: $\begin{bmatrix} 1 & 1 & 0 & 0 \end{bmatrix}'$ \
+Coluna 3: $\begin{bmatrix} 0 & 0 & 1 & 1 \end{bmatrix}'$ \
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+# linha 1
+X[1,]
+
+# linha 2
+X[2,]
+
+# linha 3
+X[3,]
+
+# linha 4
+X[3,]
+
+# coluna 1
+X[,1]
+
+# coluna 2
+X[,2]
+
+# coluna 3
+X[,3]
+```
+
+## e) A matriz X é quadrada? Justifique.
+Não, pois o número de linhas (4) não é igual ao número de colunas (3).
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+ncol(X) == nrow(X)
+```
+
+## f) Existem linhas ou colunas repetidas? O que isso sugere sobre a matriz?
+Existem, a primeira e a segunda, e a terceira e quarta linha são iguais entre si. Além da primeira coluna ser o resultado da soma das outras cuas colunas. Isso sugere que a matriz não possui posto completo.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+qr(X)$rank
+```
+
+# 3. Sejam
+
+$$
+\mathbf{A} = \begin{bmatrix} 
+1 & 0 & 3 \\ 
+1 & 0 & 0 \\ 
+1 & 1 & 2 \\ 
+1 & 1 & -1 
+\end{bmatrix} 
+\quad \text{e} \quad 
+\mathbf{b} = \begin{bmatrix} 
+10 \\ 
+3 \\ 
+-2 
+\end{bmatrix}
+$$
+
+
+Calcule:
+
+## a) $\mathbf{Ab}$;
+
+$$ \mathbf{A}\mathbf{b} = \begin{bmatrix} 1 & 0 & 3 \\ 1 & 0 & 0 \\ 1 & 1 & 2 \\ 1 & 1 & -1 \end{bmatrix} \begin{bmatrix} 10 \\ 3 \\ -2 \end{bmatrix} = \begin{bmatrix} (1)(10) + (0)(3) + (3)(-2) \\ (1)(10) + (0)(3) + (0)(-2) \\ (1)(10) + (1)(3) + (2)(-2) \\ (1)(10) + (1)(3) + (-1)(-2) \end{bmatrix} = \begin{bmatrix} 4 \\ 10 \\ 9 \\ 15 \end{bmatrix} $$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+# Matriz A
+A <- matrix(c(1, 0,  3,
+              1, 0,  0,
+              1, 1,  2,
+              1, 1, -1), 
+            nrow = 4, ncol = 3, byrow = TRUE)
+
+# Vetor b
+b <- matrix(c(10, 
+               3, 
+              -2), 
+            nrow = 3, ncol = 1)
+
+A%*%b
+```
+
+## b) $\mathbf{b}'\mathbf{b}$;
+$$\mathbf{b'}\mathbf{b} =
+\begin{bmatrix} 
+10 & 3 & -2
+\end{bmatrix}
+\begin{bmatrix} 
+10 \\
+3 \\
+-2
+\end{bmatrix} = 
+\begin{bmatrix} 
+(10)(10) + (3)(3) + (-2)(-2) 
+\end{bmatrix} = 
+\begin{bmatrix} 113
+\end{bmatrix} $$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+t(b)%*%b
+```
+
+## c) $\mathbf{bb}'$.
+$$\mathbf{b}\mathbf{b'} =
+\begin{bmatrix}
+10 \\
+3 \\
+-2 
+\end{bmatrix}
+\begin{bmatrix} 
+10 & 3 & -2 
+\end{bmatrix} = 
+\begin{bmatrix}
+(10)(10) & (10)(3) & (10)(-2) \\
+(3)(10) & (3)(3) & (3)(-2) \\
+(-2)(10) & (-2)(3) & (-2)(-2)
+\end{bmatrix} =
+\begin{bmatrix} 
+100 & 30 & -20 \\
+30 & 9 & -6 \\
+-20 & -6 & 4
+\end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+b%*%t(b)
+```
+
+
+# 4. Sejam
+
+$$
+\mathbf{A} = \begin{bmatrix} 
+1 & 0 \\
+2 & -1 
+\end{bmatrix} 
+\quad \text{e} \quad 
+\mathbf{B} = \begin{bmatrix}
+3 & -2 \\ 
+0 & 1 
+\end{bmatrix}
+$$
+
+## a) Calcule $\mathbf{A} + \mathbf{B}$ e $\mathbf{B} + \mathbf{A}$. O que você observa?
+$$\mathbf{A} + \mathbf{B} =
+\begin{bmatrix} 
+1 & 0 \\
+2 & -1 
+\end{bmatrix} + 
+\begin{bmatrix} 
+3 & -2 \\
+0 & 1 
+\end{bmatrix} =
+\begin{bmatrix}
+1 + (3) & 0 + (-2) \\
+2 + (0) & -1 + (1) 
+\end{bmatrix} =
+\begin{bmatrix} 
+4 & -2 \\
+2 & 0 
+\end{bmatrix}$$
+ 
+$$\mathbf{A} + \mathbf{B} = 
+\begin{bmatrix} 
+3 & -2 \\
+0 & 1
+\end{bmatrix} + 
+\begin{bmatrix} 
+1 & 0 \\
+2 & -1
+\end{bmatrix} = 
+\begin{bmatrix} 
+3 + (1) & -2 + (0) \\ 
+0 + (2) & 1 + (-1) 
+\end{bmatrix} =
+\begin{bmatrix} 
+4 & -2 \\
+2 & 0 
+\end{bmatrix}$$
+
+Podemos observar que a ordem da soma não altera o resultado.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+# Matriz A
+A <- matrix(c(1,  0,
+              2, -1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+# Matriz B
+B <- matrix(c(3, -2,
+              0,  1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+A+B
+
+B+A
+```
+
+## b) Calcule $(\mathbf{A} + \mathbf{B})'$.
+$$(\mathbf{A} + \mathbf{B})' = 
+\begin{bmatrix} 
+1 & 2 \\
+0 & -1 
+\end{bmatrix} +
+\begin{bmatrix} 
+3 & 0 \\
+-2 & 1 
+\end{bmatrix} =
+\begin{bmatrix}
+1 + (3) & 2 + (0) \\
+0 + (-2) & -1 + (1) 
+\end{bmatrix} =
+\begin{bmatrix}
+4 & 2 \\ 
+-2 & 0
+\end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+t(A+B)
+```
+
+## c) Calcule $\mathbf{A}' + \mathbf{B}'$.
+
+$$\mathbf{A'} + \mathbf{B'} =
+\begin{bmatrix} 1 & 2 \\ 0 & -1 \end{bmatrix} + \begin{bmatrix} 3 & 0 \\ -2 & 1 \end{bmatrix} = \begin{bmatrix} 1 + (3) & 2 + (0) \\ 0 + (-2) & -1 + (1) \end{bmatrix} = \begin{bmatrix} 4 & 2 \\ -2 & 0 \end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+t(A) + t(B)
+```
+
+## d) Compare os resultados obtidos. É possível identificar algum padrão?
+Os resultados são todos iguais.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A + B == B + A
+
+t(A + B) == t(A) + t(B)
+```
+
+## e) Com base nos resultados, escreva uma propriedade que relacione as operações realizadas.
+A partir dos resultados podemos relacionar a soma das matrizes com a propriedade de comutativa, ou seja, operação de soma em matrizes de mesma dimensão não tem seu resultado alterado pela ordem das parcelas. Assim:
+
+$A + B = B + A$ e 
+$(A + B)' = A' + B'$
+
+## f) Calcule o produto de Kronecker $\mathbf{A} \otimes \mathbf{B}$.
+$$\mathbf{A} \otimes \mathbf{B} =
+\begin{bmatrix}
+1 & 0 \\
+2 & -1 
+\end{bmatrix} \otimes \mathbf{B} =
+\begin{bmatrix}
+1 \mathbf{B} & 0 \mathbf{B} \\
+2 \mathbf{B} & -1 \mathbf{B} 
+\end{bmatrix} = 
+\begin{bmatrix} 
+3 & -2 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+6 & -4 & -3 & 2 \\
+0 & 2 & 0 & -1
+\end{bmatrix}$$ 
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+kronecker(A, B)
+```
+
+
+# 5. Seja
+
+$$
+\mathbf{A} = \begin{bmatrix}
+7 & -3 & 2 \\
+4 & 9 & 5 
+\end{bmatrix}
+$$
+
+## a) Calcule $\mathbf{A}'$.
+$$
+\mathbf{A}' = \begin{bmatrix} 
+7 & 4 \\ 
+-3 & 9 \\ 
+2 & 5 
+\end{bmatrix}
+$$
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A <- matrix(c(7, -3, 2,
+              4,  9, 5), 
+            nrow = 2, ncol = 3, byrow = TRUE)
+
+t(A)
+```
+
+## b) Calcule $(\mathbf{A}')'$. O que você observa em relação à matriz original $\mathbf{A}$?
+$$
+(\mathbf{A}')' =
+\left(\begin{bmatrix} 
+7 & 4 \\ 
+-3 & 9 \\ 
+2 & 5 
+\end{bmatrix}\right) ' = 
+\begin{bmatrix}
+7 & -3 & 2 \\
+4 & 9 & 5 
+\end{bmatrix}
+$$
+Quando aplicamos a transposta duas vezes retornamos à matriz original, ou seja, a transposta da transposta de uma matriz é ela mesma ($(A')' = A$).
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+t(t(A))
+```
+
+## c) Calcule $\mathbf{A}'\mathbf{A}$ e $\mathbf{A}\mathbf{A}'$. Compare os resultados quanto à dimensão e aos valores.
+$$\mathbf{A'}\mathbf{A} = \begin{bmatrix}
+7 & 4 \\
+-3 & 9 \\
+2 & 5
+\end{bmatrix} 
+\begin{bmatrix}
+7 & -3 & 2 \\
+4 & 9 & 5 
+\end{bmatrix} = 
+\begin{bmatrix} 
+(7)(7) + (4)(4) & (7)(-3) + (4)(9) & (7)(2) + (4)(5) \\
+(-3)(7) + (9)(4) & (-3)(-3) + (9)(9) & (-3)(2) + (9)(5) \\
+(2)(7) + (5)(4) & (2)(-3) + (5)(9) & (2)(2) + (5)(5)
+\end{bmatrix} = 
+\begin{bmatrix} 
+65 & 15 & 34 \\
+15 & 90 & 39 \\
+34 & 39 & 29 
+\end{bmatrix}$$
+
+
+$$\mathbf{A}\mathbf{A'} = \begin{bmatrix} 
+7 & -3 & 2 \\
+4 & 9 & 5 
+\end{bmatrix} 
+\begin{bmatrix} 
+7 & 4 \\
+-3 & 9 \\
+2 & 5
+\end{bmatrix} = \begin{bmatrix} 
+(7)(7) + (-3)(-3) + (2)(2) & (7)(4) + (-3)(9) + (2)(5) \\
+(4)(7) + (9)(-3) + (5)(2) & (4)(4) + (9)(9) + (5)(5) 
+\end{bmatrix} = 
+\begin{bmatrix} 
+62 & 11 \\
+11 & 122 
+\end{bmatrix}$$
+
+Quando multiplicamos $A'A$, estamos multiplicando uma matriz 3x2 com uma 2x3, portanto, iremos obter uma matriz 3x3. Já quando multiplicamos $AA'$, estamos multiplicando uma matriz 2x3 com uma 3x2 e, portanto, iremos obter uma matriz 2x2. Uma vez que a multiplicação de matrizes se dá pelas linhas e colunas par a par, os valores obtidos não serão os mesmo pois são linhas e colunas diferentes que estão sendo utilizadas na operação.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A <- matrix(c(7, -3, 2,
+              4,  9, 5), 
+            nrow = 2, ncol = 3, byrow = TRUE)
+
+t(A)%*%A; dim(t(A)%*%A) 
+
+A%*%t(A); dim(A%*%t(A))
+```
+
+## d) Com base nos resultados, descreva as relações observadas entre as operações realizadas.
+Com base nos resultados podemos concluir que a ordem das parcelas altera o resultado, ou seja, $A'A \neq AA'$.
+
+
+# 6. Sejam
+
+$$\mathbf{A} = \begin{bmatrix}
+1 & 3 \\
+5 & -7
+\end{bmatrix},
+\quad \mathbf{B} = \begin{bmatrix}
+3 & -2 \\ 
+6 & 9 \end{bmatrix} 
+\quad \text{e} \quad 
+\mathbf{C} = \begin{bmatrix} 
+1 & 3 \\
+2 & 4 
+\end{bmatrix}$$
+
+Verifique, por meio de cálculos, a validade da lei distributiva da multiplicação de matrizes em relação à soma:
+$$\mathbf{A}(\mathbf{B} + \mathbf{C}) = \mathbf{AB} + \mathbf{AC}$$
+
+\ 
+Primeiro vamos fazer $\mathbf{A}(\mathbf{B} + \mathbf{C})$:
+
+$$\mathbf{A}(\mathbf{B} + \mathbf{C}) = \mathbf{A} \left(\begin{bmatrix}
+3 & -2 \\
+6 & 9 
+\end{bmatrix} + 
+\begin{bmatrix} 
+1 & 3 \\
+2 & 4 
+\end{bmatrix}\right) =
+\mathbf{A} \begin{bmatrix}
+3 + (1) & -2 + (3) \\
+6 + (2) & 9 + (4)
+\end{bmatrix} =$$
+
+$$\mathbf{A}(\mathbf{B} + \mathbf{C}) = \begin{bmatrix} 
+1 & 3 \\ 
+5 & -7 
+\end{bmatrix} 
+\begin{bmatrix} 
+4 & 1 \\
+8 & 13 \end{bmatrix} = \begin{bmatrix} (1)(4) + (3)(8) & (1)(1) + (3)(13) \\ (5)(4) + (-7)(8) & (5)(1) + (-7)(13) \end{bmatrix} = \begin{bmatrix} 28 & 40 \\ -36 & -86 \end{bmatrix}$$
+
+\
+Agora, vamos fazer $\mathbf{AB} + \mathbf{AC}$:
+
+$$\mathbf{AB} = \begin{bmatrix} 
+1 & 3 \\ 
+5 & -7 
+\end{bmatrix}
+\begin{bmatrix} 
+3 & -2 \\
+6 & 9 
+\end{bmatrix} = 
+\begin{bmatrix} 
+(1)(3) + (3)(6) & (1)(-2) + (3)(9) \\
+(5)(3) + (-7)(6) & (5)(-2) + (-7)(9)
+\end{bmatrix} = 
+\begin{bmatrix} 
+21 & 25 \\
+-27 & -73
+\end{bmatrix}$$
+
+$$\mathbf{A}\mathbf{C} =
+\begin{bmatrix} 
+1 & 3 \\
+5 & -7 
+\end{bmatrix} 
+\begin{bmatrix} 
+1 & 3 \\
+2 & 4 
+\end{bmatrix} = 
+\begin{bmatrix}
+(1)(1) + (3)(2) & (1)(3) + (3)(4) \\
+(5)(1) + (-7)(2) & (5)(3) + (-7)(4) 
+\end{bmatrix} = 
+\begin{bmatrix}
+7 & 15 \\
+-9 & -13 
+\end{bmatrix}$$
+
+$$\mathbf{AB} + \mathbf{AC} =
+\begin{bmatrix}
+21 & 25 \\
+-27 & -73 
+\end{bmatrix} + 
+\begin{bmatrix} 
+7 & 15 \\
+-9 & -13 
+\end{bmatrix} = 
+\begin{bmatrix} 
+21 + (7) & 25 + (15) \\
+-27 + (-9) & -73 + (-13)
+\end{bmatrix} = 
+\begin{bmatrix}
+28 & 40 \\
+-36 & -86 
+\end{bmatrix}$$
+
+Como $\mathbf{A}(\mathbf{B} + \mathbf{C}) = \mathbf{AB} + \mathbf{AC}$, concluímos que a lei distributiva também se aplica à matrizes.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+# Matriz A
+A <- matrix(c(1,  3,
+              5, -7), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+# Matriz B 
+B <- matrix(c(3, -2,
+              6,  9), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+# Matriz C 
+C <- matrix(c(1, 3,
+              2, 4), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+A%*%(B+C) == (A%*%B + A%*%C)
+```
+
+## a) Calcule $\mathbf{B} + \mathbf{C}$
+$$\mathbf{B} + \mathbf{C} = \begin{bmatrix} 3 & -2 \\ 6 & 9 \end{bmatrix} + \begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} 3 + (1) & -2 + (3) \\ 6 + (2) & 9 + (4) \end{bmatrix} = \begin{bmatrix} 4 & 1 \\ 8 & 13 \end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+B+C
+```
+
+## b) Calcule $\mathbf{A}(\mathbf{B} + \mathbf{C})$
+$$\mathbf{A} (\mathbf{B}+ \mathbf{C}) = \begin{bmatrix} 1 & 3 \\ 5 & -7 \end{bmatrix} \begin{bmatrix} 4 & 1 \\ 8 & 13 \end{bmatrix} = \begin{bmatrix} (1)(4) + (3)(8) & (1)(1) + (3)(13) \\ (5)(4) + (-7)(8) & (5)(1) + (-7)(13) \end{bmatrix} = \begin{bmatrix} 28 & 40 \\ -36 & -86 \end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A%*%(B+C)
+```
+
+## c) Calcule $\mathbf{AB}$ e $\mathbf{AC}$
+$$\mathbf{A}\mathbf{B} = \begin{bmatrix} 1 & 3 \\ 5 & -7 \end{bmatrix} \begin{bmatrix} 3 & -2 \\ 6 & 9 \end{bmatrix} = \begin{bmatrix} (1)(3) + (3)(6) & (1)(-2) + (3)(9) \\ (5)(3) + (-7)(6) & (5)(-2) + (-7)(9) \end{bmatrix} = \begin{bmatrix} 21 & 25 \\ -27 & -73 \end{bmatrix}$$
+$$\mathbf{A}\mathbf{C} = \begin{bmatrix} 1 & 3 \\ 5 & -7 \end{bmatrix} \begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} (1)(1) + (3)(2) & (1)(3) + (3)(4) \\ (5)(1) + (-7)(2) & (5)(3) + (-7)(4) \end{bmatrix} = \begin{bmatrix} 7 & 15 \\ -9 & -13 \end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+# AB
+A%*%B
+
+# AC
+A%*%C
+```
+
+## d) Calcule $\mathbf{AB} + \mathbf{AC}$
+$$\mathbf{AB} + \mathbf{AC} = \begin{bmatrix} 21 & 25 \\ -27 & -73 \end{bmatrix} + \begin{bmatrix} 7 & 15 \\ -9 & -13 \end{bmatrix} = \begin{bmatrix} 21 + (7) & 25 + (15) \\ -27 + (-9) & -73 + (-13) \end{bmatrix} = \begin{bmatrix} 28 & 40 \\ -36 & -86 \end{bmatrix} $$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A%*%B + A%*%C
+```
+
+## e) Compare os resultados obtidos e conclua sobre a validade da lei distributiva
+Como $\mathbf{A}(\mathbf{B} + \mathbf{C}) = \mathbf{AB} + \mathbf{AC}$, a lei distributiva é válida para matrizes.
+
+
+# 7. Sejam
+
+$$\mathbf{A} = \begin{bmatrix} 
+8 & 3 & 7 \\ 
+-2 & 5 & -3 
+\end{bmatrix}, \quad 
+\mathbf{B} = \begin{bmatrix} 
+-2 & 5 \\
+3 & 7 \\
+6 & -4 \end{bmatrix} 
+\quad \text{e} \quad 
+\mathbf{C} = \begin{bmatrix} 
+1 & 2 \\
+-3 & 1 \\
+2 & 4 \end{bmatrix}$$
+
+## a) Calcule $\mathbf{AB}$ e $\mathbf{BA}$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) Calcule $\mathbf{B} + \mathbf{C}$, $\mathbf{AC}$ e $\mathbf{A}(\mathbf{B} + \mathbf{C})$. Em seguida, compare $\mathbf{A}(\mathbf{B} + \mathbf{C})$ com $\mathbf{AB} + \mathbf{AC}$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) Calcule $(\mathbf{AB})'$ e $\mathbf{B}'\mathbf{A}'$. Compare os resultados obtidos.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## d) Compare $tr(\mathbf{AB})$ com $tr(\mathbf{BA})$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## e) Sejam $\mathbf{a}_1'$ e $\mathbf{a}_2'$ as duas linhas de $\mathbf{A}$. Calcule 
+
+$$
+\begin{bmatrix} \mathbf{a}_1'\mathbf{B} \\ 
+\mathbf{a}_2'\mathbf{B} \end{bmatrix}
+$$
+e compare o resultado com $\mathbf{AB}$.
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## f) Sejam $\mathbf{b}_1$ e $\mathbf{b}_2$ as duas colunas de $\mathbf{B}$. Calcule $(\mathbf{Ab}_1, \mathbf{Ab}_2)$ e compare o resultado com $\mathbf{AB}$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+
+# 8. Sejam
+
+$$
+\mathbf{A} = \begin{bmatrix} 
+3 & 2 & 1 \\ 
+6 & 4 & 2 \\ 
+12 & 8 & 4 
+\end{bmatrix} 
+\quad \text{e} \quad 
+\mathbf{B} = \begin{bmatrix} 
+1 & -1 & 2 \\ 
+-1 & 1 & -2 \\ 
+-1 & 1 & -2 
+\end{bmatrix}.
+$$
+
+Considere $\mathbf{O}$ a matriz nula (matriz cujos elementos são todos iguais a zero) de dimensão apropriada.
+
+## a) Mostre que $\mathbf{AB} = \mathbf{O}$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) Encontre um vetor $\mathbf{x}$ tal que $\mathbf{Ax} = 0$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) Determine o posto de $\mathbf{A}$ e o posto de $\mathbf{B}$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+
+# 9. Sejam
+
+$$
+\mathbf{A} = \begin{bmatrix}
+1 & 2 \\
+3 & 4 
+\end{bmatrix}, \quad
+\mathbf{B} = \begin{bmatrix}
+5 & 6 \\
+7 & 8 \end{bmatrix}
+\quad \text{e} \quad
+\mathbf{C} = \begin{bmatrix} 
+2 & 0 \\
+1 & 3 \end{bmatrix}.
+$$
+
+## a) Usando a propriedade da transposta do produto de duas matrizes, desenvolva $(\mathbf{ABC})'$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) Escreva o resultado obtido em função de $\mathbf{A}'$, $\mathbf{B}'$ e $\mathbf{C}'$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) Calcule numericamente $(\mathbf{ABC})'$ e $\mathbf{C}'\mathbf{B}'\mathbf{A}'$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## d) Compare os resultados e conclua.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+
+# 10. Sejam $\mathbf{A}$ e $\mathbf{B}$ definidas e particionadas como:
+
+$$
+\mathbf{A} = \left( \begin{array}{cc|c} 
+2 & 1 & 2 \\ 
+3 & 2 & 0 \\ \hline 
+1 & 0 & 1 
+\end{array} \right) 
+\quad \text{e} \quad 
+\mathbf{B} = \left( \begin{array}{ccc|c} 
+1 & 1 & 1 & 0 \\ 
+2 & 1 & 1 & 2 \\ \hline 
+2 & 3 & 1 & 2 
+\end{array} \right)
+$$
+
+## a) Encontre $\mathbf{AB}$ utilizando a partição indicada, mostrando o passo a passo.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) Encontre $\mathbf{AB}$ pela forma usual.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) Compare os resultados obtidos.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+
+# 11. Particione as matrizes $\mathbf{A}$ e $\mathbf{B}$ do problema anterior como:
+
+$$
+\mathbf{A} = \left( \begin{array}{c|cc} 
+2 & 1 & 2 \\ 
+3 & 2 & 0 \\ 
+1 & 0 & 1 
+\end{array} \right) = (\mathbf{a}_1, \mathbf{A}_2) 
+\quad \text{e} \quad 
+\mathbf{B} = \left( \begin{array}{cccc} 
+1 & 1 & 1 & 0 \\ \hline 
+2 & 1 & 1 & 2 \\ 
+2 & 3 & 1 & 2 
+\end{array} \right) = \begin{pmatrix} \mathbf{b}_1' \\ \mathbf{B}_2 \end{pmatrix}.
+$$
+
+## a) Identifique os blocos $\mathbf{a}_1, \mathbf{A}_2, \mathbf{b}_1'$ e $\mathbf{B}_2$.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) Escreva as dimensões de cada bloco.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) Reescreva o produto $\mathbf{AB}$ em termos dessa partição.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+
+# 12. Considere as seguintes matrizes:
+
+$$
+\mathbf{A} = \begin{bmatrix} 
+1 & 0 & 0 \\ 
+0 & 2 & 0 \\ 
+0 & 0 & 3 
+\end{bmatrix},
+\quad \mathbf{B} = \begin{bmatrix}
+1 & 2 & 3 \\ 
+0 & 4 & 5 \\ 
+0 & 0 & 6 
+\end{bmatrix}, 
+\quad \mathbf{C} = \begin{bmatrix} 
+1 & 2 \\ 
+2 & 1 \end{bmatrix}
+$$
+
+$$
+\mathbf{D} = \begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{bmatrix},
+\quad \mathbf{E} = \begin{bmatrix} 
+1 & 1 \\ 
+1 & 1 
+\end{bmatrix},
+\quad \mathbf{F} = \begin{bmatrix} 
+1 & 0 \\
+0 & 0 
+\end{bmatrix}.
+$$
+
+## a) Classifique cada matriz quanto ao tipo (por exemplo: quadrada, diagonal, identidade, triangular superior, triangular inferior, simétrica, etc.).
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) Identifique qual(is) matriz(es) são idempotentes.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) Seja $\mathbf{1}$ um vetor coluna cujos elementos são todos iguais a 1. Calcule o produto $\mathbf{11}'$ e descreva a matriz obtida.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## d) Determine o posto (*rank*) de cada matriz.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## e) Justifique brevemente cada uma das classificações realizadas.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+# 13. Construa uma matriz A que satisfaça simultaneamente as seguintes propriedades:
+## a) seja simétrica;
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## b) não seja diagonal;
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
+
+## c) tenha posto igual a 1.
+### R Check
+```{r}
+#| message: false
+#| warning: false
+
+```
