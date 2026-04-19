@@ -498,21 +498,19 @@ kronecker(A, B)
 
 # 5. Seja
 
-$$
-\mathbf{A} = \begin{bmatrix}
+$$\mathbf{A} = \begin{bmatrix}
 7 & -3 & 2 \\
 4 & 9 & 5 
-\end{bmatrix}
-$$
+\end{bmatrix}$$
 
-## a) Calcule $\mathbf{A}'$.
-$$
-\mathbf{A}' = \begin{bmatrix} 
+## a) Calcule $\mathbf{A}'$
+
+$$\mathbf{A}' = \begin{bmatrix} 
 7 & 4 \\ 
 -3 & 9 \\ 
 2 & 5 
-\end{bmatrix}
-$$
+\end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
@@ -525,8 +523,7 @@ t(A)
 ```
 
 ## b) Calcule $(\mathbf{A}')'$. O que você observa em relação à matriz original $\mathbf{A}$?
-$$
-(\mathbf{A}')' =
+$$(\mathbf{A}')' =
 \left(\begin{bmatrix} 
 7 & 4 \\ 
 -3 & 9 \\ 
@@ -535,8 +532,7 @@ $$
 \begin{bmatrix}
 7 & -3 & 2 \\
 4 & 9 & 5 
-\end{bmatrix}
-$$
+\end{bmatrix}$$
 Quando aplicamos a transposta duas vezes retornamos à matriz original, ou seja, a transposta da transposta de uma matriz é ela mesma ($(A')' = A$).
 
 ### R Check
@@ -547,6 +543,7 @@ t(t(A))
 ```
 
 ## c) Calcule $\mathbf{A}'\mathbf{A}$ e $\mathbf{A}\mathbf{A}'$. Compare os resultados quanto à dimensão e aos valores.
+
 $$\mathbf{A'}\mathbf{A} = \begin{bmatrix}
 7 & 4 \\
 -3 & 9 \\
@@ -791,66 +788,159 @@ $$\mathbf{A} = \begin{bmatrix}
 -3 & 1 \\
 2 & 4 \end{bmatrix}$$
 
-## a) Calcule $\mathbf{AB}$ e $\mathbf{BA}$.
+## a) Calcule $\mathbf{AB}$ e $\mathbf{BA}$
+$$\mathbf{A}\mathbf{B} = \begin{bmatrix} 8 & 3 & 7 \\ -2 & 5 & -3 \end{bmatrix} \begin{bmatrix} -2 & 5 \\ 3 & 7 \\ 6 & -4 \end{bmatrix} = \begin{bmatrix} (8)(-2) + (3)(3) + (7)(6) & (8)(5) + (3)(7) + (7)(-4) \\ (-2)(-2) + (5)(3) + (-3)(6) & (-2)(5) + (5)(7) + (-3)(-4) \end{bmatrix} = \begin{bmatrix} 35 & 33 \\ 1 & 37 \end{bmatrix}$$
+
+$$\mathbf{B}\mathbf{A} = \begin{bmatrix} -2 & 5 \\ 3 & 7 \\ 6 & -4 \end{bmatrix} \begin{bmatrix} 8 & 3 & 7 \\ -2 & 5 & -3 \end{bmatrix} = \begin{bmatrix} (-2)(8) + (5)(-2) & (-2)(3) + (5)(5) & (-2)(7) + (5)(-3) \\ (3)(8) + (7)(-2) & (3)(3) + (7)(5) & (3)(7) + (7)(-3) \\ (6)(8) + (-4)(-2) & (6)(3) + (-4)(5) & (6)(7) + (-4)(-3) \end{bmatrix} = \begin{bmatrix} -26 & 19 & -29 \\ 10 & 44 & 0 \\ 56 & -2 & 54 \end{bmatrix}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A <- matrix(c( 8, 3,  7,
+              -2, 5, -3), 
+            nrow = 2, ncol = 3, byrow = TRUE)
+
+# Matriz B 
+B <- matrix(c(-2,  5,
+               3,  7,
+               6, -4), 
+            nrow = 3, ncol = 2, byrow = TRUE)
+
+# Matriz C
+C <- matrix(c( 1, 2,
+              -3, 1,
+               2, 4), 
+            nrow = 3, ncol = 2, byrow = TRUE)
+
+# AB
+A%*%B
+
+#BA
+B%*%A
+```
+
+## b) Calcule $\mathbf{B} + \mathbf{C}$, $\mathbf{AC}$ e $\mathbf{A}(\mathbf{B} + \mathbf{C})$. Em seguida, compare $\mathbf{A}(\mathbf{B} + \mathbf{C})$ com $\mathbf{AB} + \mathbf{AC}$
+
+$$\mathbf{B} + \mathbf{C} = \begin{bmatrix} -2 & 5 \\ 3 & 7 \\ 6 & -4 \end{bmatrix} + \begin{bmatrix} 1 & 2 \\ -3 & 1 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} -2 + (1) & 5 + (2) \\ 3 + (-3) & 7 + (1) \\ 6 + (2) & -4 + (4) \end{bmatrix} = \begin{bmatrix} -1 & 7 \\ 0 & 8 \\ 8 & 0 \end{bmatrix}$$
+$$\mathbf{A}\mathbf{C} = \begin{bmatrix} 8 & 3 & 7 \\ -2 & 5 & -3 \end{bmatrix} \begin{bmatrix} 1 & 2 \\ -3 & 1 \\ 2 & 4 \end{bmatrix} = \begin{bmatrix} (8)(1) + (3)(-3) + (7)(2) & (8)(2) + (3)(1) + (7)(4) \\ (-2)(1) + (5)(-3) + (-3)(2) & (-2)(2) + (5)(1) + (-3)(4) \end{bmatrix} = \begin{bmatrix} 13 & 47 \\ -23 & -11 \end{bmatrix}$$
+
+$$\mathbf{A}(\mathbf{B+C}) = \begin{bmatrix} 8 & 3 & 7 \\ -2 & 5 & -3 \end{bmatrix} \begin{bmatrix} -1 & 7 \\ 0 & 8 \\ 8 & 0 \end{bmatrix} = \begin{bmatrix} (8)(-1) + (3)(0) + (7)(8) & (8)(7) + (3)(8) + (7)(0) \\ (-2)(-1) + (5)(0) + (-3)(8) & (-2)(7) + (5)(8) + (-3)(0) \end{bmatrix} = \begin{bmatrix} 48 & 80 \\ -22 & 26 \end{bmatrix}$$
+$$\mathbf{AB} + \mathbf{AC} = \begin{bmatrix} 35 & 33 \\ 1 & 37 \end{bmatrix} + \begin{bmatrix} 13 & 47 \\ -23 & -11 \end{bmatrix} = \begin{bmatrix} 35 + (13) & 33 + (47) \\ 1 + (-23) & 37 + (-11) \end{bmatrix} = \begin{bmatrix} 48 & 80 \\ -22 & 26 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
 
+# B+C
+B+C
+
+# AC
+A%*%C
+
+# A(B+C)
+A%*%(B+C)
+
+# AB+AC
+(A%*%B) + (A%*%C)
 ```
 
-## b) Calcule $\mathbf{B} + \mathbf{C}$, $\mathbf{AC}$ e $\mathbf{A}(\mathbf{B} + \mathbf{C})$. Em seguida, compare $\mathbf{A}(\mathbf{B} + \mathbf{C})$ com $\mathbf{AB} + \mathbf{AC}$.
-### R Check
-```{r}
-#| message: false
-#| warning: false
-
-```
+$\mathbf{A}(\mathbf{B} + \mathbf{C}) = \mathbf{A}\mathbf{B} + \mathbf{A}\mathbf{C}$, pois a propriedade distributiva é válida para multiplicação de matrizes.
 
 ## c) Calcule $(\mathbf{AB})'$ e $\mathbf{B}'\mathbf{A}'$. Compare os resultados obtidos.
+$$\mathbf{A}\mathbf{B} = \begin{bmatrix} 35 & 33 \\ 1 & 37 \end{bmatrix}$$
+$$(\mathbf{A}\mathbf{B})' = \begin{bmatrix} 35 & 1 \\ 33 & 37 \end{bmatrix}$$
+
+$$\mathbf{B'}\mathbf{A'} = \begin{bmatrix} -2 & 3 & 6 \\ 5 & 7 & -4 \end{bmatrix} \begin{bmatrix} 8 & -2 \\ 3 & 5 \\ 7 & -3 \end{bmatrix} = \begin{bmatrix} (-2)(8) + (3)(3) + (6)(7) & (-2)(-2) + (3)(5) + (6)(-3) \\ (5)(8) + (7)(3) + (-4)(7) & (5)(-2) + (7)(5) + (-4)(-3) \end{bmatrix} = \begin{bmatrix} 35 & 1 \\ 33 & 37 \end{bmatrix}$$
+A partir desse resultado provamos a propriedade das matrizes que o transposto do produto entre duas matrizes é o produto das transpostas em ordem contrária, ou seja, $(\mathbf{AB})' = \mathbf{B}'\mathbf{A}'$.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+t(A%*%B)
 
+t(B)%*%t(A)
 ```
 
 ## d) Compare $tr(\mathbf{AB})$ com $tr(\mathbf{BA})$.
+$$\text{Tr}(\mathbf{AB}) = \text{Tr}\begin{bmatrix} 35 & 33 \\ 1 & 37 \end{bmatrix} = 35 + 37 = 72$$
+
+$$\text{Tr}(\mathbf{BA}) = \text{Tr}\begin{bmatrix} -26 & 19 & -29 \\ 10 & 44 & 0 \\ 56 & -2 & 54 \end{bmatrix} = -26 + 44 + 54 = 72$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+# Tr(AB)
+sum(diag((A%*%B)))
 
+# Tr(BA)
+sum(diag((B%*%A)))
 ```
 
-## e) Sejam $\mathbf{a}_1'$ e $\mathbf{a}_2'$ as duas linhas de $\mathbf{A}$. Calcule 
+## e) Sejam $\mathbf{a}_1'$ e $\mathbf{a}_2'$ as duas linhas de $\mathbf{A}$. Calcule $\begin{bmatrix} \mathbf{a}_1'\mathbf{B} \\ \mathbf{a}_2'\mathbf{B} \end{bmatrix}$ e compare o resultado com $\mathbf{AB}$.
 
-$$
-\begin{bmatrix} \mathbf{a}_1'\mathbf{B} \\ 
-\mathbf{a}_2'\mathbf{B} \end{bmatrix}
-$$
-e compare o resultado com $\mathbf{AB}$.
+$$\mathbf{a_1'}\mathbf{B} = \begin{bmatrix} 8 & 3 & 7 \end{bmatrix} \begin{bmatrix} -2 & 5 \\ 3 & 7 \\ 6 & -4 \end{bmatrix} = \begin{bmatrix} (8)(-2) + (3)(3) + (7)(6) & (8)(5) + (3)(7) + (7)(-4) \end{bmatrix} = \begin{bmatrix} 35 & 33 \end{bmatrix}$$
+
+$$\mathbf{a_2'}\mathbf{B} = \begin{bmatrix} -2 & 5 & -3 \end{bmatrix} \begin{bmatrix} -2 & 5 \\ 3 & 7 \\ 6 & -4 \end{bmatrix} = \begin{bmatrix} (-2)(-2) + (5)(3) + (-3)(6) & (-2)(5) + (5)(7) + (-3)(-4) \end{bmatrix} = \begin{bmatrix} 1 & 37 \end{bmatrix}$$
+
+$$\therefore \begin{bmatrix}
+\mathbf{a}_1'\mathbf{B} \\ 
+\mathbf{a}_2'\mathbf{B}
+\end{bmatrix} =
+\begin{bmatrix}
+35 & 33 \\ 
+1 & 37 \end{bmatrix}$$
 
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+a1 <- A[1,]
+a2 <- A[2,]
 
+# a1B
+a1%*%B
+
+# a2B
+a2%*%B
+
+# AB
+A%*%B == rbind(a1%*%B, a2%*%B)
 ```
 
 ## f) Sejam $\mathbf{b}_1$ e $\mathbf{b}_2$ as duas colunas de $\mathbf{B}$. Calcule $(\mathbf{Ab}_1, \mathbf{Ab}_2)$ e compare o resultado com $\mathbf{AB}$.
+$$\mathbf{A}\mathbf{b_1} = \begin{bmatrix} 8 & 3 & 7 \\ -2 & 5 & -3 \end{bmatrix} \begin{bmatrix} -2 \\ 3 \\ 6 \end{bmatrix} = \begin{bmatrix} (8)(-2) + (3)(3) + (7)(6) \\ (-2)(-2) + (5)(3) + (-3)(6) \end{bmatrix} = \begin{bmatrix} 35 \\ 1 \end{bmatrix}$$
+
+$$\mathbf{A}\mathbf{b_2} = \begin{bmatrix} 8 & 3 & 7 \\ -2 & 5 & -3 \end{bmatrix} \begin{bmatrix} 5 \\ 7 \\ -4 \end{bmatrix} = \begin{bmatrix} (8)(5) + (3)(7) + (7)(-4) \\ (-2)(5) + (5)(7) + (-3)(-4) \end{bmatrix} = \begin{bmatrix} 33 \\ 37 \end{bmatrix}$$
+$$\therefore \begin{bmatrix}\mathbf{Ab}_1 & \mathbf{Ab}_2\end{bmatrix} = 
+\begin{bmatrix}
+35 & 33 \\ 
+1 & 37 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
 
+b1 <- B[, 1, drop = FALSE]
+b2 <- B[, 2, drop = FALSE]
+
+# Ab1
+A%*%b1
+
+# Ab2
+A%*%b2
+
+cbind(A%*%b1, A%*%b2) == A%*%B
 ```
 
 
 # 8. Sejam
 
-$$
-\mathbf{A} = \begin{bmatrix} 
+$$\mathbf{A} = \begin{bmatrix} 
 3 & 2 & 1 \\ 
 6 & 4 & 2 \\ 
 12 & 8 & 4 
@@ -860,12 +950,33 @@ $$
 1 & -1 & 2 \\ 
 -1 & 1 & -2 \\ 
 -1 & 1 & -2 
-\end{bmatrix}.
-$$
+\end{bmatrix}$$
 
 Considere $\mathbf{O}$ a matriz nula (matriz cujos elementos são todos iguais a zero) de dimensão apropriada.
 
-## a) Mostre que $\mathbf{AB} = \mathbf{O}$.
+## a) Mostre que $\mathbf{AB} = \mathbf{O}$
+$$\mathbf{A}\mathbf{B} = \begin{bmatrix} 3 & 2 & 1 \\ 6 & 4 & 2 \\ 12 & 8 & 4 \end{bmatrix} \begin{bmatrix} 1 & -1 & 2 \\ -1 & 1 & -2 \\ -1 & 1 & -2 \end{bmatrix} =$$
+$$= \begin{bmatrix} (3)(1) + (2)(-1) + (1)(-1) & (3)(-1) + (2)(1) + (1)(1) & (3)(2) + (2)(-2) + (1)(-2) \\ (6)(1) + (4)(-1) + (2)(-1) & (6)(-1) + (4)(1) + (2)(1) & (6)(2) + (4)(-2) + (2)(-2) \\ (12)(1) + (8)(-1) + (4)(-1) & (12)(-1) + (8)(1) + (4)(1) & (12)(2) + (8)(-2) + (4)(-2) \end{bmatrix} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}$$
+$$\therefore \mathbf{AB} = \mathbf{0}$$
+
+### R Check
+```{r}
+#| message: false
+#| warning: false
+A <- matrix(c( 3, 2, 1,
+               6, 4, 2,
+              12, 8, 4), 
+            nrow = 3, ncol = 3, byrow = TRUE)
+
+B <- matrix(c( 1, -1,  2,
+              -1,  1, -2,
+              -1,  1, -2), 
+            nrow = 3, ncol = 3, byrow = TRUE)
+
+A%*%B
+```
+
+## b) Encontre um vetor $\mathbf{x}$ tal que $\mathbf{Ax} = 0$
 ### R Check
 ```{r}
 #| message: false
@@ -873,27 +984,73 @@ Considere $\mathbf{O}$ a matriz nula (matriz cujos elementos são todos iguais a
 
 ```
 
-## b) Encontre um vetor $\mathbf{x}$ tal que $\mathbf{Ax} = 0$.
+## c) Determine o posto de $\mathbf{A}$ e o posto de $\mathbf{B}$
+Posso encontrar o posto obtendo a forma escalonada canônica da matriz e somar quantos 1's isolados a forma possui.
+
+Obtendo a forma escalonada canônica de **A**:
+
+$$\begin{aligned}
+&\text{Matriz Inicial:} \\
+&\begin{bmatrix}
+3 & 2 & 1 \\
+6 & 4 & 2 \\
+12 & 8 & 4
+\end{bmatrix}
+\xrightarrow{L_1 \leftrightarrow L_3}
+\begin{bmatrix}
+12 & 8 & 4 \\
+6 & 4 & 2 \\
+3 & 2 & 1
+\end{bmatrix}
+&\xrightarrow{L_1 \leftarrow \frac{1}{12}L_1} 
+\begin{bmatrix}
+1 & 2/3 & 1/3 \\
+6 & 4 & 2 \\
+3 & 2 & 1
+\end{bmatrix} \\
+\\
+&\xrightarrow{L_2 \leftarrow L_2 - 6L_1} 
+\begin{bmatrix}
+1 & 2/3 & 1/3 \\
+0 & 0 & 0 \\
+3 & 2 & 1
+\end{bmatrix}
+&\xrightarrow{L_3 \leftarrow L_3 - 3L_1} 
+\begin{bmatrix}
+1 & 2/3 & 1/3 \\
+0 & 0 & 0 \\
+0 & 0 & 0 \end{bmatrix}
+\end{aligned}$$
+
+Como há apenas um número 1 isolado o posto de A é 1.
+
+Da mesma maneira o posto de B é
+$$\begin{aligned}
+&\text{Matriz Inicial:} \\
+&\begin{bmatrix} 1 & -1 & 2 \\ -1 & 1 & -2 \\ -1 & 1 & -2 \end{bmatrix} 
+\xrightarrow{L_2 \leftarrow L_2 + 1L_1} 
+\begin{bmatrix} 1 & -1 & 2 \\ 0 & 0 & 0 \\ -1 & 1 & -2 \end{bmatrix}
+&\xrightarrow{L_3 \leftarrow L_3 + 1L_1} 
+\begin{bmatrix} 1 & -1 & 2 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}
+\end{aligned}$$
+
+Dessa forma, temos que o posto de B também é 1.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+# Posto A
+qr(A)$rank
 
-```
-
-## c) Determine o posto de $\mathbf{A}$ e o posto de $\mathbf{B}$.
-### R Check
-```{r}
-#| message: false
-#| warning: false
-
+# Posto B
+qr(B)$rank
 ```
 
 
 # 9. Sejam
 
-$$
-\mathbf{A} = \begin{bmatrix}
+$$\mathbf{A} = \begin{bmatrix}
 1 & 2 \\
 3 & 4 
 \end{bmatrix}, \quad
@@ -903,46 +1060,55 @@ $$
 \quad \text{e} \quad
 \mathbf{C} = \begin{bmatrix} 
 2 & 0 \\
-1 & 3 \end{bmatrix}.
-$$
+1 & 3 \end{bmatrix}$$
 
-## a) Usando a propriedade da transposta do produto de duas matrizes, desenvolva $(\mathbf{ABC})'$.
+## a) Usando a propriedade da transposta do produto de duas matrizes, desenvolva $(\mathbf{ABC})'$
+$$(\mathbf{A}\mathbf{B}\mathbf{C})' = \mathbf{C}'\mathbf{B}'\mathbf{A}'$$
+
+## b) Escreva o resultado obtido em função de $\mathbf{A}'$, $\mathbf{B}'$ e $\mathbf{C}'$
+$$(\mathbf{A}\mathbf{B}\mathbf{C})' = \mathbf{C}'\mathbf{B}'\mathbf{A}' = \begin{bmatrix} 2 & 1 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} 5 & 7 \\ 6 & 8 \end{bmatrix} \mathbf{A}' = \begin{bmatrix} (2)(5) + (1)(6) & (2)(7) + (1)(8) \\ (0)(5) + (3)(6) & (0)(7) + (3)(8) \end{bmatrix}=$$
+$$= \begin{bmatrix} 16 & 22 \\ 18 & 24 \end{bmatrix}\mathbf{A}'= \begin{bmatrix} 16 & 22 \\ 18 & 24 \end{bmatrix} \begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix} =$$
+$$= \begin{bmatrix} (16)(1) + (22)(2) & (16)(3) + (22)(4) \\ (18)(1) + (24)(2) & (18)(3) + (24)(4) \end{bmatrix} = \begin{bmatrix} 60 & 136 \\ 66 & 150 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+A <- matrix(c(1, 2,
+              3, 4), 
+            nrow = 2, ncol = 2, byrow = TRUE)
 
+B <- matrix(c(5, 6,
+              7, 8), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+C <- matrix(c(2, 0,
+              1, 3), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+t(C)%*%t(B)%*%t(A)
 ```
 
-## b) Escreva o resultado obtido em função de $\mathbf{A}'$, $\mathbf{B}'$ e $\mathbf{C}'$.
+## c) Calcule numericamente $(\mathbf{ABC})'$ e $\mathbf{C}'\mathbf{B}'\mathbf{A}'$
+$$(\mathbf{A}\mathbf{B}\mathbf{C})' = \left(\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix}\mathbf{C} \right)' = \left(\begin{bmatrix} (1)(5) + (2)(7) & (1)(6) + (2)(8) \\ (3)(5) + (4)(7) & (3)(6) + (4)(8) \end{bmatrix} = \begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix}\mathbf{C}\right)'=$$
+$$= \left(\begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix} \begin{bmatrix} 2 & 0 \\ 1 & 3 \end{bmatrix}\right)' = \left(\begin{bmatrix} (19)(2) + (22)(1) & (19)(0) + (22)(3) \\ (43)(2) + (50)(1) & (43)(0) + (50)(3) \end{bmatrix}\right)' = \left(\begin{bmatrix} 60 & 66 \\ 136 & 150 \end{bmatrix}\right)' =$$
+
+$$\begin{bmatrix} 60 & 136 \\ 66 & 150 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+t(A%*%B%*%C)
 ```
 
-## c) Calcule numericamente $(\mathbf{ABC})'$ e $\mathbf{C}'\mathbf{B}'\mathbf{A}'$.
-### R Check
-```{r}
-#| message: false
-#| warning: false
-
-```
-
-## d) Compare os resultados e conclua.
-### R Check
-```{r}
-#| message: false
-#| warning: false
-
-```
+## d) Compare os resultados e conclua
+A partir dos resultados podemos concluir que a propriedade distributiva da transposta também se aplica quando há mais de duas matrizes. 
 
 
 # 10. Sejam $\mathbf{A}$ e $\mathbf{B}$ definidas e particionadas como:
 
-$$
-\mathbf{A} = \left( \begin{array}{cc|c} 
+$$\mathbf{A} = \left( \begin{array}{cc|c} 
 2 & 1 & 2 \\ 
 3 & 2 & 0 \\ \hline 
 1 & 0 & 1 
@@ -952,38 +1118,131 @@ $$
 1 & 1 & 1 & 0 \\ 
 2 & 1 & 1 & 2 \\ \hline 
 2 & 3 & 1 & 2 
-\end{array} \right)
-$$
+\end{array} \right)$$
 
-## a) Encontre $\mathbf{AB}$ utilizando a partição indicada, mostrando o passo a passo.
+## a) Encontre $\mathbf{AB}$ utilizando a partição indicada, mostrando o passo a passo
+
+**Representação Simbólica por Blocos**
+$$\mathbf{A} = \begin{bmatrix} \mathbf{A}_{11} & \mathbf{A}_{12} \\ \mathbf{A}_{21} & \mathbf{A}_{22} \end{bmatrix}, \quad \mathbf{B} = \begin{bmatrix} \mathbf{B}_{11} & \mathbf{B}_{12} \\ \mathbf{B}_{21} & \mathbf{B}_{22} \end{bmatrix}$$ 
+
+**Fórmula da Multiplicação em Blocos**
+$$\mathbf{AB} = \begin{bmatrix} 
+      \mathbf{A}_{11}\mathbf{B}_{11} + \mathbf{A}_{12}\mathbf{B}_{21} & \mathbf{A}_{11}\mathbf{B}_{12} + \mathbf{A}_{12}\mathbf{B}_{22} \\ 
+      \mathbf{A}_{21}\mathbf{B}_{11} + \mathbf{A}_{22}\mathbf{B}_{21} & \mathbf{A}_{21}\mathbf{B}_{12} + \mathbf{A}_{22}\mathbf{B}_{22} 
+      \end{bmatrix}$$ 
+
+**Multiplicação dos blocos**
+$$\mathbf{A}_{11}\mathbf{B}_{11} = \begin{bmatrix} 2 & 1 \\ 3 & 2 \end{bmatrix} \begin{bmatrix} 1 & 1 & 1 \\ 2 & 1 & 1 \end{bmatrix} =$$
+$$= \begin{bmatrix} (2)(1) + (1)(2) & (2)(1) + (1)(1) & (2)(1) + (1)(1) \\ (3)(1) + (2)(2) & (3)(1) + (2)(1) & (3)(1) + (2)(1) \end{bmatrix}=$$
+$$= \begin{bmatrix} 4 & 3 & 3 \\ 7 & 5 & 5 \end{bmatrix}$$
+
+$$\mathbf{A}_{12}\mathbf{B}_{21} = \begin{bmatrix} 2 \\ 0 \end{bmatrix} \begin{bmatrix} 2 & 3 & 1 \end{bmatrix} = \begin{bmatrix} (2)(2) & (2)(3) & (2)(1) \\ (0)(2) & (0)(3) & (0)(1) \end{bmatrix} = \begin{bmatrix} 4 & 6 & 2 \\ 0 & 0 & 0 \end{bmatrix}$$
+
+$$\mathbf{A}_{11}\mathbf{B}_{12} = \begin{bmatrix} 2 & 1 \\ 3 & 2 \end{bmatrix} \begin{bmatrix} 0 \\ 2 \end{bmatrix} = \begin{bmatrix} (2)(0) + (1)(2) \\ (3)(0) + (2)(2) \end{bmatrix} = \begin{bmatrix} 2 \\ 4 \end{bmatrix}$$
+
+$$\mathbf{A}_{12}\mathbf{B}_{22} = \begin{bmatrix} 2 \\ 0 \end{bmatrix} \begin{bmatrix} 2 \end{bmatrix} = \begin{bmatrix} (2)(2) \\ (0)(2) \end{bmatrix} = \begin{bmatrix} 4 \\ 0 \end{bmatrix}$$
+
+$$\mathbf{A}_{21}\mathbf{B}_{11} = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 1 & 1 & 1 \\ 2 & 1 & 1 \end{bmatrix} =$$
+$$=\begin{bmatrix} (1)(1) + (0)(2) & (1)(1) + (0)(1) & (1)(1) + (0)(1) \end{bmatrix} = \begin{bmatrix} 1 & 1 & 1 \end{bmatrix}$$
+$$\mathbf{A}_{22}\mathbf{B}_{21} = \begin{bmatrix} 1 \end{bmatrix} \begin{bmatrix} 2 & 3 & 1 \end{bmatrix} = \begin{bmatrix} (1)(2) & (1)(3) & (1)(1) \end{bmatrix} = \begin{bmatrix} 2 & 3 & 1 \end{bmatrix}$$
+
+$$\mathbf{A}_{21}\mathbf{B}_{12} = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 0 \\ 2 \end{bmatrix} = \begin{bmatrix} (1)(0) + (0)(2) \end{bmatrix} = \begin{bmatrix} 0 \end{bmatrix}$$
+
+$$\mathbf{A}_{22}\mathbf{B}_{22} = \begin{bmatrix} 1 \end{bmatrix} \begin{bmatrix} 2 \end{bmatrix} = \begin{bmatrix} (1)(2) \end{bmatrix} = \begin{bmatrix} 2 \end{bmatrix}$$
+
+**Cálculo dos Blocos Resultantes**
+
+Para o bloco $\mathbf{C}_{11} = \mathbf{A}_{11}\mathbf{B}_{11} + \mathbf{A}_{12}\mathbf{B}_{21}$:
+$$\begin{bmatrix} 4 & 3 & 3 \\ 7 & 5 & 5 \end{bmatrix}  +  \begin{bmatrix} 4 & 6 & 2 \\ 0 & 0 & 0 \end{bmatrix}  =  \begin{bmatrix} 8 & 9 & 5 \\ 7 & 5 & 5 \end{bmatrix}$$
+
+Para o bloco $\mathbf{C}_{12} = \mathbf{A}_{11}\mathbf{B}_{12} + \mathbf{A}_{12}\mathbf{B}_{22}$:
+$$\begin{bmatrix} 2 \\ 4 \end{bmatrix}  +  \begin{bmatrix} 4 \\ 0 \end{bmatrix}  =  \begin{bmatrix} 6 \\ 4 \end{bmatrix}$$
+
+Para o bloco $\mathbf{C}_{21} = \mathbf{A}_{21}\mathbf{B}_{11} + \mathbf{A}_{22}\mathbf{B}_{21}$:
+$$\begin{bmatrix} 1 & 1 & 1 \end{bmatrix}  +  \begin{bmatrix} 2 & 3 & 1 \end{bmatrix}  =  \begin{bmatrix} 3 & 4 & 2 \end{bmatrix}$$
+
+Para o bloco $\mathbf{C}_{22} = \mathbf{A}_{21}\mathbf{B}_{12} + \mathbf{A}_{22}\mathbf{B}_{22}$:
+$$\begin{bmatrix} 0 \end{bmatrix}  +  \begin{bmatrix} 2 \end{bmatrix}  =  \begin{bmatrix} 2 \end{bmatrix}$$
+
+**Resultado Final Consolidado**
+$$\mathbf{AB} =  \begin{bmatrix} 8 & 9 & 5 & 6 \\ 7 & 5 & 5 & 4 \\ 3 & 4 & 2 & 2 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+# Matriz A
+A <- matrix(c(2, 1, 2,
+              3, 2, 0,
+              1, 0, 1), 
+            nrow = 3, ncol = 3, byrow = TRUE)
 
+# Matriz B
+B <- matrix(c(1, 1, 1, 0,
+              2, 1, 1, 2,
+              2, 3, 1, 2), 
+            nrow = 3, ncol = 4, byrow = TRUE)
+
+# A11
+A11 <- A[1:2, 1:2, drop = FALSE]
+
+# A12
+A12 <- A[1:2, 3, drop = FALSE]
+
+# A21
+A21 <- A[3, 1:2, drop = FALSE]
+
+# A22
+A22 <- A[3, 3, drop = FALSE]
+
+# B11
+B11 <- B[1:2, 1:3, drop = FALSE]
+
+# B12
+B12 <- B[1:2, 4, drop = FALSE]
+
+# B21
+B21 <- B[3, 1:3, drop = FALSE]
+
+# B22
+B22 <- B[3, 4, drop = FALSE]
+
+C11 <- (A11%*%B11)+(A12%*%B21)
+C12 <- (A11%*%B12)+(A12%*%B22)
+C21 <- (A21%*%B11)+(A22%*%B21)
+C22 <- (A21%*%B12)+(A22%*%B22)
+
+particionada <- rbind(cbind(C11, C12),
+  cbind(C21, C22))
 ```
 
-## b) Encontre $\mathbf{AB}$ pela forma usual.
+## b) Encontre $\mathbf{AB}$ pela forma usual
+
+$$\mathbf{A}\mathbf{B} = \begin{bmatrix} 2 & 1 & 2 \\ 3 & 2 & 0 \\ 1 & 0 & 1 \end{bmatrix} \begin{bmatrix} 1 & 1 & 1 & 0 \\ 2 & 1 & 1 & 2 \\ 2 & 3 & 1 & 2 \end{bmatrix} = $$
+$$=\begin{bmatrix} (2)(1) + (1)(2) + (2)(2) & (2)(1) + (1)(1) + (2)(3) & (2)(1) + (1)(1) + (2)(1) & (2)(0) + (1)(2) + (2)(2) \\ (3)(1) + (2)(2) + (0)(2) & (3)(1) + (2)(1) + (0)(3) & (3)(1) + (2)(1) + (0)(1) & (3)(0) + (2)(2) + (0)(2) \\ (1)(1) + (0)(2) + (1)(2) & (1)(1) + (0)(1) + (1)(3) & (1)(1) + (0)(1) + (1)(1) & (1)(0) + (0)(2) + (1)(2) \end{bmatrix} =$$
+$$=\begin{bmatrix} 8 & 9 & 5 & 6 \\ 7 & 5 & 5 & 4 \\ 3 & 4 & 2 & 2 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+tradicional <- A%*%B
 ```
 
-## c) Compare os resultados obtidos.
+## c) Compare os resultados obtidos
+Como podemos observar o resultado da multiplicação tradicional e com a matriz particionada é o mesmo, portanto, a multiplicação particionada pode ser utilizada como estratégia para multiplicação com matrizes muito grandes.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+particionada == tradicional
 ```
 
 
 # 11. Particione as matrizes $\mathbf{A}$ e $\mathbf{B}$ do problema anterior como:
 
-$$
-\mathbf{A} = \left( \begin{array}{c|cc} 
+$$\mathbf{A} = \left( \begin{array}{c|cc} 
 2 & 1 & 2 \\ 
 3 & 2 & 0 \\ 
 1 & 0 & 1 
@@ -993,38 +1252,90 @@ $$
 1 & 1 & 1 & 0 \\ \hline 
 2 & 1 & 1 & 2 \\ 
 2 & 3 & 1 & 2 
-\end{array} \right) = \begin{pmatrix} \mathbf{b}_1' \\ \mathbf{B}_2 \end{pmatrix}.
-$$
+\end{array} \right) = \begin{pmatrix} \mathbf{b}_1' \\ \mathbf{B}_2 \end{pmatrix}$$
 
-## a) Identifique os blocos $\mathbf{a}_1, \mathbf{A}_2, \mathbf{b}_1'$ e $\mathbf{B}_2$.
+## a) Identifique os blocos $\mathbf{a}_1, \mathbf{A}_2, \mathbf{b}_1'$ e $\mathbf{B}_2$
+Com base nas divisórias, os blocos são definidos como:
+
+* **Bloco $\mathbf{a}_1$:**
+    $$\mathbf{a}_1 = \begin{bmatrix} 2 \\ 3 \\ 1 \end{bmatrix}$$
+
+* **Bloco $\mathbf{A}_2$:**
+    $$\mathbf{A}_2 = \begin{bmatrix} 1 & 2 \\ 2 & 0 \\ 0 & 1 \end{bmatrix}$$
+
+* **Bloco $\mathbf{b}_1'$:**
+    $$\mathbf{b}_1' = \begin{bmatrix} 1 & 1 & 1 & 0 \end{bmatrix}$$
+
+* **Bloco $\mathbf{B}_2$:**
+    $$\mathbf{B}_2 = \begin{bmatrix} 2 & 1 & 1 & 2 \\ 2 & 3 & 1 & 2 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+# Matrizes completas
+A <- matrix(c(2, 1, 2, 3, 2, 0, 1, 0, 1), nrow = 3, byrow = TRUE)
+B <- matrix(c(1, 1, 1, 0, 2, 1, 1, 2, 2, 3, 1, 2), nrow = 3, byrow = TRUE)
 
+# Blocos de A
+a1 <- A[, 1, drop = FALSE]; a1
+A2 <- A[, 2:3, drop = FALSE]; A2
+
+# Blocos de B
+b1_t <- B[1, , drop = FALSE]; b1_t
+B2 <- B[2:3, , drop = FALSE]; B2
 ```
 
-## b) Escreva as dimensões de cada bloco.
+## b) Escreva as dimensões de cada bloco
+
+* **Bloco $\mathbf{a}_1$:** Vetor coluna $3 \times 1$
+
+* **Bloco $\mathbf{A}_2$:** Matriz $3 \times 2$
+
+* **Bloco $\mathbf{b}_1'$:** Vetor linha $1 \times 4$
+
+* **Bloco $\mathbf{B}_2$:** Matriz $2 \times 4$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+dim(a1)
+dim(A2)
+dim(b1_t)
+dim(B2)
 ```
 
-## c) Reescreva o produto $\mathbf{AB}$ em termos dessa partição.
+## c) Reescreva o produto $\mathbf{AB}$ em termos dessa partição
+
+**Representação da Partição**
+$$\mathbf{A} = [\mathbf{a}_1 \mid \mathbf{A}_2], \quad \mathbf{B} = \begin{bmatrix} \mathbf{b}_1' \\ \hline \mathbf{B}_2 \end{bmatrix}$$ 
+
+**Cálculo: $\mathbf{a}_1\mathbf{b}_1' + \mathbf{A}_2\mathbf{B}_2$**
+
+**Primeiro Termo (Produto Externo):**
+$$\mathbf{a}_1\mathbf{b}_1' =  \begin{bmatrix} 2 \\ 3 \\ 1 \end{bmatrix}   \begin{bmatrix} 1 & 1 & 1 & 0 \end{bmatrix}  =  \begin{bmatrix} 2 & 2 & 2 & 0 \\ 3 & 3 & 3 & 0 \\ 1 & 1 & 1 & 0 \end{bmatrix}$$
+
+**Segundo Termo (Submatrizes):**
+$$\mathbf{A}_2\mathbf{B}_2 =  \begin{bmatrix} 1 & 2 \\ 2 & 0 \\ 0 & 1 \end{bmatrix}   \begin{bmatrix} 2 & 1 & 1 & 2 \\ 2 & 3 & 1 & 2 \end{bmatrix}  =  \begin{bmatrix} 6 & 7 & 3 & 6 \\ 4 & 2 & 2 & 4 \\ 2 & 3 & 1 & 2 \end{bmatrix}$$
+
+**Resultado Final**
+$$\mathbf{AB} =  \begin{bmatrix} 2 & 2 & 2 & 0 \\ 3 & 3 & 3 & 0 \\ 1 & 1 & 1 & 0 \end{bmatrix}  +  \begin{bmatrix} 6 & 7 & 3 & 6 \\ 4 & 2 & 2 & 4 \\ 2 & 3 & 1 & 2 \end{bmatrix}  =  \begin{bmatrix} 8 & 9 & 5 & 6 \\ 7 & 5 & 5 & 4 \\ 3 & 4 & 2 & 2 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
 
+c1 <- a1%*%b1_t
+c2 <- A2%*%B2
+c1+c2
 ```
 
 
 # 12. Considere as seguintes matrizes:
 
-$$
-\mathbf{A} = \begin{bmatrix} 
+$$\mathbf{A} = \begin{bmatrix} 
 1 & 0 & 0 \\ 
 0 & 2 & 0 \\ 
 0 & 0 & 3 
@@ -1036,11 +1347,9 @@ $$
 \end{bmatrix}, 
 \quad \mathbf{C} = \begin{bmatrix} 
 1 & 2 \\ 
-2 & 1 \end{bmatrix}
-$$
+2 & 1 \end{bmatrix}$$
 
-$$
-\mathbf{D} = \begin{bmatrix}
+$$\mathbf{D} = \begin{bmatrix}
 1 & 0 & 0 \\
 0 & 1 & 0 \\
 0 & 0 & 1
@@ -1052,70 +1361,247 @@ $$
 \quad \mathbf{F} = \begin{bmatrix} 
 1 & 0 \\
 0 & 0 
-\end{bmatrix}.
-$$
+\end{bmatrix}$$
 
-## a) Classifique cada matriz quanto ao tipo (por exemplo: quadrada, diagonal, identidade, triangular superior, triangular inferior, simétrica, etc.).
+## a) Classifique cada matriz quanto ao tipo (por exemplo: quadrada, diagonal, identidade, triangular superior, triangular inferior, simétrica, etc.)
+
+- **Matriz A:** matriz com números na diagonal e zeros fora da diagonal, portanto, é uma matriz diagonal.
+
+- **Matriz B:** matriz com números acima da diagonal e zeros abaixo da diagonal, portanto, é uma matriz triangular superior.
+
+- **Matriz C:** matriz com a parte triangular superior espelhada à parte triangular inferior com mesmo número de linhas e colunas, portanto, é uma matriz quadrada simétrica.
+
+- **Matriz D:** matriz com uns na diagonal e zeros fora da diagonal, portanto é uma matriz identidade.
+
+- **Matriz E:** matriz apenas com uns com mesmo número de linhas e colunas, portanto, é uma matriz quadrada de uns.
+
+- **Matriz F:** matriz com mesmo número de linhas e colunas, portanto é uma matriz quadrada 2x2.
+
+## b) Identifique qual(is) matriz(es) são idempotentes
+Uma matriz idempotente é aquela que quando multiplicada por si mesma resulta nela mesma, ou seja, $A^{2} = A \times A = A$.
+
+**Matriz A:**
+
+$$\mathbf{A}\mathbf{A} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 3 \end{bmatrix} \begin{bmatrix} 1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 3 \end{bmatrix} =$$
+$$=\begin{bmatrix} (1)(1) + (0)(0) + (0)(0) & (1)(0) + (0)(2) + (0)(0) & (1)(0) + (0)(0) + (0)(3) \\ (0)(1) + (2)(0) + (0)(0) & (0)(0) + (2)(2) + (0)(0) & (0)(0) + (2)(0) + (0)(3) \\ (0)(1) + (0)(0) + (3)(0) & (0)(0) + (0)(2) + (3)(0) & (0)(0) + (0)(0) + (3)(3) \end{bmatrix} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 4 & 0 \\ 0 & 0 & 9 \end{bmatrix}$$
+
+A multiplicação matriz $\mathbf{A}$ por ela mesma não resulta nela mesma, portanto, não é idempotente.
+
+**Matriz B:**
+
+$$\mathbf{B}\mathbf{B} = \begin{bmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{bmatrix} \begin{bmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{bmatrix} =$$
+$$=\begin{bmatrix} (1)(1) + (2)(0) + (3)(0) & (1)(2) + (2)(4) + (3)(0) & (1)(3) + (2)(5) + (3)(6) \\ (0)(1) + (4)(0) + (5)(0) & (0)(2) + (4)(4) + (5)(0) & (0)(3) + (4)(5) + (5)(6) \\ (0)(1) + (0)(0) + (6)(0) & (0)(2) + (0)(4) + (6)(0) & (0)(3) + (0)(5) + (6)(6) \end{bmatrix} =$$
+$$=\begin{bmatrix} 1 & 10 & 31 \\ 0 & 16 & 50 \\ 0 & 0 & 36 \end{bmatrix}$$
+
+A multiplicação matriz $\mathbf{B}$ por ela mesma não resulta nela mesma, portanto, não é idempotente.
+
+**Matriz C:**
+
+$$\mathbf{C}\mathbf{C} = \begin{bmatrix} 1 & 2 \\ 2 & 1 \end{bmatrix} \begin{bmatrix} 1 & 2 \\ 2 & 1 \end{bmatrix} = \begin{bmatrix} (1)(1) + (2)(2) & (1)(2) + (2)(1) \\ (2)(1) + (1)(2) & (2)(2) + (1)(1) \end{bmatrix} =$$
+$$=\begin{bmatrix} 5 & 4 \\ 4 & 5 \end{bmatrix}$$
+
+A multiplicação matriz $\mathbf{C}$ por ela mesma não resulta nela mesma, portanto, não é idempotente.
+
+**Matriz D:**
+
+$$\mathbf{D}\mathbf{D} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} = \begin{bmatrix} (1)(1) + (0)(0) + (0)(0) & (1)(0) + (0)(1) + (0)(0) & (1)(0) + (0)(0) + (0)(1) \\ (0)(1) + (1)(0) + (0)(0) & (0)(0) + (1)(1) + (0)(0) & (0)(0) + (1)(0) + (0)(1) \\ (0)(1) + (0)(0) + (1)(0) & (0)(0) + (0)(1) + (1)(0) & (0)(0) + (0)(0) + (1)(1) \end{bmatrix} =$$
+$$=\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
+
+A multiplicação matriz $\mathbf{D}$ por ela mesma  resulta nela mesma, portanto, é idempotente.
+
+$$\mathbf{E}\mathbf{E} = \begin{bmatrix} 1 & 1 \\ 1 & 1 \end{bmatrix} \begin{bmatrix} 1 & 1 \\ 1 & 1 \end{bmatrix} = \begin{bmatrix} (1)(1) + (1)(1) & (1)(1) + (1)(1) \\ (1)(1) + (1)(1) & (1)(1) + (1)(1) \end{bmatrix} =$$
+$$=\begin{bmatrix} 2 & 2 \\ 2 & 2 \end{bmatrix}$$
+
+A multiplicação matriz $\mathbf{E}$ por ela mesma não resulta nela mesma, portanto, não é idempotente.
+
+$$\mathbf{F}\mathbf{F} = \begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix} = \begin{bmatrix} (1)(1) + (0)(0) & (1)(0) + (0)(0) \\ (0)(1) + (0)(0) & (0)(0) + (0)(0) \end{bmatrix} =$$
+$$=\begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix}$$
+
+A multiplicação matriz $\mathbf{F}$ por ela mesma resulta nela mesma, portanto, é idempotente.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+# Matriz A
+A <- diag(c(1, 2, 3))
 
-```
+A%*%A == A
 
-## b) Identifique qual(is) matriz(es) são idempotentes.
-### R Check
-```{r}
-#| message: false
-#| warning: false
+# Matriz B
+B <- matrix(c(1, 2, 3,
+              0, 4, 5,
+              0, 0, 6), 
+            nrow = 3, ncol = 3, byrow = TRUE)
 
+
+B%*%B == B
+
+# Matriz C
+C <- matrix(c(1, 2,
+              2, 1), 
+            nrow = 2, ncol = 2, byrow = TRUE)
+
+C%*%C == C
+
+# Matriz D
+D <- diag(1, nrow = 3)
+
+D%*%D == D
+
+# Matriz E
+E <- matrix(1, nrow = 2, ncol = 2)
+
+E%*%E == E
+
+# Matriz F
+F_mat <- matrix(c(1, 0,
+                  0, 0), 
+                nrow = 2, ncol = 2, byrow = TRUE)
+
+F_mat%*%F_mat == F_mat
 ```
 
 ## c) Seja $\mathbf{1}$ um vetor coluna cujos elementos são todos iguais a 1. Calcule o produto $\mathbf{11}'$ e descreva a matriz obtida.
+
+$$\mathbf{j}\mathbf{j'} = \begin{bmatrix} 1 & 1 & 1 & 1 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} = \begin{bmatrix} (1)(1) + (1)(1) + (1)(1) + (1)(1) \end{bmatrix} = \begin{bmatrix} 4 \end{bmatrix}$$
+
+O resultado dessa multiplicação é um escalar que representa a soma de quadrados do vetor.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+v <- c(1, 1, 1, 1)
+v <- t(v)
+v%*%t(v)
 ```
 
-## d) Determine o posto (*rank*) de cada matriz.
+## d) Determine o posto (*rank*) de cada matriz
+Vamos encontrar a forma escalonada canônica de cada matriz para determinar o posto.
+
+### Matriz A:
+$$\begin{aligned}
+&\text{Matriz Inicial:} \\
+&\begin{bmatrix} 1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 3 \end{bmatrix} 
+\xrightarrow{L_2 \leftarrow \frac{1}{2}L_2} 
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 3 \end{bmatrix} \\
+\\
+&\xrightarrow{L_3 \leftarrow \frac{1}{3}L_3} 
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+\end{aligned}$$
+
+Portanto, a matriz possui posto 3.
+
+### Matriz B:
+$$
+\begin{aligned}
+&\text{Matriz Inicial:} \\
+&\begin{bmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{bmatrix} 
+\xrightarrow{L_2 \leftarrow \frac{1}{4}L_2} 
+\begin{bmatrix} 1 & 2 & 3 \\ 0 & 1 & 1.25 \\ 0 & 0 & 6 \end{bmatrix} \\
+\\
+&\xrightarrow{L_1 \leftarrow L_1 - 2L_2} 
+\begin{bmatrix} 1 & 0 & 0.5 \\ 0 & 1 & 1.25 \\ 0 & 0 & 6 \end{bmatrix}
+&\xrightarrow{L_3 \leftarrow \frac{1}{6}L_3} 
+\begin{bmatrix} 1 & 0 & 0.5 \\ 0 & 1 & 1.25 \\ 0 & 0 & 1 \end{bmatrix} \\
+\\
+&\xrightarrow{L_1 \leftarrow L_1 - 0.5L_3} 
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1.25 \\ 0 & 0 & 1 \end{bmatrix}
+&\xrightarrow{L_2 \leftarrow L_2 - 1.25L_3} 
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+\end{aligned}
+$$
+Portanto, a matriz possui posto 3.
+
+### Matriz C:
+$$\begin{aligned}
+&\text{Matriz Inicial:} \\
+&\begin{bmatrix} 1 & 2 \\ 2 & 1 \end{bmatrix} 
+\xrightarrow{L_1 \leftrightarrow L_2} 
+\begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix} \\
+\\
+&\xrightarrow{L_1 \leftarrow \frac{1}{2}L_1} 
+\begin{bmatrix} 1 & 0.5 \\ 1 & 2 \end{bmatrix}
+&\xrightarrow{L_2 \leftarrow L_2 - L_1} 
+\begin{bmatrix} 1 & 0.5 \\ 0 & 1.5 \end{bmatrix} \\
+\\
+&\xrightarrow{L_2 \leftarrow \frac{2}{3}L_2} 
+\begin{bmatrix} 1 & 0.5 \\ 0 & 1 \end{bmatrix}
+&\xrightarrow{L_1 \leftarrow L_1 - 0.5L_2} 
+\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}
+\end{aligned}$$
+
+Portanto, a matriz possui posto 2.
+
+### Matriz D:
+$$\mathbf{D} = \begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{bmatrix}$$
+Portanto, a matriz possui posto 3.
+
+### Matriz E:
+$$\begin{aligned}
+&\text{Matriz Inicial:} \\
+&\begin{bmatrix} 1 & 1 \\ 1 & 1 \end{bmatrix} 
+\xrightarrow{L_2 \leftarrow L_2 - L_1} 
+\begin{bmatrix} 1 & 1 \\ 0 & 0 \end{bmatrix}
+\end{aligned}$$
+
+Portanto, a matriz possui posto 1.
+
+### Matriz F:
+$$\mathbf{F} = \begin{bmatrix} 
+1 & 0 \\
+0 & 0 
+\end{bmatrix}$$
+
+Portanto, a matriz possui posto 1.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+qr(A)$rank
+qr(B)$rank
+qr(C)$rank
+qr(D)$rank
+qr(E)$rank
+qr(F_mat)$rank
 ```
 
-## e) Justifique brevemente cada uma das classificações realizadas.
-### R Check
-```{r}
-#| message: false
-#| warning: false
+## e) Justifique brevemente cada uma das classificações realizadas
+Já justificado ao longo das questões anteriores.
 
-```
 
 # 13. Construa uma matriz A que satisfaça simultaneamente as seguintes propriedades:
 ## a) seja simétrica;
-### R Check
-```{r}
-#| message: false
-#| warning: false
-
-```
-
 ## b) não seja diagonal;
-### R Check
-```{r}
-#| message: false
-#| warning: false
-
-```
-
 ## c) tenha posto igual a 1.
+Para que uma matriz tenha posto 1, todas suas linhas devem ter alguma relação linear, por exemplo, serem múltiplas de alguma. Pensando em uma matriz com duas linhas, então a primeira deve ser múltipla da segunda. E para que uma matriz seja simétrica, a relação entre suas colunas deve espelhar em suas linhas. Por fim, para que ela ão seja diagonal, seus elementos fora da diagonal devem ser diferentes de zero.
+
+Assim, se temos a matriz:
+
+$$\begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$$
+
+Ela cumpre todos requisitos, pois a segunda coluna é o dobro (múltiplo) da primeira, assim, o posto é 1. Seus elementos fora da diagonal são diferentes de 0 (2), portanto a matriz não é diagonal. E por fim, o elemento $a_{12}$ é igual ao elemento $a_{21}$, portanto, é simétrica.
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
+# A
+A <- matrix(c(1, 2, 
+              2, 4), nrow = 2, byrow = TRUE)
 
+# simetria
+isSymmetric(A)
+
+# diagonal
+A - diag(diag(A))
+
+# posto
+qr(A)$rank
 ```
