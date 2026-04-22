@@ -977,11 +977,31 @@ A%*%B
 ```
 
 ## b) Encontre um vetor $\mathbf{x}$ tal que $\mathbf{Ax} = 0$
+Como há dependência entre as linhas de $\mathbf{A}$ ($L_2 = 2 \times L_1$ e $L_3 = 4 \times L_1$),o sistema possui infinitas soluções. Então podemos resolver o sistema:
+
+$3 x_1 + 2 x_2 + 1 x_3 = 0$
+
+escolhendo valores arbirários para duas variáveis e resolver a terceira. Por exemplo, se definirmos $x_1 = 1$ e $x_2 = 0$:
+
+$$3(1) + 2(0) + x_3 = 0 \\
+\therefore x_3 = -3$$
+
+Portanto, um vetor possível para x é:
+
+$$\begin{bmatrix}
+1 \\ 0 \\ -3 \end{bmatrix}$$
+
+Assim:
+
+$$\mathbf{A}\mathbf{x} = \begin{bmatrix} 3 & 2 & 1 \\ 6 & 4 & 2 \\ 12 & 8 & 4 \end{bmatrix} \begin{bmatrix} 1 \\ 0 \\ -3 \end{bmatrix}=$$ 
+$$= \begin{bmatrix} (3)(1) + (2)(0) + (1)(-3) \\ (6)(1) + (4)(0) + (2)(-3) \\ (12)(1) + (8)(0) + (4)(-3) \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$$
+
 ### R Check
 ```{r}
 #| message: false
 #| warning: false
-
+x <- matrix(c(1, 0, -3))
+A%*%x
 ```
 
 ## c) Determine o posto de $\mathbf{A}$ e o posto de $\mathbf{B}$
