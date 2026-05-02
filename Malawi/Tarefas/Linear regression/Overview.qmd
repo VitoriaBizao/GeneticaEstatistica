@@ -1,0 +1,37 @@
+---
+title: "Investigating common issues on statistical genetics"
+author: 
+  - name: "Grupo 3 (Malawi): Juliana Oliveira, Vitoria Murakami, Pedro H. de Araujo"
+    affiliation:
+      - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
+        city: Piracicaba, São Paulo, Brazil
+format: 
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    code-fold: true        # Esconde o código
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+    theme: 
+      light: journal
+      dark: darkly
+  pdf:
+    fig-align: center      # Centraliza no PDF
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+

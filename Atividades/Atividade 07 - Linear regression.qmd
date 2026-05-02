@@ -1,0 +1,34 @@
+---
+title: "Atividade 07 - Regressão Linear"
+author: "Vitória Bizão Murakami"
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    code-fold: true        # Esconde o código
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+# Regressão Linear
+
+**Using the dataset of the project, perform linear regressions between traits, and between traits and environmental features. Choose some significant relationships to dissect and interpret their results. In your scripts, perform the regressions "manually" and using the "lm" function and its accessories. Feel free to explore other types of relationship in your regression models (polynomial, interactions, etc.).**
+
