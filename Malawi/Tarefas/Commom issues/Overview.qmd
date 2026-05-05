@@ -1,7 +1,7 @@
 ---
 title: "Investigating common issues on statistical genetics"
 author: 
-  - name: "Grupo 3 (Malawi): Juliana Oliveira, Vitoria Murakami, Pedro H. de Araujo"
+  - name: "Grupo 3 (Malawi): Juliana Oliveira, Pedro H. de Araujo e Vitória Murakami"
     affiliation:
       - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
         city: Piracicaba, São Paulo, Brazil
@@ -34,4 +34,6 @@ execute:
   fig-width: 8             # Largura padrão global
   fig-height: 6            # Altura padrão global
 ---
+
+# On statistical learning
 

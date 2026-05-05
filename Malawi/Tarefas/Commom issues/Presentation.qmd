@@ -1,8 +1,13 @@
 ---
-title: "Presentation"
-author: "Juliana, Pedro e Vitória"
-format: revealjs
-editor: visual
+title: "On statistical learning"
+author: "Juliana Oliveira, Pedro H. de Araujo e Vitória Murakami"
+format: 
+  revealjs:
+    echo: true
+    embed-resources: true
+    code-fold: true
+    code-summary: "Code"
+    code-overflow: wrap
 ---
 
 ## Quarto

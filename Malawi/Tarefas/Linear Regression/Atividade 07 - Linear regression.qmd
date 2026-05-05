@@ -1,0 +1,441 @@
+---
+title: "Atividade 07 - Regressão Linear"
+author: 
+  - name: "Grupo 3 (Malawi): Juliana Oliveira, Pedro H. de Araujo e Vitória Murakami"
+    affiliation:
+      - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
+        city: Piracicaba, São Paulo, Brazil
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    code-fold: true        # Esconde o código
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+# Regressão Linear
+
+**Using the dataset of the project, perform linear regressions between traits, and between traits and environmental features. Choose some significant relationships to dissect and interpret their results. In your scripts, perform the regressions "manually" and using the "lm" function and its accessories. Feel free to explore other types of relationship in your regression models (polynomial, interactions, etc.).**
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| include: false
+pkg = c("tidyverse", "readxl", "gridExtra", "ggbeeswarm",
+        "grid", "ggtext", "cowplot", "ggfortify")
+sapply(pkg, require, character.only=TRUE)
+
+data <- read.csv('https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv', sep = ';')
+
+df <- data |> subset(data$COUNTRY == "Malawi")
+
+str(df)
+```
+
+Covariância entre características:
+```{r}
+# Selecionando as variáveis
+XY <- data.frame(df |> 
+                  select(c(PL_EMERG_COUNT, PH_R8, R6_RUST_Sev, PROT, OIL, GY)) |> 
+                    drop_na())
+
+Y <- as.matrix(XY[,6]) # Grain Yield (Variável resposta)
+X1 <- as.matrix(XY[,1]) # Plant emergence - plants/plot (Variável regressora 1)
+X2 <- as.matrix(XY[,2]) # Plant height at maturity - cm (Variável regressora 2)
+X3 <- as.matrix(XY[,3]) # Rust severity - 1~5 scale (Variável regressora 3)
+X4 <- as.matrix(XY[,4]) # Seed protein content - g/kg (Variável regressora 4)
+X5 <- as.matrix(XY[,5]) # Seed oil content - g/kg (Variável regressora 5)
+
+# Covariância
+round(cov(XY),2)
+```
+
+Correlação entre características:
+```{r}
+# Correlação
+round(cor(XY),2)
+```
+
+A partir dessa matriz de correlações podemos observar que todas as variáveis possuem uma correlação positiva e negativas, variando de -0.74 à 0.31. Ou seja, quando há o aumento em uma variável também há nas outras, e se houver a diminuição de uma as outras também diminuem. Com as variáveis de correlação negativa acontece o inverso, quando uma variável aumenta a outra diminuiria. Nesse caso, a produção de grãos (GY/$y$) apresenta uma maior correlação com a altura da planta madura (PH_R8/$x_2$), com 0.31 e com a emergência da planta ($x_1$), com valor de 0.25. Dessa forma, as variáveis $x_2$ e $x_1$ as melhores preditoras do modelo que busca explicar produtividade de grãos.
+
+Além disso, observa-se que as variáveis teor de proteína e óleo possuem correlação negativa($-0.74$). E que a correlação das variáveis entre si tem baixa correlação, portanto, considerando um modelo de regressão múltipla essas variáveis podem estar salvas de problemas de multicolineariedade.
+
+### Regressão entre todas características para GY
+
+Podemos ajustar o modelo de regressão $y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3} + \beta_4x_{i4} + \beta_5x_{i5}$ e encontrar os estimadores ($\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$, $\beta_5$) através dos quadrados mínimos. Em que:
+
+- $\beta_0$: intercepto;
+
+- $x_{i1}$: observações da variável regressora $\beta_1$, *Plant emergence (plants/plot)*;
+
+- $x_{i2}$: observações da variável regressora $\beta_2$, *Plant height at maturity (cm)*;
+
+- $x_{i3}$: observações da variável regressora $\beta_3$, *Rust severity (1~5 scale)*;
+
+- $x_{i4}$: observações da variável regressora $\beta_4$, *Seed protein content (g/kg)*;
+
+- $x_{i5}$: observações da variável regressora $\beta_5$, *Seed protein content (g/kg)*;
+
+E os $\beta \text{'s}$ são calculados matricialmente por: $\hat{\beta} = (X'X)^{-1}Xy$.
+
+
+```{r}
+# Regressão
+# Usando todas as variáveis
+X <- as.matrix(cbind(1, X1, X2, X3, X4, X5))
+XlX = crossprod(X)
+XlY = crossprod(X, Y)
+
+## Encontrando os betas
+betas = solve(XlX) %*% XlY
+rownames(betas) <- paste0('B', 0:5); round(betas, 3) # Alterando o nome da coluna
+```
+
+Também é possível estimar os $\beta \text{'s}$ através de função `lm()` do R. Vamos conferir se os resultados são iguais.
+```{r}
+## Usando a função lm
+lm.1 <- lm(GY ~ PL_EMERG_COUNT + PH_R8 + R6_RUST_Sev + PROT + OIL, data = df); round(lm.1$coefficients,3)
+```
+
+Assim tenho que:
+$$\hat{y_{ij}} = 1476.238 + 3.197x_{i1} + 8.995x_{i2} + 60.595_3x_{i3} + 9.168x_{i4} -6.605x_{i5}$$
+
+Considerando o modelo especificado, tem-se que:
+
+- para cada ponto a mais dado no questionário para o critério Comprometimento emocional ($x_1$) espera-se um _aumento_ na Satisfação ($y$) de 0.12599, se as outras variáveis forem mantidas constantes ($x_2$, $x_3$, $x_4$, $x_5$);
+
+- para cada ponto a mais dado no questionário para o critério Confiança ($x_2$) espera-se um _aumento_ na Satisfação ($y$) de 0.15935, se as outras variáveis ($x_1$, $x_3$, $x_4$, $x_5$) forem mantidas constantes;
+
+- para cada ponto a mais dado no questionário para o critério Confiança ($x_3$) espera-se um _aumento_ na Satisfação ($y$) de 0.10125, se as outras variáveis ($x_2$, $x_3$, $x_4$, $x_5$) forem mantidas constantes;
+
+- para cada ponto a mais dado no questionário para o critério Confiança ($x_4$) espera-se um _decréscimo_ na Satisfação ($y$) de 0.02265, se as outras variáveis ($x_1$, $x_2$, $x_3$, $x_4$) forem mantidas constantes;
+
+- para cada ponto a mais dado no questionário para o critério Confiança ($x_5$) espera-se um _aumento_ na Satisfação ($y$) de 0.51669, se as outras variáveis ($x_1$, $x_2$, $x_3$, $x_4$) forem mantidas constantes;
+
+Para realizar o **teste de significância** do modelo vamos testar a hipótese $H_0: \beta_1= \beta_2 = \beta_3 = \beta_4 = \beta_5$. A hipótese alternativa é que pelo menos um dos $\beta \text{'s}$ não é nulo, ou que pelo menos uma das variáveis $x \text{'s}$ é importante na predição da Satisfação ($y$).
+
+Para realizar o teste eu preciso da soma de quadrados de resíduos e da soma de quadrados da regressão. Sendo que:
+
+- Soma de quadrados totais = $y'y = y'\left( I - \frac{1}{n} \right)y$, e tem $n-1$ graus de liberdade, onde n é o número de observações;
+
+- Soma de quadrados de resíduos = $y'y - \hat{\beta}'X'y = y'\left[ I - X(X'X)^{-1} \right]y$, com $(n - k -1)$ graus de liberdade, onde k é o número de parâmetros ($\beta \text{'s}$);
+
+- Soma de quadrados da regressão = $\hat{\beta}'X'y - n\bar{y}^2 = y'\left[X(X'X)^{-1}X' - \frac{1}{n}J \right]y$, com $(k)$ graus de liberdade, onde k é o número de parâmetros ($\beta \text{'s}$);
+
+E então fazemos a estatística F, em que:
+
+$$F = \frac{\text{QMRegressão}}{\text{QMResíduo}}$$
+E rejeitamos $H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = \beta_5$ caso F > F($\alpha$, k, n-k-1) ou p-valor < 0.05.
+
+```{r}
+n <- nrow(Y) # número de observações
+k <- qr(X)$rank - 1
+I <- diag(n) # Matriz identidade
+J <- matrix(1, nrow = n, ncol = n) # Matriz de 1's
+j <- matrix(1, nrow = n, byrow = T) # Vetor de 1's
+
+# Soma de quadrados totais
+SQtotal <- t(Y) %*% (I - (1/n*J)) %*% Y
+gl_total <- n - 1
+
+# Soma de quadrados da regressão
+SQreg <- t(Y)%*%(X%*%solve(t(X)%*%X)%*%t(X) - (1/n*J))%*%Y
+gl_reg <- k
+
+# Soma de quadrados de resíduos
+SQres <- t(Y)%*%(I-X%*%solve(t(X)%*%X)%*%t(X))%*%Y
+gl_res <- n - k - 1
+
+# F calculado
+Fcal = (SQreg/gl_reg)/(SQres/gl_res)
+
+# p-valor 
+p_valor <- pf(Fcal, k, n-k-1, lower.tail = F)
+
+# Quadro ANOVA
+QAnova <- data.frame(FV = c("Regressão", "Resíduos", "Total"),
+                     GL = c(gl_reg, gl_res, gl_total), 
+                     SQ = c(SQreg, SQres, SQtotal), 
+                     'F' = c(round(Fcal, 3), '-', '-'),
+                     p = c(round(p_valor,3), '-', '-')) 
+
+knitr::kable(QAnova, 
+      col.names = c("Fator de Variação", "Graus de liberdade", "Soma de Quadrados", "F", "p valor"),
+      align = "ccccc",
+      digits = 4,
+      caption = "legenda")
+```
+
+Também podemos obter essas estimativas chamando o `summary` do modelo ajustado pela função `lm`.
+
+```{r}
+summary(lm.1)
+```
+
+Obtemos os mesmo valores da estatítica F e p-valor, tanto matricialmente quanto pela função do R. Como obtivemos um p-valor < 0.05, rejeitamos a hipótese $H_0$ a um nível de 5% de significância, e concluímos que pelo menos uma das variáveis preditoras ($x_1$, $x_2$, $x_3$, $x_4$ e $x_5$) do modelo de regressão é importante na predição de $y$ e, portanto, deve ser mantida no modelo.
+
+Outra maneira de avaliar a qualidade do modelo é através do coeficiente de determinação $R^2$. Dado por: $R^2 = \text{SQRegressão}/{\text{SQRegressão}}$, ou seja, o valor indica o quanto da variação de $y$ é explicada pela regressão. Ou pelo $R^2_{\text{ajustado}} = \frac{(n-1)R^2 -k}{n-k-1}$ que corrige o aumento do $R^2$ sempre que uma nova variável é inserida no modelo.
+
+```{r}
+# R2
+R2 <- SQreg/SQtotal
+
+# R2 ajustado
+R2aj <- ((n-1)*(SQreg/SQtotal)-k)/(n-k-1)
+
+tabela <- data.frame(Metrica = c("R^2^", "R^2^ Ajustado"),
+                     `Matricialmente` = c(R2, R2aj),
+                     `lm()` = c(summary(lm.1)$r.squared, summary(lm.1)$adj.r.squared))
+
+knitr::kable(tabela,
+             col.names = c("Metrica", "Matricialmente", "Função lm()"),
+             align = "ccc",
+             digits = 4)
+```
+
+O coeficiente de determinação ajustado encontrado indica que $14.92\%$ da variação de $Y$ é explicada pelo modelo.
+
+Também podemos conferir o ajuste do modelo através de alguns gráficos, por exemplo:
+
+```{r}
+#| message: false
+#| warning: false
+# Cálculo matricial das predições
+Y_pred <- X %*% betas
+
+# Criando um data frame para o plot
+df_residuos <- data.frame(Observado = as.numeric(Y),
+                          Predito = as.numeric(Y_pred))
+
+p0_lm.1 <- df_residuos |> ggplot(aes(x = Predito, y = Observado)) +
+  geom_point(color = "steelblue", alpha = 0.5, size = 2) + 
+  geom_abline(intercept = 0, slope = 1, color = "firebrick", linetype = "dashed", size = 1) + 
+  labs(
+    title = "Valores Preditos vs. Observados",
+    x = "Produtividade Predita",
+    y = "Produtividade Observada") +
+  theme_minimal() +
+  theme(text = element_text(size = 14))
+
+## Gráficos do ajuste
+p1_lm.1 <- autoplot(lm.1, 
+                    which = 1, 
+                    nrow = 1, 
+                    ncol = 1,
+                    colour = 'steelblue',    # Cor dos pontos (resíduos)
+                    smooth.colour = 'firebrick', # Cor da linha de tendência (curva)
+                    ad.colour = 'grey50',    # Cor da linha horizontal de referência (zero)
+                    size = 2,
+                    line.size = 1,
+                    alpha = 0.6) + 
+  theme_bw() + 
+  theme(text = element_text(size = 14))
+
+p2_lm.1 <- autoplot(lm.1, 
+                    which = 2, 
+                    nrow = 1, 
+                    ncol = 1,
+                    colour = 'steelblue',    # Cor dos pontos (observações)
+                    ad.colour = 'firebrick', # Cor da linha de referência (Q-Q line)
+                    ad.linetype = 'dashed',  # Estilo da linha
+                    size = 2,                # Tamanho dos pontos
+                    alpha = 0.6) +           # Transparência dos pontos
+  theme_light() + 
+  theme(text = element_text(size = 14))
+
+p3_lm.1 <- autoplot(lm.1, 
+                    which = 3, 
+                    nrow = 1, 
+                    ncol = 1,
+                    colour = 'steelblue',       # Cor dos pontos (resíduos padronizados)
+                    smooth.colour = 'firebrick',    # Cor da linha de tendência
+                    ad.colour = 'grey50',       # Cor da linha de referência
+                    size = 2, 
+                    alpha = 0.6) + 
+  theme_bw() + 
+  theme(text = element_text(size = 14))
+
+grid.arrange(p0_lm.1, p1_lm.1[[1]], p2_lm.1[[1]], p3_lm.1[[1]], ncol = 2)
+```
+
+- Variância dos resíduos:
+```{r}
+## Variância dos resíduos (sigma^2)
+n = length(Y)
+I = diag(nrow = n)
+rX = qr(X)$rank
+H = X %*% solve(XlX) %*% t(X)
+SSresid = t(Y) %*% (I - H) %*% Y
+df_res = n-rX
+sigma2 = SSresid/df_res; sigma2 # matricialmente
+
+sum(lm.1$residuals^2)/lm.1$df.residual # com lm
+```
+
+Nesse modelo eu usei 5 variáveis para tentar explicar a produtividade de grãos (GY), mas pode ser que alguma das variáveis não explique tão bem e eu possa retira-la do modelo. Vou usar o pacote `stepwise` que faz essa checagem de quais combinações de variáveis explicam melhor a variável resposta.
+
+```{r}
+# Seleção de variáveis
+stepwise_model <- step(lm(Y ~ 1, data = XY), 
+                       scope = list(lower = ~1, # lower = de onde começar; upper até onde parar
+                                    upper = ~ X1 + X2 + X3 + X4 + X5), 
+                       direction = "both", # direção
+                       trace = 0) # mostra passo a passo, se não quiser ver ‘trace = 0’
+
+summary(stepwise_model)
+```
+
+## 4 características
+
+Portanto eu posso retirar a variável *Seed oil content*. Vamos refazer as contas com o modelo:
+
+$$y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3} + \beta_4x_{i4}$$
+
+```{r}
+# Usando as variáveis 1 a 4
+X <- as.matrix(cbind(1, X1, X2, X3, X4))
+
+## Encontrando os betas
+betas <- solve(t(X)%*%X)%*%t(X)%*%Y # B = XLXXLy
+rownames(betas) <- paste0('B', 0:4); round(betas, 3) # Alterando o nome da coluna
+
+## Usando a função lm
+lm.2 <- lm(GY ~ PL_EMERG_COUNT + PH_R8 + R6_RUST_Sev + PROT, data = df); round(lm.2$coefficients,3)
+
+n <- nrow(Y) # número de observações
+k <- qr(X)$rank - 1
+I <- diag(n) # Matriz identidade
+J <- matrix(1, nrow = n, ncol = n) # Matriz de 1's
+j <- matrix(1, nrow = n, byrow = T) # Vetor de 1's
+
+# Soma de quadrados totais
+SQtotal <- t(Y) %*% (I - (1/n*J)) %*% Y
+gl_total <- n - 1
+
+# Soma de quadrados da regressão
+SQreg <- t(Y)%*%(X%*%solve(t(X)%*%X)%*%t(X) - (1/n*J))%*%Y
+gl_reg <- k
+
+# Soma de quadrados de resíduos
+SQres <- t(Y)%*%(I-X%*%solve(t(X)%*%X)%*%t(X))%*%Y
+gl_res <- n - k - 1
+
+# F calculado
+Fcal = (SQreg/gl_reg)/(SQres/gl_res)
+
+# p-valor 
+p_valor <- pf(Fcal, k, n-k-1, lower.tail = F)
+
+# Quadro ANOVA
+QAnova <- data.frame(FV = c("Regressão", "Resíduos", "Total"),
+                     GL = c(gl_reg, gl_res, gl_total), 
+                     SQ = c(SQreg, SQres, SQtotal), 
+                     'F' = c(round(Fcal, 3), '-', '-'),
+                     p = c(round(p_valor,3), '-', '-')) 
+
+knitr::kable(QAnova, 
+      col.names = c("Fator de Variação", "Graus de liberdade", "Soma de Quadrados", "F", "p valor"),
+      align = "ccccc",
+      digits = 4,
+      caption = "legenda")
+
+## R Check
+summary(lm.2)
+
+# R2
+R2 <- SQreg/SQtotal
+
+# R2 ajustado
+R2aj <- ((n-1)*(SQreg/SQtotal)-k)/(n-k-1)
+
+tabela <- data.frame(Metrica = c("R^2^", "R^2^ Ajustado"),
+                     `Matricialmente` = c(R2, R2aj),
+                     `lm()` = c(summary(lm.2)$r.squared, summary(lm.2)$adj.r.squared))
+
+knitr::kable(tabela,
+             col.names = c("Metrica", "Matricialmente", "Função lm()"),
+             align = "ccc",
+             digits = 4)
+
+
+# Cálculo matricial das predições
+Y_pred <- X %*% betas
+
+# Criando um data frame para o plot
+df_residuos <- data.frame(Observado = as.numeric(Y),
+                          Predito = as.numeric(Y_pred))
+
+p0_lm.2 <- df_residuos |> ggplot(aes(x = Predito, y = Observado)) +
+  geom_point(color = "steelblue", alpha = 0.5, size = 2) + 
+  geom_abline(intercept = 0, slope = 1, color = "firebrick", linetype = "dashed", size = 1) + 
+  labs(
+    title = "Valores Preditos vs. Observados",
+    x = "Produtividade Predita",
+    y = "Produtividade Observada") +
+  theme_minimal() +
+  theme(text = element_text(size = 14))
+
+## Gráficos do ajuste
+p1_lm.2 <- autoplot(lm.1, 
+                    which = 1, 
+                    nrow = 1, 
+                    ncol = 1,
+                    colour = 'steelblue',    # Cor dos pontos (resíduos)
+                    smooth.colour = 'firebrick', # Cor da linha de tendência (curva)
+                    ad.colour = 'grey50',    # Cor da linha horizontal de referência (zero)
+                    size = 2,
+                    line.size = 1,
+                    alpha = 0.6) + 
+  theme_bw() + 
+  theme(text = element_text(size = 14))
+
+p2_lm.2 <- autoplot(lm.1, 
+                    which = 2, 
+                    nrow = 1, 
+                    ncol = 1,
+                    colour = 'steelblue',    # Cor dos pontos (observações)
+                    ad.colour = 'firebrick', # Cor da linha de referência (Q-Q line)
+                    ad.linetype = 'dashed',  # Estilo da linha
+                    size = 2,                # Tamanho dos pontos
+                    alpha = 0.6) +           # Transparência dos pontos
+  theme_light() + 
+  theme(text = element_text(size = 14))
+
+p3_lm.2 <- autoplot(lm.1, 
+                    which = 3, 
+                    nrow = 1, 
+                    ncol = 1,
+                    colour = 'steelblue',       # Cor dos pontos (resíduos padronizados)
+                    smooth.colour = 'firebrick',    # Cor da linha de tendência
+                    ad.colour = 'grey50',       # Cor da linha de referência
+                    size = 2, 
+                    alpha = 0.6) + 
+  theme_bw() + 
+  theme(text = element_text(size = 14))
+
+grid.arrange(p0_lm.1 + labs(tag ="Modelo 1"), p0_lm.2  + labs(tag ="Modelo 2"), 
+             p1_lm.1[[1]]  + labs(tag ="Modelo 1"), p1_lm.2[[1]] + labs(tag ="Modelo 2"), ncol = 2)
+
+grid.arrange(p2_lm.1[[1]] + labs(tag ="Modelo 1"), p2_lm.2[[1]] + labs(tag ="Modelo 2"),
+             p3_lm.1[[1]] + labs(tag ="Modelo 1"), p3_lm.2[[1]] + labs(tag ="Modelo 2"), ncol = 2)
+```
