@@ -36,6 +36,37 @@ execute:
 
 **Using the dataset of the project, perform linear regressions between traits, and between traits and environmental features. Choose some significant relationships to dissect and interpret their results. In your scripts, perform the regressions "manually" and using the "lm" function and its accessories. Feel free to explore other types of relationship in your regression models (polynomial, interactions, etc.).**
 
+## Introdução
+
+### Modelo Estatístico
+
+Entende-se como modelo em estatística, a representação matematica simplificada de fênomenos reais. Ele espressa a relação entre variáveis por meio de equações e parametros, gerando uma estrutura probabilistica, que permite simular resultados fazer inferências e testar hipóteses. Os modelos podem ser definidos por diferentes estratégias, utilizando estruturas mais ou menos rigidas, à depender do objetivo da análise, podendo ser construído à partir de pressupostos teóricos, suposições probabilisticas, relações funcionais, ou utilização de técnicas de aprendizado estatístico. Em todos os casos, a escolha do modelo é primordial e influência na natureza das inferências realizadas.
+
+### Modelos Lineares
+
+Um dos tipos de modelos mais utilizados em estatística, é a regressão- uma técnica que lança mão de princípios algébricos para modelar relações entre variáveis correlacionadas, comparando-as à padrões de funções matemáticas. No caso da regressão linear, por exemplo, o que o modelo faz, é basicamente traçar uma reta de forma à minimizar a distância entre os valores observados e os valores estimados. Outras regressões importantes incluem regressão logística, polinomial e multipla.
+
+[![Tipos de correlação em variáveis dependentes](https://vamosanalisar.wordpress.com/wp-content/uploads/2019/07/correlac3a7c3a3o-linear-grc3a1fico.png)](https://vamosanalisar.wordpress.com/2019/07/17/regressao-linear-um-dos-tipos-mais-importantes-de-analise-de-dados/)
+
+### Regressão Linear Simples
+
+A regressão linear pode ser classificada em simples ou multiplas à depender do número de váriaveis preditoras envolvidas, àquelas que estudam a influência de apenas uma9 variável preditora por vez são chamadas simples, enquanto as que estudam a influência de multiplos fatores simultâneos recebem o nome de regressões multiplas. O presente trabalho tratará apenas das primeiras.\
+Um modelo linear simples de regressão pode ser construído da maneira geral por: $$
+  y_i = \beta_0+\beta_1x_1+\varepsilon_i \qquad  i=1,2,3..., n
+$$ sendo: y= resposta (variável dependente) $\beta_0$ = Intercepto do modelo (espectativa de y quando x=0) $\beta_1$ = coeficiente angular da regressão x = preditor (variável independete) $\varepsilon_i$ efeito aleatório de erro (variação não explicada)
+
+Para completar o modelo, devemos também considerar algumas suposições:
+
+$$
+E (\varepsilon_{ij})=0\quad \forall \ i,j  \\
+Var(\varepsilon_{ij})= \sigma^2 \quad \forall \ i,j  \\
+Cov(\varepsilon_{ij}, \varepsilon_{i'j'}) =  0\quad \forall \ i\neq i',j \neq j'  \\
+$$
+
+Qualquer uma dessas suposições pode não se confirmar quando se trabalha com dados reais, portanto, é importante que seja feita a verificação dos pressupostos previamente à análise;
+
+Para iniciar as análises primeiro devemos importar os dados do github [Pan African Network](https://github.com/mauricioaraujj/Pan_African_Trials_Network). também aproveitamos para importar pacotes, e filtrar apenas os dados do Malawi, para optimizar o espaço de trabalho.
+
 ```{r}
 #| message: false
 #| warning: false
@@ -54,6 +85,66 @@ str(df)
 ```
 
 ### Covariância entre características
+
+Para calcular a covariância, selecionamos 5 características quantitativas continuas e uma quantitativa discreta, sendo produtividade de grãos a resposta, e emergencia de plântulas, altura de planta na maturidade, conteúdo de proteína no grão, conteúdo de óleo no grão e severidade de ferrugem, os preditores. A função drop_na() foi utilizada para descartar linhas com dados incompletos. Passamos a variavel resposta e os preditores para o formato matriz e em seguida realizamos o calculo com cov(XY)
+
+$$
+Y =
+\begin{bmatrix}
+\text{GY}_{1} \\
+\text{GY}_{2} \\
+\text{GY}_{3} \\
+\vdots \\
+\text{GY}_{n}
+\end{bmatrix}
+\qquad
+X_{1} =
+\begin{bmatrix}
+\text{Emerg}_{1} \\
+\text{Emerg}_{2} \\
+\text{Emerg}_{3} \\
+\vdots \\
+\text{Emerg}_{n}
+\end{bmatrix}
+\qquad
+X_{2} =
+\begin{bmatrix}
+\text{Alt}_{1} \\
+\text{Alt}_{2} \\
+\text{Alt}_{3} \\
+\vdots \\
+\text{Alt}_{n}
+\end{bmatrix}
+\qquad
+X_{3} =
+\begin{bmatrix}
+\text{Ferrugem}_{1} \\
+\text{Ferrugem}_{2} \\
+\text{Ferrugem}_{3} \\
+\vdots \\
+\text{Ferrugem}_{n}
+\end{bmatrix}
+\qquad
+X_{4} =
+\begin{bmatrix}
+\text{Prot}_{1} \\
+\text{Prot}_{2} \\
+\text{Prot}_{3} \\
+\vdots \\
+\text{Prot}_{n}
+\end{bmatrix}
+\qquad
+X_{5} =
+\begin{bmatrix}
+X5_{1} \\
+X5_{2} \\
+X5_{3} \\
+\vdots \\
+X5_{n}
+\end{bmatrix}
+
+$$
+
 ```{r}
 # Selecionando as variáveis
 XY <- data.frame(df |> 
@@ -71,34 +162,39 @@ X5 <- as.matrix(XY[,5]) # Seed oil content - g/kg (Variável regressora 5)
 round(cov(XY),2)
 ```
 
+  A covariância é um valor que mede a relação linear entre duas variáveis, podendo ser positivas. Quando as variáveis se movem na mesma direção é positiva, e quando se movem em direções opostas é negativa. Vale ressaltar, que por não ser padronizada, é dificil a interpretação da magnitude dos valores, que dependem da ordem de grandeza das unidades de medida empregadas.
+  De maneira geral, foram observadas covariâncias positivas e postivias, sendo negativas apenas entre conteudo de óleo (OIL/$x_5$) e produtividade de grãos (GY/$y$), severidade de ferrugem (R6_RUST_Sev/$x_3$), e conteudo de proteína (PROT/$x_4$), e emergência de plântulas (PL_EMERG_COUNT/$x_1$) com severidade de ferrugem (R6_RUST_Sev/$x_3$).
+  
 ### Correlação entre características
+
+A correlação, assim como a covariância ajuda a verificar relações entre variáveis. A grande diferença é que, enquanto a covariância não tem escala fixa, seus resultados variando muito em função de unidade, a correlação é padronizada em uma escala que vai de -1 a 1, e podemos facilmente interpreta-la: valores de 0 à 0,19 a correlação é considerada ínfima ou desprrezivel, de 0,20 a 0,39 correlação fraca, 0,40 à 0,59 moderada, 0,60 à 0,79 forte, e acima de 0,8 muito forte. os valores também podem assumir valores negativos, o que indica que as váriaveis apresentam comportamentos inversos, enquanto uma aumenta, a outra reduz, proporcionalmente.
+
 ```{r}
 # Correlação
 round(cor(XY),2)
 ```
 
-A partir dessa matriz de correlações podemos observar que todas as variáveis possuem uma correlação positiva e negativas, variando de -0.74 à 0.31. Ou seja, quando há o aumento em uma variável também há nas outras, e se houver a diminuição de uma as outras também diminuem. Com as variáveis de correlação negativa acontece o inverso, quando uma variável aumenta a outra diminuiria. Nesse caso, a produção de grãos (GY/$y$) apresenta uma maior correlação com a altura da planta madura (PH_R8/$x_2$), com 0.31 e com a emergência da planta ($x_1$), com valor de 0.25. Dessa forma, as variáveis $x_2$ e $x_1$ as melhores preditoras do modelo que busca explicar produtividade de grãos.
+  A partir dessa matriz de correlações podemos observar que todas as variáveis possuem uma correlação positiva e negativas, variando de -0.74 à 0.31. Ou seja, quando há o aumento em uma variável também há nas outras, e se houver a diminuição de uma as outras também diminuem. Com as variáveis de correlação negativa acontece o inverso, quando uma variável aumenta a outra diminuiria. Nesse caso, a produção de grãos (GY/$y$) apresenta uma maior correlação com a altura da planta madura (PH_R8/$x_2$), com 0.31 e com a emergência da planta ($x_1$), com valor de 0.25. Dessa forma, as variáveis $x_2$ e $x_1$ as melhores preditoras do modelo que busca explicar produtividade de grãos.
 
-Além disso, observa-se que as variáveis teor de proteína e óleo possuem correlação negativa($-0.74$). E que a correlação das variáveis entre si tem baixa correlação, portanto, considerando um modelo de regressão múltipla essas variáveis podem estar salvas de problemas de multicolineariedade.
+  Além disso, observa-se que as variáveis teor de proteína e óleo possuem correlação negativa($-0.74$). E que a correlação das variáveis entre si tem baixa correlação, portanto, considerando um modelo de regressão múltipla essas variáveis podem estar salvas de problemas de multicolineariedade.
 
 ### Regressão entre todas características para GY
 
 Podemos ajustar o modelo de regressão $y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3} + \beta_4x_{i4} + \beta_5x_{i5}$ e encontrar os estimadores ($\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$, $\beta_5$) através dos quadrados mínimos. Em que:
 
-- $\beta_0$: intercepto;
+-   $\beta_0$: intercepto;
 
-- $x_{i1}$: observações da variável regressora $\beta_1$, *Plant emergence (plants/plot)*;
+-   $x_{i1}$: observações da variável regressora $\beta_1$, *Plant emergence (plants/plot)*;
 
-- $x_{i2}$: observações da variável regressora $\beta_2$, *Plant height at maturity (cm)*;
+-   $x_{i2}$: observações da variável regressora $\beta_2$, *Plant height at maturity (cm)*;
 
-- $x_{i3}$: observações da variável regressora $\beta_3$, *Rust severity (1~5 scale)*;
+-   $x_{i3}$: observações da variável regressora $\beta_3$, *Rust severity (1\~5 scale)*;
 
-- $x_{i4}$: observações da variável regressora $\beta_4$, *Seed protein content (g/kg)*;
+-   $x_{i4}$: observações da variável regressora $\beta_4$, *Seed protein content (g/kg)*;
 
-- $x_{i5}$: observações da variável regressora $\beta_5$, *Seed oil content (g/kg)*;
+-   $x_{i5}$: observações da variável regressora $\beta_5$, *Seed oil content (g/kg)*;
 
 E os $\beta \text{'s}$ são calculados matricialmente por: $\hat{\beta} = (X'X)^{-1}Xy$.
-
 
 ```{r}
 # Regressão
@@ -119,35 +215,33 @@ Também é possível estimar os $\beta \text{'s}$ através de função `lm()` do
 lm.1 <- lm(GY ~ PL_EMERG_COUNT + PH_R8 + R6_RUST_Sev + PROT + OIL, data = df); round(lm.1$coefficients,3)
 ```
 
-Assim tenho que:
-$$\hat{y_{ij}} = 1476.238 + 3.197x_{i1} + 8.995x_{i2} + 60.595_3x_{i3} + 9.168x_{i4} -6.605x_{i5}$$
+Assim tenho que: $$\hat{y_{ij}} = 1476.238 + 3.197x_{i1} + 8.995x_{i2} + 60.595_3x_{i3} + 9.168x_{i4} -6.605x_{i5}$$
 
 Considerando o modelo especificado, tem-se que:
 
-- para cada planta que emerge a mais por parcela ($x_1$) espera-se um _aumento_ na produção de grãos ($y$) em 3.197, se as outras variáveis forem mantidas constantes ($x_2$, $x_3$, $x_4$, $x_5$);
+-   para cada planta que emerge a mais por parcela ($x_1$) espera-se um *aumento* na produção de grãos ($y$) em 3.197, se as outras variáveis forem mantidas constantes ($x_2$, $x_3$, $x_4$, $x_5$);
 
-- para cada centímetro a mais na altura da planta ($x_2$) espera-se um _aumento_ na produção de grãos ($y$) de 8.995, se as outras variáveis ($x_1$, $x_3$, $x_4$, $x_5$) forem mantidas constantes;
+-   para cada centímetro a mais na altura da planta ($x_2$) espera-se um *aumento* na produção de grãos ($y$) de 8.995, se as outras variáveis ($x_1$, $x_3$, $x_4$, $x_5$) forem mantidas constantes;
 
-- para cada ponto a mais dado na severidade da ferrugem ($x_3$) espera-se um _aumento_ na produção de grãos ($y$) de 60.595, se as outras variáveis ($x_2$, $x_3$, $x_4$, $x_5$) forem mantidas constantes;
+-   para cada ponto a mais dado na severidade da ferrugem ($x_3$) espera-se um *aumento* na produção de grãos ($y$) de 60.595, se as outras variáveis ($x_2$, $x_3$, $x_4$, $x_5$) forem mantidas constantes;
 
-- para cada grama a mais em conteúdo de proteína ($x_4$) espera-se um _aumento_ na produção de grãos ($y$) de 9.168, se as outras variáveis ($x_1$, $x_2$, $x_3$, $x_4$) forem mantidas constantes;
+-   para cada grama a mais em conteúdo de proteína ($x_4$) espera-se um *aumento* na produção de grãos ($y$) de 9.168, se as outras variáveis ($x_1$, $x_2$, $x_3$, $x_4$) forem mantidas constantes;
 
-- para cada grama a mais em conteúdo de óleo ($x_5$) espera-se um _decréscimo_ na produção de grãos ($y$) de 6.605, se as outras variáveis ($x_1$, $x_2$, $x_3$, $x_4$) forem mantidas constantes;
+-   para cada grama a mais em conteúdo de óleo ($x_5$) espera-se um *decréscimo* na produção de grãos ($y$) de 6.605, se as outras variáveis ($x_1$, $x_2$, $x_3$, $x_4$) forem mantidas constantes;
 
 Para realizar o **teste de significância** do modelo vamos testar a hipótese $H_0: \beta_1= \beta_2 = \beta_3 = \beta_4 = \beta_5$. A hipótese alternativa é que pelo menos um dos $\beta \text{'s}$ não é nulo, ou que pelo menos uma das variáveis $x \text{'s}$ é importante na predição da produção de grãos ($y$).
 
 Para realizar o teste eu preciso da soma de quadrados de resíduos e da soma de quadrados da regressão. Sendo que:
 
-- Soma de quadrados totais = $y'y = y'\left( I - \frac{1}{n} \right)y$, e tem $n-1$ graus de liberdade, onde n é o número de observações;
+-   Soma de quadrados totais = $y'y = y'\left( I - \frac{1}{n} \right)y$, e tem $n-1$ graus de liberdade, onde n é o número de observações;
 
-- Soma de quadrados de resíduos = $y'y - \hat{\beta}'X'y = y'\left[ I - X(X'X)^{-1} \right]y$, com $(n - k -1)$ graus de liberdade, onde k é o número de parâmetros ($\beta \text{'s}$);
+-   Soma de quadrados de resíduos = $y'y - \hat{\beta}'X'y = y'\left[ I - X(X'X)^{-1} \right]y$, com $(n - k -1)$ graus de liberdade, onde k é o número de parâmetros ($\beta \text{'s}$);
 
-- Soma de quadrados da regressão = $\hat{\beta}'X'y - n\bar{y}^2 = y'\left[X(X'X)^{-1}X' - \frac{1}{n}J \right]y$, com $(k)$ graus de liberdade, onde k é o número de parâmetros ($\beta \text{'s}$);
+-   Soma de quadrados da regressão = $\hat{\beta}'X'y - n\bar{y}^2 = y'\left[X(X'X)^{-1}X' - \frac{1}{n}J \right]y$, com $(k)$ graus de liberdade, onde k é o número de parâmetros ($\beta \text{'s}$);
 
 E então fazemos a estatística F, em que:
 
-$$F = \frac{\text{QMRegressão}}{\text{QMResíduo}}$$
-E rejeitamos $H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = \beta_5$ caso F > F($\alpha$, k, n-k-1) ou p-valor < 0.05.
+$$F = \frac{\text{QMRegressão}}{\text{QMResíduo}}$$ E rejeitamos $H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = \beta_5$ caso F \> F($\alpha$, k, n-k-1) ou p-valor \< 0.05.
 
 ```{r}
 n <- nrow(Y) # número de observações
@@ -194,7 +288,7 @@ Também podemos obter essas estimativas chamando o `summary` do modelo ajustado 
 summary(lm.1)
 ```
 
-Obtemos os mesmo valores da estatítica F e p-valor, tanto matricialmente quanto pela função do R. Como obtivemos um p-valor < 0.05, rejeitamos a hipótese $H_0$ a um nível de 5% de significância, e concluímos que pelo menos uma das variáveis preditoras ($x_1$, $x_2$, $x_3$, $x_4$ e $x_5$) do modelo de regressão é importante na predição de $y$ e, portanto, deve ser mantida no modelo.
+Obtemos os mesmo valores da estatítica F e p-valor, tanto matricialmente quanto pela função do R. Como obtivemos um p-valor \< 0.05, rejeitamos a hipótese $H_0$ a um nível de 5% de significância, e concluímos que pelo menos uma das variáveis preditoras ($x_1$, $x_2$, $x_3$, $x_4$ e $x_5$) do modelo de regressão é importante na predição de $y$ e, portanto, deve ser mantida no modelo.
 
 Outra maneira de avaliar a qualidade do modelo é através do coeficiente de determinação $R^2$. Dado por: $R^2 = \text{SQRegressão}/{\text{SQRegressão}}$, ou seja, o valor indica o quanto da variação de $y$ é explicada pela regressão. Ou pelo $R^2_{\text{ajustado}} = \frac{(n-1)R^2 -k}{n-k-1}$ que corrige o aumento do $R^2$ sempre que uma nova variável é inserida no modelo.
 
@@ -280,7 +374,8 @@ p3_lm.1 <- autoplot(lm.1,
 grid.arrange(p0_lm.1, p1_lm.1[[1]], p2_lm.1[[1]], p3_lm.1[[1]], ncol = 2)
 ```
 
-- Variância dos resíduos:
+-   Variância dos resíduos:
+
 ```{r}
 ## Variância dos resíduos (sigma^2)
 n = length(Y)
@@ -443,18 +538,18 @@ grid.arrange(p2_lm.1[[1]] + labs(tag ="Modelo 1"), p2_lm.2[[1]] + labs(tag ="Mod
 ```
 
 # Variáveis ambientais
+
 Podemos ajustar o modelo de regressão $y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3}$ e encontrar os estimadores ($\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$) através dos quadrados mínimos. Em que:
 
-- $y_{ij}$: variável resposta *produtividade de grãos (kg/ha)*;
+-   $y_{ij}$: variável resposta *produtividade de grãos (kg/ha)*;
 
-- $\beta_0$: intercepto;
+-   $\beta_0$: intercepto;
 
-- $x_{i1}$: observações da variável regressora $\beta_1$, *Latitude (graus)*;
+-   $x_{i1}$: observações da variável regressora $\beta_1$, *Latitude (graus)*;
 
-- $x_{i2}$: observações da variável regressora $\beta_2$, *Longitude (graus)*;
+-   $x_{i2}$: observações da variável regressora $\beta_2$, *Longitude (graus)*;
 
-- $x_{i3}$: observações da variável regressora $\beta_3$, *Elevação (m)*.
-
+-   $x_{i3}$: observações da variável regressora $\beta_3$, *Elevação (m)*.
 
 E os $\beta \text{'s}$ são calculados matricialmente por: $\hat{\beta} = (X'X)^{-1}Xy$.
 
@@ -480,6 +575,7 @@ rownames(betas) <- paste0('B', 0:3); round(betas, 3) # Alterando o nome da colun
 ```
 
 Também é possível estimar os $\beta \text{'s}$ através de função `lm()` do R. Vamos conferir se os resultados são iguais.
+
 ```{r}
 ## Usando a função lm
 lm.3 <- lm(GY ~ LAT + LON + ELEV, data = df); round(lm.3$coefficients,3)
@@ -599,4 +695,3 @@ p3_lm.3 <- autoplot(lm.3,
 
 grid.arrange(p0_lm.3, p1_lm.3[[1]], p2_lm.3[[1]], p3_lm.3[[1]] , ncol = 2)
 ```
-
