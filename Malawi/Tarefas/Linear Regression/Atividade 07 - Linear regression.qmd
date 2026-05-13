@@ -49,8 +49,9 @@ Um dos tipos de modelos mais utilizados em estatística, é a regressão- uma t�
 
 ### Regressão Linear Simples
 
-A regressão linear pode ser classificada em simples ou multiplas à depender do número de váriaveis preditoras envolvidas, àquelas que estudam a influência de apenas uma9 variável preditora por vez são chamadas simples, enquanto as que estudam a influência de multiplos fatores simultâneos recebem o nome de regressões multiplas. O presente trabalho tratará apenas das primeiras.\
-Um modelo linear simples de regressão pode ser construído da maneira geral por: $$
+A regressão linear pode ser classificada em simples ou multiplas à depender do número de váriaveis preditoras envolvidas, àquelas que estudam a influência de apenas uma9 variável preditora por vez são chamadas simples, enquanto as que estudam a influência de multiplos fatores simultâneos recebem o nome de regressões multiplas. A presente seção tratará apenas das primeiras, entretanto, uma introdução mais aprofundada de regressões multiplas pode ser encontrado mais adiante no trabalho, em momento oportuno. \
+
+Um modelo linear simples de regressão pode ser definido de maneira geral por: $$
   y_i = \beta_0+\beta_1x_1+\varepsilon_i \qquad  i=1,2,3..., n
 $$ sendo: y= resposta (variável dependente) $\beta_0$ = Intercepto do modelo (espectativa de y quando x=0) $\beta_1$ = coeficiente angular da regressão x = preditor (variável independete) $\varepsilon_i$ efeito aleatório de erro (variação não explicada)
 
@@ -385,6 +386,7 @@ p3_lm.1 <- autoplot(lm.1,
 
 grid.arrange(p0_lm.1, p1_lm.1[[1]], p2_lm.1[[1]], p3_lm.1[[1]], ncol = 2)
 ```
+Quando observamos o grafico da regressão, e no gráfico de resíduos, fica perceptível uma grande variância nas observações, isso ocorre em boa parte, por estarmos analisando uma base proveniente de ensaios multiambientes, sujeitos à grandes efeitos ambientais e efeitos de interação genótipo ambiente, que não são capturados pelo modelo. Ademais, apesar de os dados apresentarem resíduos considerados normais, as caudas da distribuição desviam dos valores esperados. A presença de outliers, destacada em todos os gráficos, atrapalham o modelo, futuramente, é interessante que se faça o tratamento destes outliers para melhorar a qualidade da inferência.     
 
 -   Variância dos resíduos:
 
@@ -548,6 +550,7 @@ grid.arrange(p0_lm.1 + labs(tag ="Modelo 1"), p0_lm.2 + labs(tag ="Modelo 2"),
 grid.arrange(p2_lm.1[[1]] + labs(tag ="Modelo 1"), p2_lm.2[[1]] + labs(tag ="Modelo 2"),
              p3_lm.1[[1]] + labs(tag ="Modelo 1"), p3_lm.2[[1]] + labs(tag ="Modelo 2"), ncol = 2)
 ```
+
 
 ## Variáveis ambientais
 Além das características fenotípicas podemos modelar regressões para variáveis ambientais. Foram escolhidas para esse teste, as variáveis Latitude, Longitude e Altitude, para partirmos da hipótese prévia que elas são relacionadas e tem influência na produtividade de grãos.
@@ -756,7 +759,7 @@ $$
 p < 2.2 \times 10^{-16}
 $$
 
-Dessa forma, rejeita-se a hipótese nula $H_0$ ao nível de $5\%$ de significância, concluindo que pelo menos uma das variáveis ambientais avaliadas contribui significativamente para explicar a produtividade de grãos.
+  Dessa forma, rejeita-se a hipótese nula $H_0$ ao nível de $5\%$ de significância, concluindo que pelo menos uma das variáveis ambientais avaliadas contribui significativamente para explicar a produtividade de grãos.
 
 O coeficiente de determinação obtido foi:
 
@@ -780,6 +783,10 @@ $$
 
 indicando a magnitude média dos desvios entre os valores observados e os valores preditos pelo modelo.
 
+  Analisando-se os gráficos, pode-se notar que existe interferência de outliers, principalmente na analise de normalidade dos resíduos. Vale também ressaltar, o comportamento discreto das leituras de latitude, longitude e altitude, Apesar de serem váriaveis continuas, o número limitado de ambientes levou a uma concentração das leituras em determinadas coordenadas, referentes à cada estação experimental. Apesar do comportamento incomum dos dados, não houve implicações deletérias no ajuste de modelo. 
+
 ## Conclusão
 
-Através dessa tarefa foi possível praticar a ánalise de dados por analise de regressão em dados reais, permitiu também um contato mais sólido com a base de dados do trabalho final. De maneira geral, o trabalho  nos mostrou a importância e o poder da regressão linear como ferramenta estatística para modelagem estatistica.
+  A realização desta atividade possibilitou a aplicação prática de técnicas de regressão linear na análise de dados reais, proporcionando maior familiaridade com a base de dados utilizada no projeto final da disciplina. Além de consolidar os fundamentos teóricos relacionados aos modelos lineares, o desenvolvimento das análises permitiu aprofundar conhecimentos sobre ajuste de modelos, interpretação de coeficientes, avaliação de pressupostos e análise de resíduos.
+
+O trabalho evidenciou a importância da regressão linear como ferramenta estatística para modelagem e interpretação de fenômenos biológicos. A atividade também contribuiu significativamente para o desenvolvimento da capacidade analítica e da resolução de problemas relacionados ao tratamento e interpretação de dados, especialmente diante das dificuldades práticas encontradas ao longo das etapas de análise. De modo geral, a experiência adquirida aqui tende a ser de grande utilidade ao longo da pós-graduação e também na futura atuação profissional dos membros envolvidos.

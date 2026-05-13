@@ -2359,8 +2359,9 @@ window.Quarto = {
   <li><a href="#regressão-entre-todas-características-para-gy" id="toc-regressão-entre-todas-características-para-gy" class="nav-link" data-scroll-target="#regressão-entre-todas-características-para-gy">Regressão entre todas características para GY</a></li>
   </ul></li>
   <li><a href="#características" id="toc-características" class="nav-link" data-scroll-target="#características">4 características</a></li>
-  </ul></li>
   <li><a href="#variáveis-ambientais" id="toc-variáveis-ambientais" class="nav-link" data-scroll-target="#variáveis-ambientais">Variáveis ambientais</a></li>
+  <li><a href="#conclusão" id="toc-conclusão" class="nav-link" data-scroll-target="#conclusão">Conclusão</a></li>
+  </ul></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Atividade-07---Linear-regression.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
@@ -2423,8 +2424,9 @@ window.Quarto = {
 </section>
 <section id="regressão-linear-simples" class="level3">
 <h3 class="anchored" data-anchor-id="regressão-linear-simples">Regressão Linear Simples</h3>
-<p>A regressão linear pode ser classificada em simples ou multiplas à depender do número de váriaveis preditoras envolvidas, àquelas que estudam a influência de apenas uma9 variável preditora por vez são chamadas simples, enquanto as que estudam a influência de multiplos fatores simultâneos recebem o nome de regressões multiplas. O presente trabalho tratará apenas das primeiras.<br>
-Um modelo linear simples de regressão pode ser construído da maneira geral por: <span class="math display">\[
+<p>A regressão linear pode ser classificada em simples ou multiplas à depender do número de váriaveis preditoras envolvidas, àquelas que estudam a influência de apenas uma9 variável preditora por vez são chamadas simples, enquanto as que estudam a influência de multiplos fatores simultâneos recebem o nome de regressões multiplas. A presente seção tratará apenas das primeiras, entretanto, uma introdução mais aprofundada de regressões multiplas pode ser encontrado mais adiante no trabalho, em momento oportuno.<br>
+</p>
+<p>Um modelo linear simples de regressão pode ser definido de maneira geral por: <span class="math display">\[
   y_i = \beta_0+\beta_1x_1+\varepsilon_i \qquad  i=1,2,3..., n
 \]</span> sendo: y= resposta (variável dependente) <span class="math inline">\(\beta_0\)</span> = Intercepto do modelo (espectativa de y quando x=0) <span class="math inline">\(\beta_1\)</span> = coeficiente angular da regressão x = preditor (variável independete) <span class="math inline">\(\varepsilon_i\)</span> efeito aleatório de erro (variação não explicada)</p>
 <p>Para completar o modelo, devemos também considerar algumas suposições: <span class="math display">\[
@@ -2542,6 +2544,7 @@ GY                       0.25  0.31        0.13  0.13 -0.08  1.00</code></pre>
 </section>
 <section id="regressão-entre-todas-características-para-gy" class="level3">
 <h3 class="anchored" data-anchor-id="regressão-entre-todas-características-para-gy">Regressão entre todas características para GY</h3>
+<p>à partir desse momento, utilizaremos regressões multiplas.Um tipo de modelagem utilizada quando se deseja avaliar simultaneamente o efeito de duas ou mais variáveis preditoras sobre uma variável resposta.a regressão múltipla permite incorporar diferentes fontes de variação ao modelo, mostrando o efeito parcial de cada variável sobre o resultado final, quando as demais são constantes:</p>
 <p>Podemos ajustar o modelo de regressão <span class="math inline">\(y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3} + \beta_4x_{i4} + \beta_5x_{i5}\)</span> e encontrar os estimadores (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>, <span class="math inline">\(\beta_3\)</span>, <span class="math inline">\(\beta_4\)</span>, <span class="math inline">\(\beta_5\)</span>) através dos quadrados mínimos. Em que:</p>
 <ul>
 <li><p><span class="math inline">\(\beta_0\)</span>: intercepto;</p></li>
@@ -2821,6 +2824,7 @@ F-statistic: 133.9 on 5 and 3785 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
+<p>Quando observamos o grafico da regressão, e no gráfico de resíduos, fica perceptível uma grande variância nas observações, isso ocorre em boa parte, por estarmos analisando uma base proveniente de ensaios multiambientes, sujeitos à grandes efeitos ambientais e efeitos de interação genótipo ambiente, que não são capturados pelo modelo. Ademais, apesar de os dados apresentarem resíduos considerados normais, as caudas da distribuição desviam dos valores esperados. A presença de outliers, destacada em todos os gráficos, atrapalham o modelo, futuramente, é interessante que se faça o tratamento destes outliers para melhorar a qualidade da inferência.</p>
 <ul>
 <li>Variância dos resíduos:</li>
 </ul>
@@ -2842,7 +2846,7 @@ F-statistic: 133.9 on 5 and 3785 DF,  p-value: &lt; 2.2e-16</code></pre>
 <pre><code>[1] 1070709</code></pre>
 </div>
 </div>
-<p>Nesse modelo eu usei 5 variáveis para tentar explicar a produtividade de grãos (GY), mas pode ser que alguma das variáveis não explique tão bem e eu possa retira-la do modelo, evitando problemas de superparametrização. Vou usar o pacote <code>stepwise</code> que faz essa checagem de quais combinações de variáveis explicam melhor a variável resposta.</p>
+<p>Nesse modelo foram utilizadas cinco variáveis preditoras para explicar a produtividade de grãos (GY). Entretanto, é possível que algumas dessas variáveis contribuam pouco para a capacidade explicativa do modelo, tornando sua permanência desnecessária. A inclusão excessiva de variáveis pode resultar em problemas de superparametrização, dessa forma, foi seleção <em>stepwise</em>, que avalia diferentes combinações de preditores com o objetivo de identificar o modelo que melhor explica a variável resposta.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Seleção de variáveis</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>stepwise_model <span class="ot">&lt;-</span> <span class="fu">step</span>(<span class="fu">lm</span>(Y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> XY), </span>
@@ -2880,7 +2884,7 @@ F-statistic: 167.4 on 4 and 3786 DF,  p-value: &lt; 2.2e-16</code></pre>
 </section>
 <section id="características" class="level2">
 <h2 class="anchored" data-anchor-id="características">4 características</h2>
-<p>Portanto, eu posso retirar a variável <em>Seed oil content</em>. Vamos refazer as contas com o modelo:</p>
+<p>Portanto, podemos retirar a variável <em>Seed oil content</em>. Vamos refazer as contas com o modelo:</p>
 <p><span class="math display">\[y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3} + \beta_4x_{i4}\]</span></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usando as variáveis 1 a 4</span></span>
@@ -3122,10 +3126,9 @@ F-statistic: 167.4 on 4 and 3786 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </section>
-</section>
-<section id="variáveis-ambientais" class="level1">
-<h1>Variáveis ambientais</h1>
-<p>Podemos ajustar o modelo de regressão <span class="math inline">\(y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3}\)</span> e encontrar os estimadores (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>, <span class="math inline">\(\beta_3\)</span>) através dos quadrados mínimos. Em que:</p>
+<section id="variáveis-ambientais" class="level2">
+<h2 class="anchored" data-anchor-id="variáveis-ambientais">Variáveis ambientais</h2>
+<p>Além das características fenotípicas podemos modelar regressões para variáveis ambientais. Foram escolhidas para esse teste, as variáveis Latitude, Longitude e Altitude, para partirmos da hipótese prévia que elas são relacionadas e tem influência na produtividade de grãos. Podemos portanto, ajustar o modelo de regressão <span class="math inline">\(y_{ij} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} +  \beta_3x_{i3}\)</span> e encontrar os estimadores (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>, <span class="math inline">\(\beta_3\)</span>) através dos quadrados mínimos. Em que:</p>
 <ul>
 <li><p><span class="math inline">\(y_{ij}\)</span>: variável resposta <em>produtividade de grãos (kg/ha)</em>;</p></li>
 <li><p><span class="math inline">\(\beta_0\)</span>: intercepto;</p></li>
@@ -3161,7 +3164,7 @@ B2 -212.630
 B3    0.347</code></pre>
 </div>
 </div>
-<p>Também é possível estimar os <span class="math inline">\(\beta \text{&#39;s}\)</span> através de função <code>lm()</code> do R. Vamos conferir se os resultados são iguais.</p>
+<p>Também é possível estimar os <span class="math inline">\(\beta \text{&#39;s}\)</span> através de função <code>lm()</code> do R.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Usando a função lm</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>lm<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">lm</span>(GY <span class="sc">~</span> LAT <span class="sc">+</span> LON <span class="sc">+</span> ELEV, <span class="at">data =</span> df); <span class="fu">round</span>(lm<span class="fl">.3</span><span class="sc">$</span>coefficients,<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -3170,6 +3173,10 @@ B3    0.347</code></pre>
    6542.654    -205.563    -212.630       0.347 </code></pre>
 </div>
 </div>
+<p>A partir dos resultados do modelo de regressão, obtém-se a seguinte equação ajustada:</p>
+<p><span class="math display">\[
+\hat{y}_{ij} = 6542.654 - 205.563x_{i1} - 212.630x_{i2} + 0.347x_{i3}
+\]</span> na qual: <span class="math inline">\(x_{i1}\)</span>= Latitude, <span class="math inline">\(x_{i2}\)</span> Longitude <span class="math inline">\(x_{i3}\)</span>= Elevação. e <span class="math inline">\(\beta_0 = 6542.654\)</span> intercepto do modelo, ou seja valor esperado quando em latitude e longitude 0.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(Y) <span class="co"># número de observações</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">qr</span>(X)<span class="sc">$</span>rank <span class="sc">-</span> <span class="dv">1</span></span>
@@ -3377,6 +3384,53 @@ F-statistic:  88.6 on 3 and 6930 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
+<p>A partir do modelo ajustado, obtém-se a seguinte equação de regressão:</p>
+<p><span class="math display">\[
+\hat{y}_{ij} = 6542.654 - 205.563x_{i1} - 212.630x_{i2} + 0.347x_{i3}
+\]</span></p>
+<p>em que <span class="math inline">\(x_{i1}\)</span> corresponde à latitude, <span class="math inline">\(x_{i2}\)</span> à longitude e <span class="math inline">\(x_{i3}\)</span> à elevação.</p>
+<p>Considerando os coeficientes estimados:</p>
+<ul>
+<li><p>para cada aumento de uma unidade na latitude (<span class="math inline">\(x_1\)</span>), espera-se um <em>decréscimo</em> médio de <span class="math inline">\(205.563\)</span> unidades na produtividade de grãos (<span class="math inline">\(y\)</span>), mantendo-se constantes longitude (<span class="math inline">\(x_2\)</span>) e elevação (<span class="math inline">\(x_3\)</span>);</p></li>
+<li><p>para cada aumento de uma unidade na longitude (<span class="math inline">\(x_2\)</span>), espera-se um <em>decréscimo</em> médio de <span class="math inline">\(212.630\)</span> unidades na produtividade de grãos (<span class="math inline">\(y\)</span>), mantendo-se constantes latitude (<span class="math inline">\(x_1\)</span>) e elevação (<span class="math inline">\(x_3\)</span>);</p></li>
+<li><p>para cada metro adicional na elevação (<span class="math inline">\(x_3\)</span>), espera-se um <em>aumento</em> médio de <span class="math inline">\(0.347\)</span> unidades na produtividade de grãos (<span class="math inline">\(y\)</span>), mantendo-se constantes latitude (<span class="math inline">\(x_1\)</span>) e longitude (<span class="math inline">\(x_2\)</span>).</p></li>
+</ul>
+<p>Todos os coeficientes estimados apresentaram elevada significância estatística (<span class="math inline">\(p &lt; 0.001\)</span>), indicando que as variáveis ambientais incluídas no modelo possuem associação significativa com a produtividade de grãos.</p>
+<p>Para avaliar a significância global do modelo, foi realizado o teste:</p>
+<p><span class="math display">\[
+H_0: \beta_1 = \beta_2 = \beta_3 = 0
+\]</span></p>
+<p>contra a hipótese alternativa de que pelo menos um dos coeficientes seja diferente de zero.</p>
+<p>O modelo apresentou parametros:</p>
+<p><span class="math display">\[
+F = 88.6
+\]</span></p>
+<p>e p-valor:</p>
+<p><span class="math display">\[
+p &lt; 2.2 \times 10^{-16}
+\]</span></p>
+<p>Dessa forma, rejeita-se a hipótese nula <span class="math inline">\(H_0\)</span> ao nível de <span class="math inline">\(5\%\)</span> de significância, concluindo que pelo menos uma das variáveis ambientais avaliadas contribui significativamente para explicar a produtividade de grãos.</p>
+<p>O coeficiente de determinação obtido foi:</p>
+<p><span class="math display">\[
+R^2 = 0.03694
+\]</span></p>
+<p>e o coeficiente de determinação ajustado:</p>
+<p><span class="math display">\[
+R^2_{aj} = 0.03652
+\]</span></p>
+<p>Esses resultados indicam que aproximadamente <span class="math inline">\(3.65\%\)</span> da variação observada na produtividade de grãos é explicada pelas variáveis ambientais incluídas no modelo. Embora os coeficientes tenham sido estatisticamente significativos, o baixo valor de <span class="math inline">\(R^2\)</span> sugere que grande parte da variabilidade da produtividade está associada a outros fatores não contemplados na análise, como manejo agrícola, fertilidade do solo, condições climáticas específicas e interação genótipo <span class="math inline">\(\times\)</span> ambiente.</p>
+<p>O erro padrão residual estimado foi de aproximadamente:</p>
+<p><span class="math display">\[
+\sigma = 1150
+\]</span></p>
+<p>indicando a magnitude média dos desvios entre os valores observados e os valores preditos pelo modelo.</p>
+<p>Analisando-se os gráficos, pode-se notar que existe interferência de outliers, principalmente na analise de normalidade dos resíduos. Vale também ressaltar, o comportamento discreto das leituras de latitude, longitude e altitude, Apesar de serem váriaveis continuas, o número limitado de ambientes levou a uma concentração das leituras em determinadas coordenadas, referentes à cada estação experimental. Apesar do comportamento incomum dos dados, não houve implicações deletérias no ajuste de modelo.</p>
+</section>
+<section id="conclusão" class="level2">
+<h2 class="anchored" data-anchor-id="conclusão">Conclusão</h2>
+<p>A realização desta atividade possibilitou a aplicação prática de técnicas de regressão linear na análise de dados reais, proporcionando maior familiaridade com a base de dados utilizada no projeto final da disciplina. Além de consolidar os fundamentos teóricos relacionados aos modelos lineares, o desenvolvimento das análises permitiu aprofundar conhecimentos sobre ajuste de modelos, interpretação de coeficientes, avaliação de pressupostos e análise de resíduos.</p>
+<p>O trabalho evidenciou a importância da regressão linear como ferramenta estatística para modelagem e interpretação de fenômenos biológicos. A atividade também contribuiu significativamente para o desenvolvimento da capacidade analítica e da resolução de problemas relacionados ao tratamento e interpretação de dados, especialmente diante das dificuldades práticas encontradas ao longo das etapas de análise. De modo geral, a experiência adquirida aqui tende a ser de grande utilidade ao longo da pós-graduação e também na futura atuação profissional dos membros envolvidos.</p>
+</section>
 </section>
 
 </main>
