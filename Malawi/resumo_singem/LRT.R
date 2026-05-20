@@ -1,5 +1,10 @@
+
+# preparação --------------------------------------------------------------
+
+
 library(tidyverse)
 getwd()
+setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/Malawi/resumo_singem")
 data <- readRDS("treateddata.rds")
 malawi <- data %>%    mutate(
   env = as.factor(env),
@@ -16,6 +21,8 @@ malawi <- data %>%    mutate(
   
 )
 saveRDS(malawi, "asfactor.rds")
+
+malawi <- readRDS('asfactor.rds')
 num.env <- nlevels(malawi$env)
 num.gen <- nlevels(malawi$gen)
 num.bloco <- nlevels(malawi$bloco)
@@ -28,8 +35,9 @@ num.GY <- length(malawi$GY)
 num.NDM <- length(malawi$NDM)
 num.PROT <- length(malawi$PROT)
 
-
+library(tidyverse)
 library(asreml)
+malawi
 #teste
 
 soydata<- subset(malawi, env == "E0137")
@@ -44,8 +52,58 @@ Mod_r <- asreml(GY ~ rep,
                 maxit = 100,
                 na.action = na.method(x="include", y = "include"))
 
+# composição variancia ----------------------------------------------------
+library(asreml)
+
+mod_id <- asreml(
+  fixed  = GY ~ env,
+  random = ~ gen + gen:env,     # variância comum para cada gen:env
+  rcov   = ~ units,
+  data   = malawi
+)
+rm(mod_id)
 
 
+mod_diag <- asreml(
+  fixed  = GY ~ env,,
+  random = ~ gen + diag(env):gen,   # uma variância específica por ambiente
+  rcov   = ~ units,
+  data   = malawi
+)
+
+
+
+mod_corgh <- asreml(
+  fixed  = GY ~ env,,
+  random = ~ gen + corgh(env):gen,  # matriz não estruturada
+  rcov   = ~ units,
+  data   = malawi
+)
+
+
+mod_fa1 <- asreml(
+  fixed  = GY ~ env,,
+  random = ~ gen + fa(env,1):gen,
+  rcov   = ~ units,
+  data   = malawi
+)
+
+mod_fa2 <- asreml(
+  fixed  = GY ~ env,,
+  random = ~ gen + fa(env,2):gen,
+  rcov   = ~ units,
+  data   = malawi
+)
+
+
+lrt(mod_id,   mod_diag)
+lrt(mod_diag, mod_corgh)
+lrt(mod_id,   mod_corgh)
+lrt(mod_corgh, mod_fa1)
+lrt(mod_fa1, mod_fa2)
+
+
+# efeito de bloco ---------------------------------------------------------
 
 #loop
 
@@ -95,3 +153,18 @@ for (i in levels(malawi$env)) {
 
 table(results$signn)
 view(results)
+
+
+#interação genótipo ambiente
+mod_full <- asreml(
+  fixed = GY ~ env,
+  random = ~ gen + gen:env,
+  data = malawi
+)
+mod_red <- asreml(
+  fixed = GY ~ env,
+  random = ~ gen,
+  data = malawi
+)
+
+lrt(mod_full, mod_red)
