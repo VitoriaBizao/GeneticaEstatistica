@@ -61,8 +61,8 @@ malawi_sem_outliers <- malawi %>%
     media = mean(GY, na.rm = TRUE),
     DP = sd(GY, na.rm = TRUE),
     
-    outlier = GY > (media + 2.5 * DP) |
-      GY < (media - 2.5 * DP)
+    outlier = GY > (media + 2 * DP) |
+      GY < (media - 2 * DP)
   ) %>%
   filter(!outlier) %>%
   ungroup()
@@ -94,7 +94,7 @@ malawi_sem_outliers <- malawi_sem_outliers %>%
     DP = sd(NDM, na.rm = TRUE),
     
     outlier = NDM > (media + 6.6 * DP) |
-      NDM < (media - 4 * DP)
+      NDM < (media - 2.5 * DP)
   ) %>%
   filter(!outlier) %>%
   ungroup()

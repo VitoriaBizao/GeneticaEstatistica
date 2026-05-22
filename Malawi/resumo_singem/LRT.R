@@ -6,10 +6,11 @@ library(tidyverse)
 getwd()
 setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/Malawi/resumo_singem")
 data <- readRDS("treateddata.rds")
-malawi <- data %>%    mutate(
+data <- data %>%    mutate(
   env = as.factor(env),
   gen = as.factor(gen),
   bloco = as.factor(rep),
+  check = as.factor(check),
   SEASON= as.factor(SEASON),
   YEAR= as.factor(YEAR),
   loc = as.factor(loc),
@@ -20,7 +21,7 @@ malawi <- data %>%    mutate(
   PROT = as.numeric(PROT),
   
 )
-saveRDS(malawi, "asfactor.rds")
+write.csv2(data, "data.csv")
 
 malawi <- readRDS('asfactor.rds')
 num.env <- nlevels(malawi$env)

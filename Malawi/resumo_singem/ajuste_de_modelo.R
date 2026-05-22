@@ -3,27 +3,32 @@ library(asreml)
 getwd()
 setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/Malawi/resumo_singem")
 data <- readRDS("asfactor.rds")
+boxplot(GY ~ env, data = data)
+boxplot(NDM ~ env, data = data)
+boxplot(PH_R8 ~ env, data = data)
+head(data$)
+
 
 
 # GY ----------------------------------------------------------------------
 
 
-m0 <- asreml(
-  fixed = GY ~ env + bloco,
+M0 <- asreml(
   
-  random = ~
-    gen:fa(env,1) +
-    gen:env,
-, 
+  fixed = GY ~ env,
   
-  residual = ~ dsum(~id(units) | env),
+  random = ~ gen + gen:env,
   
-  data = data
+  residual = ~ dsum(~id(units)|env),
+  
+  data = data,
+  
+  maxit = 200
 )
 
-plot(residuals(m0))
-qqnorm(residuals(m0)); qqline(residuals(m0))
-rm(m0)
+plot(residuals(M0))
+qqnorm(residuals(M0)); qqline(residuals(M0))
+rm(M0)
 
 M1 <- asreml(
   fixed = GY ~ env,
@@ -36,46 +41,16 @@ M1 <- asreml(
   
   data = data,
   
-  maxit = 100
+  maxit = 300
+
 )
 
 plot(residuals(M1))
 qqnorm(residuals(M1)); qqline(residuals(M1))
 
-m2 <- asreml(
-  
-  fixed = GY ~ env,
-  
-  random = ~ gen + gen:env,
-  
-  residual = ~ dsum(~id(units)|env),
-  
-  data = data,
-  
-  maxit = 200
-)
-
-summary(m2)
-plot(residuals(m3))
-qqnorm(residuals(m2)); qqline(residuals(m2))
 
 data$GY_log <- log(data$GY)
 
-m3 <- asreml(
-  
-  fixed = GY ~ env,
-  
-  random = ~ gen + gen:env,
-  
-  residual = ~ dsum(~id(units)|env),
-  
-  data = data,
-  
-  maxit = 200
-)
-summary(m3)
-m3$converge
-m3$gammas
 
 M4 <- asreml(
   fixed  = GY ~ env,,
@@ -86,6 +61,16 @@ M4 <- asreml(
 
 plot(residuals(M4))
 qqnorm(residuals(M4)); qqline(residuals(M4))
+
+M3 = asreml(
+  fixed = GY ~ rep:env + env,
+  random = ~ gen:fa(env, 3),
+  data = data,
+  residual = ~ dsum(~id(units) | env),
+  
+
+plot(residuals(M3))
+qqnorm(residuals(M3)); qqline(residuals(M3))
 
 # PHR8---------------------------------------------------------------------
 
@@ -99,12 +84,23 @@ phm1 <-  asreml(
 plot(residuals(phm1))
 qqnorm(residuals(phm1)); qqline(residuals(phm1))
 
+# ndm ---------------------------------------------------------------------
+
+ndmm0 <-  asreml(
+  fixed  = PH_R8 ~ env,,
+  random = ~ gen + fa(env,2):gen,
+  rcov   = ~ units,
+  data   = datax''
+)
+
+plot(residuals(phm1))
+qqnorm(residuals(phm1)); qqline(residuals(phm1))
 # blups -------------------------------------------------------------------
 
 
-blups_gen <- predict(M4, classify = "gen")$pvals
-blups_adj <- predict(M4, classify = "gen", sed = TRUE)$pvals
-blup_ge <- predict(M4, classify = "gen:env")$pvals
+blups_gen <- predict(M1, classify = "gen")$pvals
+blups_adj <- predict(M1, classify = "gen", sed = TRUE)$pvals
+blup_ge <- predict(M1, classify = "gen:env")$pvals
 head(blups_gen)
 head(blup_ge)
 head(blups_adj)
@@ -112,8 +108,8 @@ write.csv(blups_gen, "BLUPs_gen.csv", row.names = FALSE)
 
 # WAASB -------------------------------------------------------------------
 
-var_g <- summary(M4)$varcomp["gen","component"]
-pred_gen <- predict(M4, classify="gen", sed=TRUE)$pvals
+var_g <- summary(M1)$varcomp["gen","component"]
+pred_gen <- predict(M1, classify="gen", sed=TRUE)$pvals
 pred_gen$PEV <- pred_gen$std.error^2
 pred_gen$accuracy <- sqrt(1 - pred_gen$PEV / var_g)
 
