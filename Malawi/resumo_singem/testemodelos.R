@@ -1,5 +1,8 @@
-data <-  read.csv2("data.csv")
-boxplot(NDM ~ env, data)
+data <-  read.csv2("https://raw.githubusercontent.com/VitoriaBizao/GeneticaEstatistica/refs/heads/main/Malawi/resumo_singem/dataoutr.csv")
+data <- read.csv('https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv', sep = ';')
+
+library(asreml)
+
 # GY ----------------------------------------------------------------------
 
 
@@ -25,7 +28,7 @@ m1_GY <- asreml(
   rcov    = ~ at(env):units,
   data    = data,
   na.action = na.method(x = "include", y = "include"),
-  maxit = 300)
+  maxit = 100)
 
 m2_GY <- asreml(
   fixed   = GY ~ env + check,
@@ -99,7 +102,7 @@ qqnorm(residuals(m0_NDM)); qqline(residuals(m0_NDM))
 
 
 m1_NDM <- asreml(
-  fixed   = NDM ~  env + check + bloco:env,
+  fixed   = NDM ~ env + check + bloco:env,
   random  = ~ gen + 
     fa(env, 1):gen,
   rcov    = ~ at(env):units,
@@ -107,26 +110,33 @@ m1_NDM <- asreml(
   na.action = na.method(x = "include", y = "include"),
   maxit = 300)
 
+summary(m1_NDM)$aic
+plot(residuals(M1))
+qqnorm(residuals(m1_NDM)); qqline(residuals(m1_NDM))
+
 lrt(m0_NDM, m1_NDM)
 plot(residuals(m1_NDM))
 qqnorm(residuals(m1_NDM)); qqline(residuals(m1_NDM))
 
-data$resid_std <- residuals(m1_NDM, type = "stdCond")
+data$resid_std <- residuals(m0_NDM, type = "stdCond")
 
 boxplot(
   resid_std ~ env,
   data = data,
   las = 2
 )
-
-abline(h = c(-7, 7), col = "red")
+abline(h = c(-5, 5), col = "red")
+#AMBIENTE MUITO RUIM
+data$NDM[data$env == "E0249"] <- NA
+data <- data %>%
+  filter(env != "E0249")  
 
 outliers <- data %>%
   filter(abs(resid_std) > 7)
 
 data <- data %>%
   mutate(
-    outlier = abs(resid_std) > 7,
+    outlier = abs(resid_std) > 5,
     NDM = ifelse(outlier, NA, NDM)
   )
 # PH_R8 -------------------------------------------------------------------
