@@ -1,17 +1,17 @@
 data <-  read.csv2("https://raw.githubusercontent.com/VitoriaBizao/GeneticaEstatistica/refs/heads/main/Malawi/resumo_singem/dataoutr.csv")
 data <- read.csv('https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv', sep = ';')
-data <- arrow_table(data)
 library(asreml)
 library(bestNormalize)
 
 # GY ----------------------------------------------------------------------
 asreml.options(workspace="200mb")
 
+nlevels(data$loc)
+
 m0_GY <- asreml(
-  fixed   = GY ~ env + check,
+  fixed   = GY ~ env + check + bloco:env,
   random  = ~ gen + 
-    gen:env +
-    bloco:env,
+    gen:env,
   rcov    = ~ at(env):units,
   data    = data,
 )
@@ -84,7 +84,7 @@ m5_GY <- asreml(
 lrt(m1_GY, m2_GY)
 
 qqnorm(residuals(m1_GY)); qqline(residuals(m1_GY))
-
+table(cluster_env$Cluster)
 
 # NDM ---------------------------------------------------------------------
 boxplot(NDM ~ env, data )
@@ -101,6 +101,7 @@ summary(m0_GY)$aic
 plot(residuals(M1))
 qqnorm(residuals(m0_NDM)); qqline(residuals(m0_NDM))
 
+write_csv(pred_ge,'blup_env_GY.csv')
 
 m1_NDM <- asreml(
   fixed   = NDM ~ env + check + bloco:env,
@@ -126,7 +127,9 @@ boxplot(
   data = data,
   las = 2
 )
+
 abline(h = c(-5, 5), col = "red")
+ 
 #AMBIENTE MUITO RUIM
 data$NDM[data$env == "E0249"] <- NA
 data <- data %>%
@@ -178,11 +181,12 @@ qqnorm(residuals(m2_PH)); qqline(residuals(m2_PH))
 
 lrt(m0_PH, m1_PH)
 
+data
 data <- data_clean
 boxplot(PH_R8 ~ env, data)
 boxplot(PH_R8 ~ env, data_clean)
 
-data$resid_std <- residuals(m1_PH, type = "stdCond")
+data$resid_std <- residuals(m0_PH, type = "stdCond")
 
 boxplot(
   resid_std ~ env,
