@@ -1,10 +1,11 @@
 data <-  read.csv2("https://raw.githubusercontent.com/VitoriaBizao/GeneticaEstatistica/refs/heads/main/Malawi/resumo_singem/dataoutr.csv")
 data <- read.csv('https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv', sep = ';')
-
+data <- arrow_table(data)
 library(asreml)
+library(bestNormalize)
 
 # GY ----------------------------------------------------------------------
-
+asreml.options(workspace="200mb")
 
 m0_GY <- asreml(
   fixed   = GY ~ env + check,
@@ -12,7 +13,7 @@ m0_GY <- asreml(
     gen:env +
     bloco:env,
   rcov    = ~ at(env):units,
-  data    = data
+  data    = data,
 )
 
 summary(m0_GY)$aic
@@ -91,7 +92,7 @@ m0_NDM <- asreml(
   fixed   = NDM ~ env + check + bloco:env,
   random  = ~ gen + 
     gen:env,
-  rcov    = ~ at(env):units,
+  rcov = ~ units,
   data    = data,
   na.action = na.method(x = "include", y = "include"),
   maxit = 300)
@@ -105,7 +106,7 @@ m1_NDM <- asreml(
   fixed   = NDM ~ env + check + bloco:env,
   random  = ~ gen + 
     fa(env, 1):gen,
-  rcov    = ~ at(env):units,
+  rcov = ~ at(env):units,
   data    = data,
   na.action = na.method(x = "include", y = "include"),
   maxit = 300)
@@ -132,7 +133,7 @@ data <- data %>%
   filter(env != "E0249")  
 
 outliers <- data %>%
-  filter(abs(resid_std) > 7)
+  filter(abs(resid_std) > 5)
 
 data <- data %>%
   mutate(
