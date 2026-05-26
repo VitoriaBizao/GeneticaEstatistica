@@ -2,8 +2,8 @@ library(tidyverse)
 library(asreml)
 getwd()
 setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/Malawi/resumo_singem")
-data <- readRDS("asfactor.rds")
-
+data  <- read.csv2("dataoutr.csv")
+ 
 
 m1_GY <- asreml(
   fixed   = GY ~ env + check + bloco:env,
@@ -12,10 +12,59 @@ m1_GY <- asreml(
   rcov    = ~ at(env):units,
   data    = data,
   na.action = na.method(x = "include", y = "include"),
-  
   maxit = 300)
 
 qqnorm(residuals(m1_GY)); qqline(residuals(m1_GY))
+m1_GY <- update(m1_GY)
+asreml.options(maxit = 100, workspace = '1gb', pworkspace = '2gb')
+pred_ge <- predict(m0_GY,
+                   classify = "gen:env",
+                   sed = TRUE)$pvals
+
+#remover outliers arquivo teste modelos
+
+m1_PH <- asreml(
+  fixed   = PH_R8 ~ env + check + bloco:env,
+  random  = ~ gen + 
+    fa(env,1):gen,
+  rcov    = ~ at(env):units,
+  data    = data,
+  na.action = na.method(x = "include", y = "include"),
+  maxit = 300)
+qqnorm(residuals(m1_PH)); qqline(residuals(m1_PH))
+
+summary(m0_GY)$aic
+plot(residuals(M1))
+qqnorm(residuals(m0_PH)); qqline(residuals(m0_PH))
+
+blup_gxe <- predict(m1_GY, classify = "gen:env", sed = TRUE)$pvals
+write.csv(blup_gen, "blupsPH_R8_gen")
+
+
+
+# herdabilidade -----------------------------------------------------------
+#GY
+varcomp <- summary(m1_GY)$varcomp
+var_g  <- varcomp["gen","component"]
+pred <- read.csv("BLUPs_gen.csv")
+pred$PEV <- pred$std.error^2
+H2_Cullis <- 1 - mean(pred$PEV) / var_g
+
+saveRDS(H2_Cullis, "h2cullis.rds")
+
+#PH_R*
+varcomp <- summary(m0_PH)$varcomp
+var_g  <- varcomp["gen","component"]
+pred <- read.csv("blupsPH_R8_gen.csv")
+pred$PEV <- pred$std.error^2
+H2_Cullis <- 1 - mean(pred$PEV) / var_g
+saveRDS(H2_Cullis, "h2cullis_PHR8")
+h2gy <- readRDS("h2cullis_GY.rds")
+
+
+# h2 GxE ------------------------------------------------------------------
+pred <-  read.csv('BLUPs_GY_gen.csv')
+sed_matrix <- pred$sed 
 
 # waasb -------------------------------------------------------------------
 
@@ -26,6 +75,7 @@ pred_GE <- predict(
 )$pvals
 
 head(pred_GE)
+
 
 
 # 1. Montar a matriz GxE a partir dos predicted values do ASReml
@@ -150,6 +200,7 @@ waasb_df <- tibble(
 mean_waasb  <- mean(waasb_df$waasb)
 mean_gy_all <- mean(waasb_df$mean_gy)
 
+
 # Quadrantes:
 # I   (dir-cima):  alta produção + baixa estabilidade
 # II  (dir-baixo): alta produção + alta estabilidade  ← IDEAL
@@ -205,8 +256,6 @@ print(p)
 # Salvar
 ggsave("waasb_biplot.png", p, width = 8, height = 7, dpi = 300)
 
-#pev
-library(tidyverse)
-
-
+readRDS("h2cullis_PHR8.rds")
+readRDS("h2cullis_GY.rds")
 

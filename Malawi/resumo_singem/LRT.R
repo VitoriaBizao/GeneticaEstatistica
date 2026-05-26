@@ -1,11 +1,12 @@
 
 # preparação --------------------------------------------------------------
-
-
-library(tidyverse)
+library(dplyr)
+library(asreml)
 getwd()
-setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/Malawi/resumo_singem")
-data <- readRDS("treateddata.rds")
+setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/data/resumo_singem")
+data <- read.csv("data_sem_outliers.csv")
+source("https://raw.githubusercontent.com/saulo-chaves/May_b_useful/refs/heads/main/fa_outs.R")
+
 data <- data %>%    mutate(
   env = as.factor(env),
   gen = as.factor(gen),
@@ -21,27 +22,25 @@ data <- data %>%    mutate(
   PROT = as.numeric(PROT),
   
 )
-write.csv2(data, "data.csv")
 
-malawi <- readRDS('asfactor.rds')
-num.env <- nlevels(malawi$env)
-num.gen <- nlevels(malawi$gen)
-num.bloco <- nlevels(malawi$bloco)
-num.SEASON <- nlevels(malawi$SEASON)
-num.YEAR <- nlevels(malawi$YEAR)
-num.loc <- nlevels(malawi$loc)
-num.RAINFED <- nlevels(malawi$RAINFED)
+num.env <- nlevels(data$env)
+num.gen <- nlevels(data$gen)
+num.bloco <- nlevels(data$bloco)
+num.SEASON <- nlevels(data$SEASON)
+num.YEAR <- nlevels(data$YEAR)
+num.loc <- nlevels(data$loc)
+num.RAINFED <- nlevels(data$RAINFED)
 
-num.GY <- length(malawi$GY)
-num.NDM <- length(malawi$NDM)
-num.PROT <- length(malawi$PROT)
+num.GY <- length(data$GY)
+num.NDM <- length(data$NDM)
+num.PROT <- length(data$PROT)
 
 library(tidyverse)
 library(asreml)
-malawi
+data
 #teste
 
-soydata<- subset(malawi, env == "E0137")
+soydata<- subset(data, env == "E0137")
 Mod_f <- asreml(GY ~ rep,
                 random = ~ gen,
                 data = soydata,
@@ -55,12 +54,13 @@ Mod_r <- asreml(GY ~ rep,
 
 # composição variancia ----------------------------------------------------
 library(asreml)
+asreml.options(workspace = '1gb', pworkspace = '2gb')
 
 mod_id <- asreml(
-  fixed  = GY ~ env,
+  fixed  = GY ~ env + bloco:env + check,
   random = ~ gen + gen:env,     # variância comum para cada gen:env
   rcov   = ~ units,
-  data   = malawi
+  data   = data
 )
 rm(mod_id)
 
@@ -69,41 +69,71 @@ mod_diag <- asreml(
   fixed  = GY ~ env,,
   random = ~ gen + diag(env):gen,   # uma variância específica por ambiente
   rcov   = ~ units,
-  data   = malawi
+  data   = data
+  maxit = 100,
+  na.action = na.method(x="include", y = "include"))
 )
 
-
+qqnorm(residuals(mod_fa1)); qqline(residuals(mod_fa1))
 
 mod_corgh <- asreml(
   fixed  = GY ~ env,,
   random = ~ gen + corgh(env):gen,  # matriz não estruturada
   rcov   = ~ units,
-  data   = malawi
+  data   = data
+  maxit = 100,
+  na.action = na.method(x="include", y = "include"))
 )
-
 
 mod_fa1 <- asreml(
-  fixed  = GY ~ env,,
+  fixed  = GY ~ env + bloco:env + check,
   random = ~ gen + fa(env,1):gen,
   rcov   = ~ units,
-  data   = malawi
-)
+  data   = data,
+  maxit = 200,
+  na.action = na.method(x="include", y = "include"))
 
 mod_fa2 <- asreml(
-  fixed  = GY ~ env,,
+  fixed  = GY ~ env + bloco:env + check,
   random = ~ gen + fa(env,2):gen,
   rcov   = ~ units,
-  data   = malawi
-)
+  data   = data,
+  maxit = 200,
+  na.action = na.method(x="include", y = "include"))
+
+mod_fa3 <- asreml(
+  fixed  = GY ~ env + bloco: env + check,
+  random = ~ gen + fa(env,3):gen,
+  rcov   = ~ units,
+  data   = data,
+  maxit = 200,
+  na.action = na.method(x="include", y = "include"))
+
+mod_fa4 <- asreml(
+  fixed  = GY ~ env + bloco:env + check,
+  random = ~ gen + fa(env,4):gen,
+  rcov   = ~ units,
+  data   = data,
+  maxit = 200,
+  na.action = na.method(x="include", y = "include"))
 
 
-lrt(mod_id,   mod_diag)
+lrt(mod_id,   mod_fa1)
 lrt(mod_diag, mod_corgh)
 lrt(mod_id,   mod_corgh)
 lrt(mod_corgh, mod_fa1)
-lrt(mod_fa1, mod_fa2)
+lrt(mod_fa3, mod_fa4)
 
 
+
+fa.models = list(mod_fa1, mod_fa2, mod_fa3, mod_fa4)
+fa.res = lapply(fa.models, function(x) fa.outs(x, name.env = "env",
+                                               name.gen = "gen"))
+diagnos = do.call(rbind,lapply(fa.res, function(x) x$diagnostics))
+rownames(diagnos) = c("fa1", "fa2", "fa3", "fa4"); diagnos[,'ASVR']
+write.csv(diagnos, "diagnose.csv")
+
+rm(mod_fa1,mod_fa2,mod_fa3)
 # efeito de bloco ---------------------------------------------------------
 
 #loop
@@ -113,9 +143,9 @@ results <- data.frame(site = character(),
                       signn = character(), 
                       stringsAsFactors = FALSE)
 
-for (i in levels(malawi$env)) {
+for (i in levels(data$env)) {
   
-  soydata <- subset(malawi, env == i)
+  soydata <- subset(data, env == i)
   
   
   try({
@@ -160,12 +190,33 @@ view(results)
 mod_full <- asreml(
   fixed = GY ~ env,
   random = ~ gen + gen:env,
-  data = malawi
+  data = data
 )
 mod_red <- asreml(
   fixed = GY ~ env,
   random = ~ gen,
-  data = malawi
+  data = data
 )
 
 lrt(mod_full, mod_red)
+
+# residual covariance -----------------------------------------------------
+
+mod_idv <- asreml(
+  fixed  = GY ~ env,,
+  random = ~ gen + fa(env,1):gen,
+  rcov   = ~ dsum(idv(units) | env),
+  data   = data,
+  na.action = na.method(x="include", y = "include"),
+  maxit = 300)
+
+
+mod_unit <- asreml(
+  fixed  = GY ~ env,,
+  random = ~ gen + fa(env,1):gen,
+  rcov   =  ~ units,
+  data   = data,
+  na.action = na.method(x="include", y = "include"),
+  maxit = 300)
+lrt(mod_idv, mod_unit)
+
