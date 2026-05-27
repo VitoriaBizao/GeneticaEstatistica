@@ -112,7 +112,7 @@ vpredict(m1GY,  H2 ~ V1/(V1+V2))
 
 ```
 
-```{R}
+```{R ERRO}
 library(GGally)
 blues_mf <- predict(mfGY, classify = 'env')
 blups_m0 <- predict(m0GY, classify = "gen")
