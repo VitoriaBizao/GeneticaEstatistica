@@ -1,0 +1,135 @@
+---
+title: "Data analysis of your dataset"
+author: 
+  - name: "Grupo 3 (Malawi): Juliana Oliveira, Pedro H. de Araujo e Vitória Murakami"
+    affiliation:
+      - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
+        city: Piracicaba, São Paulo, Brazil
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+```{R}
+library(dplyr)
+
+data = read.csv2("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv")
+data <- subset(data, COUNTRY == "Malawi")
+
+data <- data %>%    mutate(
+  env = as.factor(env),
+  gen = as.factor(gen),
+  bloco = as.factor(rep),
+  check = as.factor(check),
+  SEASON= as.factor(SEASON),
+  YEAR= as.factor(YEAR),
+  loc = as.factor(loc),
+  RAINFED = as.factor(RAINFED),
+  
+  GY = as.numeric(GY),
+  PH_R8 = as.numeric(PH_R8)
+)
+
+library(asreml)
+
+asreml.options(workspace = '1gb', pworkspace = '2gb')
+#testando efeitos fixos
+mfGY <-  asreml(
+  fixed  = GY ~ env + bloco:env + check,
+  rcov   = ~ units,
+  data   = data
+)
+
+plot(mfGY)
+
+wald(mfGY)
+
+mfGY <-  asreml(
+  fixed  = GY ~ env + bloco:env,
+  rcov   = ~ units,
+  data   = data)
+  
+#testing for randomm efects
+#gen
+m0GY <-  asreml(
+  fixed  = GY ~ env + bloco:env,
+  random = ~ gen,
+  data   = data)
+
+lrt(m0GY, mfGY)
+plot(m0GY)
+
+#gxe interaction
+
+m1GY <- asreml(
+  fixed  = GY ~ env + bloco:env,
+  random = ~ gen + gen:env,
+  data   = data
+)
+
+lrt(m0GY, m1GY)
+
+plot(m1GY)
+```
+
+```{R}
+#variance componentes
+summary(mfGY)$varcomp
+summary(m0GY)$varcomp
+summary(m1GY)$varcomp
+
+```
+
+```{R}
+summary(m0GY)
+summary(m1GY)
+
+#| tbl-cap: "m0"
+vpredict(m0GY,  H2 ~ V1/(V1+V2))
+#| tbl-cap: "m1"
+vpredict(m1GY,  H2 ~ V1/(V1+V2))
+
+```
+
+```{R}
+library(GGally)
+blues_mf <- predict(mfGY, classify = 'env')
+blups_m0 <- predict(m0GY, classify = "gen")
+blups_m1 <- predict(m1GY, classify = "gen")
+blups_m1_gxe <- predict(m1GY, classify = "gen:env")
+
+table(blups_m0$pvals$status)
+table(blups_m1$pvals$status)
+
+
+aux = cbind(blups_m0$pvals[,2], blups_m1$pvals[,2])
+
+colnames(aux) = c("m0", "m1")
+
+GGally::ggpairs(
+  data = as.data.frame(aux[,-1])
+) +
+  theme(text = element_text(size = 20))
+
+```

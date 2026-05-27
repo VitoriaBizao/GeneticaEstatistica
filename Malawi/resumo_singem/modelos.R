@@ -3,7 +3,8 @@ library(asreml)
 getwd()
 setwd("C:/Users/ph408/OneDrive/Documentos/esalq/GEVitoria/Malawi/resumo_singem")
 data  <- read.csv2("dataoutr.csv")
- 
+asreml.options(maxit = 100, workspace = '1gb', pworkspace = '2gb')
+
 
 m1_GY <- asreml(
   fixed   = GY ~ env + check + bloco:env,
@@ -17,9 +18,10 @@ m1_GY <- asreml(
 qqnorm(residuals(m1_GY)); qqline(residuals(m1_GY))
 m1_GY <- update(m1_GY)
 asreml.options(maxit = 100, workspace = '1gb', pworkspace = '2gb')
-pred_ge <- predict(m0_GY,
+asreml.options()
+blup2 <- predict(m1_GY,
                    classify = "gen:env",
-                   sed = TRUE)$pvals
+                   )$pvals
 
 #remover outliers arquivo teste modelos
 

@@ -23,15 +23,16 @@ remover_outliers_sd <- function(data){
       fixed   = GY ~ bloco,
       random  = ~ gen,
       data    = subconjunto,
-      na.action = na.method(x = "include", y = "include")
+      na.action = na.method(x = "include", y = "include"),
+      maxit = 100
     )
     
     # resíduos padronizados
     subconjunto$res <- residuals(mod, type = "stdCond")
     
     sd_res <- sd(subconjunto$res, na.rm = TRUE)
-    lim_sup <-  3 * sd_res
-    lim_inf <- -3 * sd_res
+    lim_sup <-  2.8 * sd_res
+    lim_inf <- -2.8 * sd_res
     
     # marca outliers
     subconjunto$outlier <- subconjunto$res > lim_sup |
