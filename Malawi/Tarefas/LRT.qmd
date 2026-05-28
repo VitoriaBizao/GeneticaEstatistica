@@ -31,6 +31,8 @@ execute:
   fig-height: 6            # Altura padrão global
 ---
 
+#Produtividade
+
 ```{R}
 library(dplyr)
 
@@ -60,16 +62,9 @@ mfGY <-  asreml(
   rcov   = ~ units,
   data   = data
 )
-
+wald(mfGY)
 plot(mfGY)
 
-wald(mfGY)
-
-mfGY <-  asreml(
-  fixed  = GY ~ env + bloco:env,
-  rcov   = ~ units,
-  data   = data)
-  
 #testing for randomm efects
 #gen
 m0GY <-  asreml(
@@ -131,5 +126,87 @@ GGally::ggpairs(
   data = as.data.frame(aux[,-1])
 ) +
   theme(text = element_text(size = 20))
-
 ```
+
+#Altura de Planta
+
+```{R}
+library(asreml)
+asreml.options(workspace = '1gb', pworkspace = '2gb')
+#fix efffects
+mfPH <- asreml(
+  fixed = PH_R8 ~ env + bloco:env + check,
+  rcov  = ~ units,
+  data  = data
+)
+
+#wald test
+wald(mfPH)
+plot(mfPH)
+
+#random effects
+# efeito de genótipo
+m0PH <- asreml(
+  fixed  = PH_R8 ~ env + bloco:env,
+  random = ~ gen,
+  data   = data
+)
+plot(m0PH)
+
+# interação GxE
+m1PH <- asreml(
+  fixed  = PH_R8 ~ env + bloco:env,
+  random = ~ gen + gen:env,
+  data   = data
+)
+plot(m1PH)
+lrt(m0PH, m1PH)
+```
+``` {R}
+#componentes de variância
+summary(mfPH)$varcomp
+summary(m0PH)$varcomp
+summary(m1PH)$varcomp
+``` 
+
+```{R}
+#Heritability
+# herdabilidade modelo m0
+vpredict(m0PH, H2 ~ V1/(V1+V2))
+
+# herdabilidade modelo m1
+vpredict(m1PH, H2 ~ V1/(V1+V2))
+```
+
+``` {R}
+
+library(GGally)
+
+blues_mfPH <- predict(mfPH, classify = "env")
+
+blups_m0PH <- predict(m0PH, classify = "gen")
+
+blups_m1PH <- predict(m1PH, classify = "gen")
+
+blups_m1PH_gxe <- predict(m1PH, classify = "gen:env")
+
+table(blups_m0PH$pvals$status)
+table(blups_m1PH$pvals$status)
+table(blups_m1PH_gxe$pvals$status)
+
+
+aux <- cbind(
+  blups_m0PH$pvals[,2],
+  blups_m1PH$pvals[,2]
+)
+
+colnames(aux) <- c("m0", "m1")
+
+GGally::ggpairs(
+  data = as.data.frame(aux)
+) +
+  theme(text = element_text(size = 20))
+```
+
+
+
