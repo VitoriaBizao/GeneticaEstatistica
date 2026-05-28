@@ -6,6 +6,7 @@ data  <- read.csv2("dataoutr.csv")
 asreml.options(maxit = 100, workspace = '1gb', pworkspace = '2gb')
 
 
+
 m1_GY <- asreml(
   fixed   = GY ~ env + check + bloco:env,
   random  = ~ gen + 
