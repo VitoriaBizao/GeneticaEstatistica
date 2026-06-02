@@ -32,8 +32,24 @@ execute:
   fig-height: 6            # Altura padrão global
 ---
 
+<<<<<<< HEAD
 # Data analysis
 **Choose two traits. Perform data analysis of all trials in your dataset using a RCBD model. Justify your choice in using the treatment and the block effects as fixed or random. Report the variance component estimates, the hypothesis test results, the broad-sense heritability, the coefficient of experimental variation, and the selection candidates' BLUPs and reliabilities. Finally, compare the rankings between trials and speculate the reasons why they are different/similar. This task must be carried out within groups.**
+=======
+# Introdução
+
+A modelagem correta é fundamental para a acurácia e precisão dos métodos estatisticos, sobretudo quando trabalhamos com modelos mistos, pois eles envolvem a divisão dos efeitos em fixos e aleatórios, não existindo regra geral para definição dos fatores experimentais em um ou outro. Dessa forma, é importante que o pesquisador tenha conhecimentos em delineamentos experimentais, entenda bem os objetivos que pretende satisfazer com a analise, e tenha bom domínio na estatistica, sobretudo a de modelos lineares, de forma a minimizar os erros e melhorar a qualidade das inferências. Nessa etapa, é importante avaliar a significância dos efeitos, observar o comportamento dos resíduos e sua distribuição.  
+
+Entre os principais testes utilizados em modelos mistos destaca-se o teste da razão de verossimilhança (Likelihood Ratio Test – LRT), amplamente empregado para comparar modelos aninhados, especialmente na avaliação da significância de efeitos aleatórios. O LRT baseia-se na diferença entre os valores de log-verossimilhança de dois modelos, sendo um completo e outro reduzido. Caso a remoção de determinado efeito provoque redução significativa na verossimilhança do modelo, conclui-se que esse efeito contribui de maneira importante para explicar a variabilidade dos dados. Esse teste é particularmente útil na seleção de componentes de variância, estruturas de covariância residual e modelos de interação genótipo × ambiente.
+
+Para os efeitos fixos, um dos testes mais utilizados é o teste de Wald, que avalia se os parâmetros estimados diferem significativamente de zero. O teste de Wald considera a razão entre a estimativa do parâmetro e seu erro padrão, permitindo verificar a relevância estatística dos efeitos fixos presentes no modelo. Em experimentos agrícolas, esse teste é frequentemente empregado para avaliar fatores como ambientes, tratamentos, manejos ou covariáveis. Apesar de sua ampla utilização, os resultados devem ser interpretados com cautela, principalmente em situações com pequeno número de observações ou modelos muito complexos, nas quais aproximações assintóticas podem comprometer a precisão das inferências.
+
+Além dos testes estatísticos, ferramentas gráficas desempenham papel essencial na avaliação da qualidade dos modelos mistos. A análise de resíduos, por exemplo, permite verificar pressupostos como normalidade, homogeneidade de variâncias e independência dos erros. Gráficos de resíduos versus valores ajustados podem indicar heterocedasticidade ou padrões sistemáticos não capturados pelo modelo, enquanto gráficos Q-Q auxiliam na identificação de desvios da normalidade. Da mesma forma, plots de BLUPs e valores preditos podem evidenciar comportamentos atípicos, estimativas excessivamente influenciadas por poucos dados ou problemas de convergência.
+
+# Desenvolvimento
+
+# Produtividade
+>>>>>>> refs/remotes/origin/main
 
 ## Produtividade
 ```{R}
@@ -549,6 +565,7 @@ colnames(aux) = c("mod2", "mod3")
 GGally::ggpairs(data = aux) + theme(text = element_text(size = 20))
 ```
 
+<<<<<<< HEAD
 ## Altura de Planta
 ```{r}
 #| message: false
@@ -768,6 +785,9 @@ ml <- marrangeGrob(grobs = plots,
 
 print(ml)
 ```
+=======
+# Altura de Planta
+>>>>>>> refs/remotes/origin/main
 
 ```{R}
 #| message: false
@@ -810,12 +830,11 @@ plot(m1PH)
 #| warning: false
 #| echo: false
 
-
 #componentes de variância
 summary(mfPH)$varcomp
 summary(m0PH)$varcomp
 summary(m1PH)$varcomp
-``` 
+```
 
 ```{R}
 #| message: false
@@ -829,6 +848,7 @@ vpredict(m0PH, H2 ~ V1/(V1+V2))
 # herdabilidade modelo m1
 vpredict(m1PH, H2 ~ V1/(V1+V2))
 ```
+
 
 ``` {R}
 #| message: false
@@ -854,6 +874,4 @@ aux <- cbind(blups_m0PH$pvals[,2], blups_m1PH$pvals[,2])
 
 colnames(aux) <- c("m0", "m1")
 ```
-
-
-
+# Conclusão
