@@ -32,10 +32,8 @@ execute:
   fig-height: 6            # Altura padrão global
 ---
 
-<<<<<<< HEAD
-# Data analysis
 **Choose two traits. Perform data analysis of all trials in your dataset using a RCBD model. Justify your choice in using the treatment and the block effects as fixed or random. Report the variance component estimates, the hypothesis test results, the broad-sense heritability, the coefficient of experimental variation, and the selection candidates' BLUPs and reliabilities. Finally, compare the rankings between trials and speculate the reasons why they are different/similar. This task must be carried out within groups.**
-=======
+
 # Introdução
 
 A modelagem correta é fundamental para a acurácia e precisão dos métodos estatisticos, sobretudo quando trabalhamos com modelos mistos, pois eles envolvem a divisão dos efeitos em fixos e aleatórios, não existindo regra geral para definição dos fatores experimentais em um ou outro. Dessa forma, é importante que o pesquisador tenha conhecimentos em delineamentos experimentais, entenda bem os objetivos que pretende satisfazer com a analise, e tenha bom domínio na estatistica, sobretudo a de modelos lineares, de forma a minimizar os erros e melhorar a qualidade das inferências. Nessa etapa, é importante avaliar a significância dos efeitos, observar o comportamento dos resíduos e sua distribuição.  
@@ -51,8 +49,6 @@ Além dos testes estatísticos, ferramentas gráficas desempenham papel essencia
 Os dados a seguir são resultantes de ensaios que foram conduzidos com genótipos de soja no país Malawi (África), provenientes dos Ensaios Pan-Africanos (PATs), coordenados pelo Laboratório de Inovação em Soja (SIL) (Araújo et al., 2025).
 
 Para a análise dos dados em delineamento de blocos casualizados por meio de modelos mistos, foram selecionadas as características produtividade de grãos (GY, kg ha⁻¹) e altura de plantas na maturidade (PH_R8, cm), por serem variáveis de interesse agronômico e frequentemente utilizadas na avaliação do desempenho de genótipos.
-
->>>>>>> refs/remotes/origin/main
 
 ## Produtividade
 ```{R}
@@ -140,8 +136,8 @@ Ajustando o modelo:
 
 asreml.options(workspace = '1gb', pworkspace = '2gb')
 
-mod = asreml(fixed = GY ~ 1,
-             random = ~ gen + bloco,
+mod = asreml(fixed = GY ~ bloco,
+             random = ~ gen,
              data = subset(data, env == "E0137"))
 ```
 
@@ -179,8 +175,7 @@ $$\text{LR} = -2[\text{log}_R - \text{log}_C]$$
 #| message: false
 #| warning: false
 #| echo: false
-modred <- asreml(fixed = GY ~ 1,
-             random = ~ bloco,
+modred <- asreml(fixed = GY ~ bloco,
              data = subset(data, env == "E0137"))
 
 logLik_full <- summary(mod)$loglik
@@ -193,7 +188,7 @@ $$\text{LR} = -2[\text{log}_R - \text{log}_C] = \\
 = -2[(-1063.656) - (-1093.509)] = \\
 \therefore LR = 59.706$$
 
-O *p-valor* para um LR de $59.706$ e $01$ grau de liberdade é $5.506818e-15$.
+O *p-valor* para um LR de $59.706$ e $01$ grau de liberdade é $5.513956e-15$.
 
 Conferindo pelo `lrt.asreml`:
 ```{r}
@@ -217,27 +212,48 @@ Conferindo com a saída do `asreml`:
 #| warning: false
 #| echo: false
 
-H2 <- vpredict(mod, H2 ~ V2/(V2+V3)); H2
+H2 <- vpredict(mod, H2 ~ V1/(V1+V2)); H2
 ```
 
-### Coefficient of experimental variation
-Conseguimos também estimar o coeficiente dos blocos, que é de onde vem a variação experimental:
+#### Generalized heritability 
+
+Como temos dados perdidos dos blocos, vamos calcular a herdabilidade generalizada pelo método de Cullis et al. (2006):
+
+$$H^2 = 1 - \frac{\bar{\triangle}{BLUP}}{2\sigma_{g}^2}$$
+
+onde $\sigma_{g}^2$ é a variância genética e, $\bar{\triangle}{BLUP}$ é a variância do erro médio de predição entre genótipos. 
+
+Assim temos:
 
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 
-mod$coefficients$random[grep("^bloco", rownames(mod$coefficients$random)),"effect"]
+mvd = mean(((predict.asreml(mod,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(mod,classify = "gen",sed = T)$sed)^2,diag=F)])
+
+her = 1-(mvd/(2*summary(mod)$varcomp["gen","component"])); her
+```
+
+### Coefficient of experimental variation
+Como consideramos os genótipos como efeitos aleatórios podemos estimar seus coeficientes de variação:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+mod$coefficients$random[grep("^gen", rownames(mod$coefficients$random)),"effect"]
 ```
 
 ### Selection candidates' BLUPs 
 Com o modelo ajustado e os valores preditos podemos selecionar os genótipos com maiores BLUPs:
 
 ```{r}
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 pred <- predict.asreml(object = mod, classify = "gen")
 
@@ -312,16 +328,15 @@ for(e in envs){
   if(nrow(dados_env) < 5) next
   
   # Modelo completo
-  mod <- try(asreml(fixed = GY ~ 1,
-                    random = ~ gen + bloco,
+  mod <- try(asreml(fixed = GY ~ bloco,
+                    random = ~ gen,
                     data = dados_env),
              silent = TRUE)
   
   if(inherits(mod, "try-error")) next
   
   # Modelo reduzido
-  modred <- try(asreml(fixed = GY ~ 1,
-                       random = ~ bloco,
+  modred <- try(asreml(fixed = GY ~ bloco,
                        data = dados_env),
                 silent = TRUE)
   
@@ -347,15 +362,17 @@ for(e in envs){
 }
   
   #----------------------------------#
-  # Herdabilidade
+  # Herdabilidade Ampla
   #----------------------------------#
-  H2 <- try(vpredict(mod, H2 ~ V2/(V2+V3)), silent = TRUE)
+  H2 <- try(vpredict(mod, H2 ~ V1/(V1+V2)), silent = TRUE)
   
   #----------------------------------#
-  # Efeitos de bloco
+  # Herdabilidade Cullis
   #----------------------------------#
-  expvar <- try(mod$coefficients$random[grep("^bloco", rownames(mod$coefficients$random)), "effect"],
-                silent = TRUE)
+  mvd = mean(((predict.asreml(mod,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(mod,classify = "gen",sed = T)$sed)^2,diag=F)])
+
+  H2_c = 1-(mvd/(2*summary(mod)$varcomp["gen","component"]))
   
   #----------------------------------#
   # BLUPs
@@ -408,7 +425,7 @@ for(e in envs){
                           lrt = lrt,
                           significativo = signif_gen,
                           H2 = H2,
-                          bloco = expvar,
+                          H2_c = H2_c,
                           blups = blups,
                           reliability = reliability,
                           plot_blup = g_blup)
@@ -421,29 +438,26 @@ for(e in envs){
 #| warning: false
 #| echo: false
 
-tab_res <- map_dfr(names(resultados), function(e){
+
+tab_res <- purrr::map_dfr(names(resultados), function(e){
 
   x <- resultados[[e]]
 
   if(is.null(x)) return(NULL)
 
-  tibble(
-    Trial = e,
-
-    Bloco = x$varcomp$component[1],
-    Genotipo = x$varcomp$component[2],
-    Residuo = x$varcomp$component[3],
-
-    LRT = x$significativo,
-
-    H2 = x$H2$Estimate[1],
-    H2_SE = x$H2$SE[1],
-
-    Bloco1 = x$bloco[1],
-    Bloco2 = x$bloco[2],
-    Bloco3 = x$bloco[3],
-
-    Reliability = x$reliability)
+  tibble(Trial = e,
+         
+         Genotipo = x$varcomp$component[1],
+         Residuo = x$varcomp$component[2],
+         
+         LRT = x$significativo,
+         
+         H2 = x$H2$Estimate[1],
+         H2_SE = x$H2$SE[1],
+         
+         H2_Cullis = x$H2_c,
+         
+         Reliability = x$reliability)
 })
 
 tab_res |>
@@ -452,13 +466,13 @@ tab_res |>
       escape = FALSE,
       booktabs = TRUE,
       caption = "Resultado de todos os experimentos (trials)",
-      col.names = c("Trial", "Bloco", "Genótipo",
-                    "$\\epsilon$", "LRT", "$H^2$",
-                    "SE", "Bloco 1", "Bloco 2",
-                    "Bloco 3", "Reliability")) |>
-  add_header_above(c(" " = 1, "Componente de variância" = 3,
-                     " " = 1, "Herdabilidade" = 2,
-                     "Variância esperada" = 3,
+      col.names = c("Trial", "Genótipo", "$\\epsilon$",
+                    "LRT", "$H^2$", "SE",
+                    "$H^2$ - Cullis", "Reliability")) |>
+  add_header_above(c(" " = 1,
+                     "Componente de variância" = 2,
+                     " " = 1, 
+                     "Herdabilidade" = 3, 
                      " " = 1)) |>
   kable_styling(full_width = FALSE, position = "center")
 ```
@@ -517,58 +531,7 @@ print(ml)
 
 Aqui um genótipo foi colorido apenas para mostrar de outra forma que a posição de genótipo no rank depende do experimento.
 
-### Análise conjunta
-Podemos também analisar todos os trials conjuntamente. Assim, nosso modelo fica:
 
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-
-mfGY <-  asreml(fixed = GY ~ env,
-                rcov  = ~ bloco:env,
-                data  = data)
-wald(mfGY)
-plot(mfGY)
-
-#testing for randomm efects
-#gen
-m0GY <-  asreml(fixed  = GY ~ env,
-                random = ~ gen + gen:env + env:bloco,
-                data = data)
-
-wald(m0GY)
-plot(m0GY)
-
-#gxe interaction
-m1GY <- asreml(fixed  = GY ~ 1,
-               random = ~ gen + env + gen:env + env:bloco,
-               data = data)
-
-plot(m1GY)
-```
-
-```{R ERRO}
-#| message: false
-#| warning: false
-#| echo: false
-
-library(GGally)
-blues_mf <- predict(mfGY, classify = 'env')
-blups_m0 <- predict(m0GY, classify = "gen")
-blups_m1 <- predict(m1GY, classify = "gen")
-
-table(blups_m0$pvals$status)
-table(blups_m1$pvals$status)
-
-
-aux = cbind(blups_m0$pvals[,2], blups_m1$pvals[,2])
-colnames(aux) = c("mod2", "mod3")
-
-GGally::ggpairs(data = aux) + theme(text = element_text(size = 20))
-```
-
-<<<<<<< HEAD
 ## Altura de Planta
 ```{r}
 #| message: false
@@ -591,16 +554,15 @@ for(e in envs){
   if(nrow(dados_env) < 5) next
   
   # Modelo completo
-  mod <- try(asreml(fixed = PH_R8 ~ 1,
-                    random = ~ gen + bloco,
+  mod <- try(asreml(fixed = PH_R8 ~ bloco,
+                    random = ~ gen,
                     data = dados_env),
              silent = TRUE)
   
   if(inherits(mod, "try-error")) next
   
   # Modelo reduzido
-  modred <- try(asreml(fixed = PH_R8 ~ 1,
-                       random = ~ bloco,
+  modred <- try(asreml(fixed = PH_R8 ~ bloco,
                        data = dados_env),
                 silent = TRUE)
   
@@ -609,9 +571,9 @@ for(e in envs){
   #----------------------------------#
   varcomp <- summary(mod)$varcomp
   
-  #----------------------------------
+  #----------------------------------#
   # LRT
-  #----------------------------------
+  #----------------------------------#
   lrt <- try(lrt.asreml(mod, modred), silent = TRUE)
   
   signif_gen <- NA
@@ -626,15 +588,17 @@ for(e in envs){
 }
   
   #----------------------------------#
-  # Herdabilidade
+  # Herdabilidade Ampla
   #----------------------------------#
-  H2 <- try(vpredict(mod, H2 ~ V2/(V2+V3)), silent = TRUE)
+  H2 <- try(vpredict(mod, H2 ~ V1/(V1+V2)), silent = TRUE)
   
   #----------------------------------#
-  # Efeitos de bloco
+  # Herdabilidade Cullis
   #----------------------------------#
-  expvar <- try(mod$coefficients$random[grep("^bloco", rownames(mod$coefficients$random)), "effect"],
-                silent = TRUE)
+  mvd = mean(((predict.asreml(mod,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(mod,classify = "gen",sed = T)$sed)^2,diag=F)])
+
+  H2_c = 1-(mvd/(2*summary(mod)$varcomp["gen","component"]))
   
   #----------------------------------#
   # BLUPs
@@ -687,40 +651,39 @@ for(e in envs){
                           lrt = lrt,
                           significativo = signif_gen,
                           H2 = H2,
-                          bloco = expvar,
+                          H2_c = H2_c,
                           blups = blups,
                           reliability = reliability,
                           plot_blup = g_blup)
 }
 ```
 
+
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
-tab_res <- map_dfr(names(resultados), function(e){
+
+
+tab_res <- purrr::map_dfr(names(resultados), function(e){
 
   x <- resultados[[e]]
 
   if(is.null(x)) return(NULL)
 
-  tibble(
-    Trial = e,
-
-    Bloco = x$varcomp$component[1],
-    Genotipo = x$varcomp$component[2],
-    Residuo = x$varcomp$component[3],
-
-    LRT = x$significativo,
-
-    H2 = x$H2$Estimate[1],
-    H2_SE = x$H2$SE[1],
-
-    Bloco1 = x$bloco[1],
-    Bloco2 = x$bloco[2],
-    Bloco3 = x$bloco[3],
-
-    Reliability = x$reliability)
+  tibble(Trial = e,
+         
+         Genotipo = x$varcomp$component[1],
+         Residuo = x$varcomp$component[2],
+         
+         LRT = x$significativo,
+         
+         H2 = x$H2$Estimate[1],
+         H2_SE = x$H2$SE[1],
+         
+         H2_Cullis = x$H2_c,
+         
+         Reliability = x$reliability)
 })
 
 tab_res |>
@@ -729,13 +692,13 @@ tab_res |>
       escape = FALSE,
       booktabs = TRUE,
       caption = "Resultado de todos os experimentos (trials)",
-      col.names = c("Trial", "Bloco", "Genótipo",
-                    "$\\epsilon$", "LRT", "$H^2$",
-                    "SE", "Bloco 1", "Bloco 2",
-                    "Bloco 3", "Reliability")) |>
-  add_header_above(c(" " = 1, "Componente de variância" = 3,
-                     " " = 1, "Herdabilidade" = 2,
-                     "Variância esperada" = 3,
+      col.names = c("Trial", "Genótipo", "$\\epsilon$",
+                    "LRT", "$H^2$", "SE",
+                    "$H^2$ - Cullis", "Reliability")) |>
+  add_header_above(c(" " = 1,
+                     "Componente de variância" = 2,
+                     " " = 1, 
+                     "Herdabilidade" = 3, 
                      " " = 1)) |>
   kable_styling(full_width = FALSE, position = "center")
 ```
@@ -788,93 +751,5 @@ ml <- marrangeGrob(grobs = plots,
 
 print(ml)
 ```
-=======
-# Altura de Planta
->>>>>>> refs/remotes/origin/main
 
-```{R}
-#| message: false
-#| warning: false
-#| echo: false
-
-library(asreml)
-asreml.options(workspace = '1gb', pworkspace = '2gb')
-#fix efffects
-mfPH <- asreml(
-  fixed = PH_R8 ~ env + bloco:env + check,
-  rcov  = ~ units,
-  data  = data
-)
-
-#wald test
-wald(mfPH)
-plot(mfPH)
-
-#random effects
-# efeito de genótipo
-m0PH <- asreml(
-  fixed  = PH_R8 ~ env + bloco:env,
-  random = ~ gen,
-  data   = data
-)
-plot(m0PH)
-
-# interação GxE
-m1PH <- asreml(
-  fixed  = PH_R8 ~ env + bloco:env,
-  random = ~ gen + gen:env,
-  data   = data
-)
-plot(m1PH)
-```
-
-``` {R}
-#| message: false
-#| warning: false
-#| echo: false
-
-#componentes de variância
-summary(mfPH)$varcomp
-summary(m0PH)$varcomp
-summary(m1PH)$varcomp
-```
-
-```{R}
-#| message: false
-#| warning: false
-#| echo: false
-
-#Heritability
-# herdabilidade modelo m0
-vpredict(m0PH, H2 ~ V1/(V1+V2))
-
-# herdabilidade modelo m1
-vpredict(m1PH, H2 ~ V1/(V1+V2))
-```
-
-
-``` {R}
-#| message: false
-#| warning: false
-#| echo: false
-
-library(GGally)
-
-blues_mfPH <- predict(mfPH, classify = "env")
-
-blups_m0PH <- predict(m0PH, classify = "gen")
-
-blups_m1PH <- predict(m1PH, classify = "gen")
-
-blups_m1PH_gxe <- predict(m1PH, classify = "gen:env")
-
-table(blups_m0PH$pvals$status)
-table(blups_m1PH$pvals$status)
-table(blups_m1PH_gxe$pvals$status)
-
-
-aux <- cbind(blups_m0PH$pvals[,2], blups_m1PH$pvals[,2])
-
-colnames(aux) <- c("m0", "m1")
-```
 # Conclusão
