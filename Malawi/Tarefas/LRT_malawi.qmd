@@ -50,7 +50,6 @@ Os dados a seguir são resultantes de ensaios que foram conduzidos com genótipo
 
 Para a análise dos dados em delineamento de blocos casualizados por meio de modelos mistos, foram selecionadas as características produtividade de grãos (GY, kg ha⁻¹) e altura de plantas na maturidade (PH_R8, cm), por serem variáveis de interesse agronômico e frequentemente utilizadas na avaliação do desempenho de genótipos.
 
-## Produtividade
 ```{R}
 #| message: false
 #| warning: false
@@ -71,7 +70,7 @@ library(DT)
 # Carregando os dados
 data = read.csv2("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv")
 
-data <- subset(data, COUNTRY == "Malawi")
+data <- subset(data, COUNTRY == "Malawi")#separando só malawi
 
 data <- data %>%  mutate(
   env = as.factor(env),
@@ -89,46 +88,63 @@ data <- data %>%  mutate(
 data <- droplevels(subset(data, !env %in% c("E249","E250")))
 ```
 
-### Modeling
-Considerando um trial como uma combinação de local, ano e estação, primeiro vamos ajustar o modelos para um trial, o E0137. Sabemos que:
+## Modeling
 
-- Os dados de alguns experimentos (trial) estão desbalanceados;
-
-- Não estamos interessados em fazer uma análise comparativa entre os blocos;
-
-- Queremos estimar a herdabilidade, portanto, precisamos da estimativa da variância genética;
-
-- Podemos considerar blocos e genótipos como uma amostragem de uma população dessas variáveis;
-
-Dessa forma, iremos considerar os blocos e os genótipos como aleatórios.
-
-Assim, o modelo testado é:
+Para ambas as características à serem avaliadas, estamos interessados em analisar os dados de todos os ensaios do conjunto de dados usando um modelo RCBD (*Randomized Complete Blocks Design*).Assim, para cada ensaio, temos o modelo testado será:
 
 $$y_{ij} = \mu + g_i + b_j + \epsilon_{ij}$$
 
 onde tem-se:
 
-- $\mu$ como intercepto;
+- $\mu$: como intercepto;
 
-- $g_i$ efeito aleatório dos genótipos;
+- $g_i$: efeito aleatório de genótipos;
 
-- $g_i$ efeito aleatório dos blocos;
+- $b_j$: efeito fixo de blocos;
 
-- $\epsilon_{ij}$ resíduo.
+- $\epsilon_{ij}$: resíduo aleatório.
 
-Dessa forma, temos que:
+Sabendo que foi avaliado um grande número de genótipos e que um dos objetivos do trabalho é estimar a hedrdabilidade, nosso interesse dentro de cada ambiente é quantificar a proporção da variância fenotípica que é de causa genética, não somente comparar as médias dos genótipos avaliados no experimento. Para isso, é necessário obter uma estimativa da variância genética $(\sigma_g^2)$.Portanto, consideramos o efeito de genótipo como aleatório, assumindo que os genótipos avaliados como uma amostragem de uma população. Assim, os efeitos genotípicos possuem:
 
-- $E(y_{ij}) = \mu$;
+$$
+g_i \sim N(0, I\sigma_g^2)
+$$
+A partir da equação de modelos mistos, podemos estimar os componentes de variância usando REML, para obtenção da variância genética $(\sigma_g^2)$ e da variância residual $(\sigma_e^2)$. Essas estimativas conseguimos calcular o fator de encolhimento (*shrinkage factor*, $\lambda$) dos BLUPs, que nps permitem calcular a herdabilidade, sendo que quanto menor o valor de $\lambda$, maior a herdabilidade:
 
-- $Var(y_{ij}) = \sigma_b^2 + \sigma_g^2 +\sigma_\epsilon^2$;
+$$
+\lambda = \frac{\sigma_e^2}{\sigma_g^2}
+$$
+Contudo, se considerássemos genótipo como efeito fixo, o modelo só me permitiria comparar os genótipos entre eles, mas não decompor a variância o que não me permitiria calcular a herdabilidade, tendo que:
 
-- $Cov(y_{ij}, y_{ij'}) = \sigma_b^2$;
+$$
+g_i \sim N(g, 0)
+$$
+Para efeito de bloco, apesar de não estarmos interessados em comparar os blocos, ele foi considerado como efeito fixo. Isso porque o baixo número de blocos (3 repetições) dificulta a obtenção das estimativas de variância associada a esse fator. Além disso, os dados de alguns experimentos (trial) estão desbalanceados pela ocorrência de algumas parcelas perdidas, reduzindo ainda mais a quantidade de informação para se estimar a variância desse componente. Dessa forma, a modelagem dos blocos como efeitos fixos permite controlar a variabilidade espacial presente no experimento sem a necessidade de estimar uma variância específica para esse fator.
 
-- $Cov(y_{ij}, y_{i'j}) = \sigma_g^2$;
+Assim, de forma matricial temos que:
 
-- $Cov(y_{ij}, y_{i'j'}) = 0$
+$$
+y = \mathbf{1}\mu + Xb + Zg + \varepsilon
+$$
+Onde:
 
-Ajustando o modelo:
+- $$E(y_{ij}) = \mu + b_j$$;
+
+- $$Var(y_{ij}) = \sigma_g^2 +\sigma_\epsilon^2$$;
+
+- $$Cov(y_{ij}, y_{i'j}) = 0$$;
+
+- $$Cov(y_{ij}, y_{ij'}) = \sigma_g^2$$;
+
+- $$Cov(y_{ij}, y_{i'j'}) = 0$$
+
+## Produtividade
+
+### Modeling
+
+Considerando que um *trial* corresponde a uma combinação específica de local, ano e estação, primeiro vamos ajustar e interpretar o modelo para o *trial* "E0137", utilizado como exemplo. Posteriormente, a mesma estratégia de modelagem será aplicada aos demais *trials* avaliados. 
+
+Ajustando o modelo para a variável produtividade:
 ```{R}
 #| message: false
 #| warning: false
@@ -142,6 +158,7 @@ mod = asreml(fixed = GY ~ bloco,
 ```
 
 ### Variance component estimates
+
 ```{R}
 #| message: false
 #| warning: false
@@ -152,23 +169,22 @@ summary(mod)$varcomp
 
 Assim, pelo modelo ajustado temos que:
 
-- $\sigma_b^2 = 472764.49$
+- $\sigma_g^2 = 718014.2$
 
-- $\sigma_g^2 = 71243.13$
-
-- $\sigma_\epsilon^2 = 547348.98$
+- $\sigma_\epsilon^2 = 394787.6$
 
 ### Hypothesis test results
-Nesse teste de hipótese o interesse está em saber se variância dos genótipos é igual a 0. Ou seja:
+
+Assim, para saber se o valor da variância genética ($\sigma_g^2$) estimada acima indica que há diferenças genéticas expressivas entre os genótipos avaliados para produtividade, aplicamos um  teste de hipótese onde o interesse está em saber se variância dos genótipos é igual a 0, ou seja:
 
 $$H_0 \text{:} \ \sigma_g^2 = 0 \ \text{ou} \ H_a \text{:} \ \sigma_g^2 \neq 0$$
 
-Uma forma de se testar isso é pela razão de verossimilhanças (LRT), em que eu testo o modelo completo, com efeito de genótipo, versus o modelo reduzido, sem o efeito de genótipo. Ou seja:
+Uma forma de se testar isso é pela razão de verossimilhanças (LRT), em que testamos o modelo completo, com efeito de genótipo, *versus* o modelo reduzido, sem o efeito de genótipo. Ou seja:
 
-$$\text{Modelo reduzido:} \ y_{ij} = \mu + b_j + \epsilon_{ij}$$ versus
+$$\text{Modelo reduzido:} \ y_{ij} = \mu + b_j + \epsilon_{ij}$$ *versus*
 
 $$\text{Modelo completo:} \ y_{ij} = \mu + g_i + b_j + \epsilon_{ij}$$
-
+Em que:
 $$\text{LR} = -2[\text{log}_R - \text{log}_C]$$
 
 ```{R}
@@ -176,26 +192,31 @@ $$\text{LR} = -2[\text{log}_R - \text{log}_C]$$
 #| warning: false
 #| echo: false
 modred <- asreml(fixed = GY ~ bloco,
-             data = subset(data, env == "E0137"))
+             data = subset(data, env == "E0137")) #removendo efeito de genótipo
 
 logLik_full <- summary(mod)$loglik
+
 logLik_red  <- summary(modred)$loglik
-LR <- 2 * (logLik_full - logLik_red)
+
+LR <- 2 * (logLik_full - logLik_red) #quanto maior o LR, componente genotípico deve permanecer no modelo
+
 pvalor <- 0.5 * pchisq(LR, df = 1, lower.tail = FALSE)
 ```
 
-$$\text{LR} = -2[\text{log}_R - \text{log}_C] = \\
-= -2[(-1063.656) - (-1093.509)] = \\
-\therefore LR = 59.706$$
+$$
+\text{LR} = -2[\text{log}_R - \text{log}_C] = \\
+= -2[(-1080.23) - (-1050.379)] = \\
+\therefore LR = 59.70352
+$$
 
-O *p-valor* para um LR de $59.706$ e $01$ grau de liberdade é $5.513956e-15$.
+O *p-valor* para um LR de $59.70352$ e $01$ grau de liberdade é $5.513956e-15$.
 
 Conferindo pelo `lrt.asreml`:
 ```{r}
 asreml::lrt(mod,modred)
 ```
 
-Portanto, a variância dos genótipos é diferente de 0.
+Portanto, rejeita-se a hipótese nula ($H_0$), ou seja, a variância dos genótipos é diferente de zero, havendo evidências de que há diferenças genéticas entre os genótipos avalidos para produtividade.
 
 ### Broad-sense heritability
 
@@ -204,24 +225,25 @@ Com as variâncias estimadas podemos calcular a herdabilidade no sentido amplo d
 $$H^2 = \frac{\sigma_g^2}{\sigma_g^2 + \sigma_\epsilon^2}$$
 Ou seja,
 
-$$H^2 = \frac{718014.2}{718014.2 + 394787.7} = 0.6452$$
+$$H^2 = \frac{718014.2}{718014.2 + 394787.6} = 0.6452$$
 
 Conferindo com a saída do `asreml`:
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
-
+#| 
 H2 <- vpredict(mod, H2 ~ V1/(V1+V2)); H2
 ```
+Portanto, aproximadamente 64,52% da variação fenotípica observada para produtividade no *trial* E0137 é de causa genotípoca (diferença genética entre os genótipos).
 
 #### Generalized heritability 
 
 Como temos dados perdidos dos blocos, vamos calcular a herdabilidade generalizada pelo método de Cullis et al. (2006):
 
-$$H^2 = 1 - \frac{\bar{\triangle}{BLUP}}{2\sigma_{g}^2}$$
+$$H^2 = 1 - \frac{\bar{SED}^2}{2\sigma_{g}^2}$$
 
-onde $\sigma_{g}^2$ é a variância genética e, $\bar{\triangle}{BLUP}$ é a variância do erro médio de predição entre genótipos. 
+onde $\sigma_{g}^2$ é a variância genética e, $\bar{SED}^2$ é a variância do erro médio de predição entre genótipos. 
 
 Assim temos:
 
@@ -236,8 +258,17 @@ mvd = mean(((predict.asreml(mod,classify = "gen",sed = T)$sed)^2)[
 her = 1-(mvd/(2*summary(mod)$varcomp["gen","component"])); her
 ```
 
-### Coefficient of experimental variation
-Como consideramos os genótipos como efeitos aleatórios podemos estimar seus coeficientes de variação:
+Portanto, de acordo com a herdabilidade de Cullis, aproximadamente 82,79% da variação fenotípica observada para produtividade no *trial* E0137 é de causa genotípoca (diferença genética entre os genótipos).
+
+A diferença observada entre a herdabilidade clássica ($H^2=0,6452$) e a herdabilidade generalizada de Cullis ($H^2=0,8279$) está relacionada ao desbalanceamento dos dados, resultado da perda de parcelas experimentais.
+
+O cálcula da herdabilidade clássica, calculada com base nos componentes de variância estimados no modelo ($\sigma_g^2$ e $\sigma_\epsilon^2$), pressupõe que todos os genótipos possuem a mesma quantidade de informação, entretanto, coma perca das parcelas, alguns genótipos passam a ter menos observações que outros.Nessa situação, em que há um desbalanceamento dos dados, a herdabilidade generalizada de Cullis torna-se mais apropriada, pois considera a variância do erro de predição dos BLUPs (*standard error of difference* - SED).
+
+Assim, o valor de 82,79% indica que a maior parte da variação observada corresponde a diferenças genéticas (variação genotípica), evidenciando que o experimento conseguiu discriminar os genótipos.
+
+### BLUPs (Best Linear Unbiased Predictions)
+
+Como os genótipos foram modelados como efeitos aleatórios, suas estimativas foram obtidas por meio dos BLUPs (Best Linear Unbiased Predictions):
 
 ```{r}
 #| message: false
@@ -248,6 +279,7 @@ mod$coefficients$random[grep("^gen", rownames(mod$coefficients$random)),"effect"
 ```
 
 ### Selection candidates' BLUPs 
+
 Com o modelo ajustado e os valores preditos podemos selecionar os genótipos com maiores BLUPs:
 
 ```{r}
@@ -262,10 +294,11 @@ head(pred$pvals |>
   mutate(Rank = row_number()) |>
   select(Rank, gen, predicted.value))
 ```
+Portanto, no *trial* E0137 , os genótipos G056, G032 e G075 apresentaram maiores valores genotípicos preditos, indicando maior potencial produtivo em relação aos demais enótipos avaliados.
 
-### Ranking trial E00138
+### Ranking trial E00137
 
-Também podemos visualizar o ranqueamento dos genótipos através do gráfico:
+Também podemos visualizar o ranqueamento dos genótipos através do gráfico a seguir, que confirma que os genótipos G056, G032 e G075 apresentaram maiores valores genotípicos preditos no no *trial* E0137.
 
 ```{r}
 #| message: false
@@ -292,21 +325,24 @@ ggplot(data = pred$pvals, aes(x = reorder(gen, -predicted.value), y = predicted.
 ```
 
 ### Reliabilities
+
 Por fim, podemos também estimar a confiabilidade do modelo através:
 
-$$R = \frac{\text{Erro padrão}^2}{\sigma_g^2}$$
+$$r_i^2 = 1 - \frac{\text{PEV}_i}{\sigma_g^2}$$
 
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 
-reliability = mean(pred$pvals$std.error^2/summary(mod)$varcomp[2,1]); reliability
+reliability = mean(1 - pred$pvals$std.error^2/summary(mod)$varcomp[2,1]); reliability
 ```
-
-Agora fazendo o mesmo para todos os experimentos:
+A confiabilidade (*reliabilities*) mede o quanto o BLUP estimado para um genótipo se aproxima do seu valor genétic verdadeiro. Nesse caso, o $r_i^2$ indica que 68,6% da variação dos valores genéticos verdadeiros foi capturada pelas predições obtidas do modelo.
 
 ### Rankings between trials
+
+Agora, após a descrição detalhada de modelagem para o *trial* E0137, a mesma abordagem foi aplicada a todos os demais *trials* para a característica de produtividade.
+
 ```{r}
 #| message: false
 #| warning: false
@@ -477,6 +513,7 @@ tab_res |>
   kable_styling(full_width = FALSE, position = "center")
 ```
 
+No gráfico a seguir observamos uma variação do ranking (posição) dos 20 genótipos com maior BLUP médio entre as diferentes *trials*. A alteração na classificação dos genótipos indica a presença de interação genótipo x ambiente.
 
 ```{r}
 #| message: false
@@ -505,8 +542,7 @@ ggplot(filter(blups_all, gen %in% top20),
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-Por esse gráfico podemos ver que a posição de genótipo no rank depende do experimento.
-
+Os gráficos a seguir mostram de outra forma que a posição de cada genótipo no rank depende do *trial*, ou seja, apresentam os valores genotípicos preditos (BLUPs) dos genótipos para cada *trial*. Observa-se variação na amplitude dos BLUPs entre os ambientes, indicando diferenças na expressão da variabilidade genética por *trial*, sendo mais um indicío da existência de interação genótipo x ambiente, assim como no gráfico anterior.
 ```{r}
 #| message: false
 #| warning: false
@@ -529,10 +565,214 @@ ml <- marrangeGrob(grobs = plots,
 print(ml)
 ```
 
-Aqui um genótipo foi colorido apenas para mostrar de outra forma que a posição de genótipo no rank depende do experimento.
-
 
 ## Altura de Planta
+
+### Modeling
+
+Considerando que um *trial* corresponde a uma combinação específica de local, ano e estação, primeiro vamos ajustar e interpretar o modelo para o *trial* "E0137", utilizado como exemplo. Posteriormente, a mesma estratégia de modelagem será aplicada aos demais *trials* avaliados. 
+
+Ajustando o modelo para a variável altura de planta:
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+
+asreml.options(workspace = '1gb', pworkspace = '2gb')
+
+mod = asreml(fixed = PH_R8 ~ bloco,
+             random = ~ gen,
+             data = subset(data, env == "E0137"))
+```
+### Variance component estimates
+
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+
+summary(mod)$varcomp
+```
+Assim, pelo modelo ajustado temos que:
+
+- $\sigma_g^2 = 271.18443$
+
+- $\sigma_\epsilon^2 = 21.25187	$
+
+### Hypothesis test results
+
+Assim, para saber se o valor da variância genética ($\sigma_g^2$) estimada acima indica que há diferenças genéticas expressivas entre os genótipos avaliados para altura de planta, aplicamos um  teste de hipótese onde o interesse está em saber se variância dos genótipos é igual a 0, ou seja:
+
+$$H_0 \text{:} \ \sigma_g^2 = 0 \ \text{ou} \ H_a \text{:} \ \sigma_g^2 \neq 0$$
+Uma forma de se testar isso é pela razão de verossimilhanças (LRT), em que testamos o modelo completo, com efeito de genótipo, *versus* o modelo reduzido, sem o efeito de genótipo. Ou seja:
+
+$$\text{Modelo reduzido:} \ y_{ij} = \mu + b_j + \epsilon_{ij}$$ *versus*
+
+$$\text{Modelo completo:} \ y_{ij} = \mu + g_i + b_j + \epsilon_{ij}$$
+Em que:
+$$\text{LR} = -2[\text{log}_R - \text{log}_C]$$
+
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+modred <- asreml(fixed = PH_R8 ~ bloco,
+             data = subset(data, env == "E0137")) #removendo efeito de genótipo
+
+logLik_full <- summary(mod)$loglik
+
+logLik_red  <- summary(modred)$loglik
+
+LR <- 2 * (logLik_full - logLik_red) #quanto maior o LR, componente genotípico deve permanecer no modelo
+
+pvalor <- 0.5 * pchisq(LR, df = 1, lower.tail = FALSE)
+```
+$$
+\text{LR} = -2[\text{log}_R - \text{log}_C] = \\
+= -2[(-393.9496) - (-496.7186)] = \\
+\therefore LR = 205.538
+$$
+
+O *p-valor* para um LR de $205.538$ e $01$ grau de liberdade é $6.462103e-47$.
+
+Conferindo pelo `lrt.asreml`:
+```{r}
+asreml::lrt(mod,modred)
+```
+
+Portanto, rejeita-se a hipótese nula ($H_0$), ou seja, a variância dos genótipos é diferente de zero, havendo evidências de que há diferenças genéticas entre os genótipos avalidos para altura de planta.
+
+### Broad-sense heritability
+
+Com as variâncias estimadas podemos calcular a herdabilidade no sentido amplo da seguinte forma:
+
+$$H^2 = \frac{\sigma_g^2}{\sigma_g^2 + \sigma_\epsilon^2}$$
+Ou seja,
+
+$$H^2 = \frac{271.18443}{271.18443 + 21.25187} = 0.9273282$$
+
+Conferindo com a saída do `asreml`:
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| 
+H2 <- vpredict(mod, H2 ~ V1/(V1+V2)); H2
+```
+
+Portanto, aproximadamente 92,73% da variação fenotípica observada para altura de planta no *trial* E0137 é de causa genotípoca (diferença genética entre os genótipos).
+
+#### Generalized heritability 
+
+Como temos dados perdidos dos blocos, vamos calcular a herdabilidade generalizada pelo método de Cullis et al. (2006):
+
+$$H^2 = 1 - \frac{\bar{SED}^2}{2\sigma_{g}^2}$$
+
+onde $\sigma_{g}^2$ é a variância genética e, $\bar{SED}^2$ é a variância do erro médio de predição entre genótipos. 
+
+Assim temos:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+mvd = mean(((predict.asreml(mod,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(mod,classify = "gen",sed = T)$sed)^2,diag=F)])
+
+her = 1-(mvd/(2*summary(mod)$varcomp["gen","component"])); her
+```
+
+Portanto, de acordo com a herdabilidade de Cullis, aproximadamente 97,45% da variação fenotípica observada para produtividade no *trial* E0137 é de causa genotípoca (diferença genética entre os genótipos).
+
+A diferença observada entre a herdabilidade clássica ($H^2=0.9273282$) e a herdabilidade generalizada de Cullis ($H^2=0.9745429$) está relacionada ao desbalanceamento dos dados, resultado da perda de parcelas experimentais, assim como descrito/justificado para a variável produtividade anteriormente.
+
+##### Heritability: produtividade *vs* altura de planta
+
+Observa-se que as duas estimativas de herdabilidade para altura de planta são substancialmente maiores do que as obtidas para produtividade. Isso indica que a maior parte da variação fenotípica observada para altura de planta é de origem genética, havendo menor influência de fatores ambientais quando comparado à produtividade.
+
+Além disso, a diferença entre a herdabilidade clássica e a herdabilidade de Cullis para altura de planta foi pequena (aproximadamente 0,05), enquanto para produtividade essa diferença foi maior (aproximadamente 0,18). Assim, mesmo diante do desbalanceamento causado pela perda de parcelas, a classificação dos genótipos para altura de planta foi pouco afetada.
+
+Portanto, esses resultados indicam que a altura de planta apresenta controle genético mais forte e maior estabilidade de expressão que a produtividade, tornando a identificação e seleção de genótipos superiores para essa característica mais eficiente. No entanto, a produtividade é um caráter mais complexo, fortemente influenciado pelo ambiente e pela interação genótipo x ambiente, o que leva a redução da herdabilidade e a precisão da seleção quando avaliada em um único ambiente.
+
+### BLUPs (Best Linear Unbiased Predictions)
+
+Como os genótipos foram modelados como efeitos aleatórios, suas estimativas foram obtidas por meio dos BLUPs (Best Linear Unbiased Predictions):
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+mod$coefficients$random[grep("^gen", rownames(mod$coefficients$random)),"effect"]
+```
+
+### Selection candidates' BLUPs 
+
+Com o modelo ajustado e os valores preditos podemos selecionar os genótipos com maiores BLUPs:
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+pred <- predict.asreml(object = mod, classify = "gen")
+
+head(pred$pvals |>
+  arrange(desc(predicted.value)) |>
+  mutate(Rank = row_number()) |>
+  select(Rank, gen, predicted.value))
+```
+
+Portanto, no *trial* E0137 , o genótipo G007 apresentou maior valor genotípico predito, indicando maior altura de planta entre os materiais avaliados. Contudo, é importante ressaltar que na prática nem sempre a maior altura de planta é o desejado, pois pode levar ao acamamento. Portanto, os BLUPs permitem identificar os genótipos com maior valor genético para altura de planta, mas a decisão de seleção deve considerar o fenótipo desejado para o programa de melhoramento.
+
+### Ranking trial E00137
+
+Também podemos visualizar o ranqueamento dos genótipos através do gráfico a seguir, que confirma que os genótipos G007, G145 e G095 apresentaram maiores valores genotípicos preditos no no *trial* E0137 para altura de planta.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+pred$pvals <- pred$pvals |>
+  mutate(destaque = ifelse(gen == "G101", "G101", "Outros"))
+
+ggplot(data = pred$pvals, aes(x = reorder(gen, -predicted.value), y = predicted.value, fill = destaque)) +
+  geom_col(color = "white") + 
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1, colour = "gray30"),
+        axis.text.y = element_text(colour = "gray30"),
+        text = element_text(size = 16),
+        plot.tag = element_text(size = 10, face = "bold", colour = "darkred"),
+        legend.position = "none",
+        plot.tag.location = "plot") +
+  geom_errorbar(aes(ymin = predicted.value - std.error, ymax = predicted.value + std.error)) +
+  scale_fill_manual(values = c("G101" = "#b2bc63", "Outros" = "#10342d")) +
+  labs(x = "Genótipo",
+       y = "BLUP",
+       tag = "E0138")
+```
+
+### Reliabilities
+
+Por fim, podemos também estimar a confiabilidade do modelo através:
+
+$$r_i^2 = 1 - \frac{\text{PEV}_i}{\sigma_g^2}$$
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+reliability = mean(1 - pred$pvals$std.error^2/summary(mod)$varcomp[2,1]); reliability
+```
+A confiabilidade (*reliabilities*) mede o quanto o BLUP estimado para um genótipo se aproxima do seu valor genétic verdadeiro. Nesse caso, o $r_i^2$ indica que 67,5% da variação dos valores genéticos verdadeiros foi capturada pelas predições obtidas do modelo.
+
+### Rankings between trials
+
+Agora, após a descrição detalhada de modelagem para o *trial* E0137, a mesma abordagem foi aplicada a todos os demais *trials* para a característica de altura de planta.
+
 ```{r}
 #| message: false
 #| warning: false
@@ -658,12 +898,10 @@ for(e in envs){
 }
 ```
 
-
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
-
 
 tab_res <- purrr::map_dfr(names(resultados), function(e){
 
@@ -703,6 +941,7 @@ tab_res |>
   kable_styling(full_width = FALSE, position = "center")
 ```
 
+No gráfico a seguir observamos uma variação do ranking (posição) dos 20 genótipos com maior BLUP médio entre as diferentes *trials*. A alteração na classificação dos genótipos indica a presença de interação genótipo x ambiente.
 ```{r}
 #| message: false
 #| warning: false
@@ -730,6 +969,7 @@ ggplot(filter(blups_all, gen %in% top20),
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+Os gráficos a seguir mostram de outra forma que a posição de cada genótipo no rank depende do *trial*, ou seja, apresentam os valores genotípicos preditos (BLUPs) dos genótipos para cada *trial*. Observa-se variação na amplitude dos BLUPs entre os ambientes, indicando diferenças na expressão da variabilidade genética por *trial*, sendo mais um indicío da existência de interação genótipo x ambiente, assim como no gráfico anterior.
 ```{r}
 #| message: false
 #| warning: false
@@ -753,3 +993,11 @@ print(ml)
 ```
 
 # Conclusão
+
+Os modelos mistos permitiram estimar adequadamente os componentes de variância, os valores genotípicos preditos (BLUPs) e os parâmetros genéticos dos diferentes *trials*, mesmo na presença de desbalanceamento decorrente da perda de parcelas experimentais.
+
+Para produtividade de grãos, foi detectada variabilidade genética significativa entre os genótipos avaliados. A herdabilidade generalizada de Cullis mostrou-se mais adequada para a interpretação dos resultados, uma vez que considera a precisão das predições em situações de desbalanceamento. Os BLUPs permitiram identificar os genótipos com maior potencial produtivo em cada ambiente e evidenciaram alterações na classificação dos materiais entre os *trials*, indicando a presença de interação genótipo x ambiente.
+
+Para altura de planta, as estimativas de herdabilidade foram superiores às observadas para produtividade, demonstrando maior controle genético e menor influência relativa dos efeitos ambientais sobre esse caráter. Além disso, a pequena diferença entre a herdabilidade clássica e a herdabilidade de Cullis sugere que o desbalanceamento teve impacto reduzido sobre a precisão das estimativas para essa variável.
+
+Em conjunto, os resultados demonstram que os dados avaliados apresentam variabilidade genética suficiente para a seleção, que os modelos mistos constituem uma ferramenta eficiente para a análise de ensaios desbalanceados e que os BLUPs fornecem estimativas confiáveis para o ranqueamento e a seleção de genótipos superiores.
