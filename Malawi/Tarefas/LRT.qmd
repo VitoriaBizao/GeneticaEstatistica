@@ -194,7 +194,7 @@ O *p-valor* para um LR de $59.706$ e $01$ grau de liberdade é $5.506818e-15$.
 
 Conferindo pelo `lrt.asreml`:
 ```{r}
-lrt.asreml(mod, modred)
+lrt(mod, modred)
 ```
 
 Portanto, a variância dos genótipos é diferente de 0.
@@ -785,6 +785,14 @@ ml <- marrangeGrob(grobs = plots,
 
 print(ml)
 ```
+
+```{R}
+mGY <- asreml(
+  fixed  = GY ~ env + bloco:env,
+  random = ~ gen:env,
+  data   = data)
+
+```
 =======
 # Altura de Planta
 >>>>>>> refs/remotes/origin/main
@@ -817,11 +825,7 @@ m0PH <- asreml(
 plot(m0PH)
 
 # interação GxE
-m1PH <- asreml(
-  fixed  = PH_R8 ~ env + bloco:env,
-  random = ~ gen + gen:env,
-  data   = data
-)
+
 plot(m1PH)
 ```
 

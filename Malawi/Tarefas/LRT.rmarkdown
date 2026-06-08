@@ -1,0 +1,881 @@
+---
+title: "Data analysis of your dataset"
+author: 
+  - name: "Grupo 3 (Malawi): Juliana Oliveira, Pedro H. de Araujo e Vitória Murakami"
+    affiliation:
+      - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
+        city: Piracicaba, São Paulo, Brazil
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML
+    code-fold: true        # Esconde o código 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+<<<<<<< HEAD
+# Data analysis
+**Choose two traits. Perform data analysis of all trials in your dataset using a RCBD model. Justify your choice in using the treatment and the block effects as fixed or random. Report the variance component estimates, the hypothesis test results, the broad-sense heritability, the coefficient of experimental variation, and the selection candidates' BLUPs and reliabilities. Finally, compare the rankings between trials and speculate the reasons why they are different/similar. This task must be carried out within groups.**
+=======
+# Introdução
+
+A modelagem correta é fundamental para a acurácia e precisão dos métodos estatisticos, sobretudo quando trabalhamos com modelos mistos, pois eles envolvem a divisão dos efeitos em fixos e aleatórios, não existindo regra geral para definição dos fatores experimentais em um ou outro. Dessa forma, é importante que o pesquisador tenha conhecimentos em delineamentos experimentais, entenda bem os objetivos que pretende satisfazer com a analise, e tenha bom domínio na estatistica, sobretudo a de modelos lineares, de forma a minimizar os erros e melhorar a qualidade das inferências. Nessa etapa, é importante avaliar a significância dos efeitos, observar o comportamento dos resíduos e sua distribuição.  
+
+Entre os principais testes utilizados em modelos mistos destaca-se o teste da razão de verossimilhança (Likelihood Ratio Test – LRT), amplamente empregado para comparar modelos aninhados, especialmente na avaliação da significância de efeitos aleatórios. O LRT baseia-se na diferença entre os valores de log-verossimilhança de dois modelos, sendo um completo e outro reduzido. Caso a remoção de determinado efeito provoque redução significativa na verossimilhança do modelo, conclui-se que esse efeito contribui de maneira importante para explicar a variabilidade dos dados. Esse teste é particularmente útil na seleção de componentes de variância, estruturas de covariância residual e modelos de interação genótipo × ambiente.
+
+Para os efeitos fixos, um dos testes mais utilizados é o teste de Wald, que avalia se os parâmetros estimados diferem significativamente de zero. O teste de Wald considera a razão entre a estimativa do parâmetro e seu erro padrão, permitindo verificar a relevância estatística dos efeitos fixos presentes no modelo. Em experimentos agrícolas, esse teste é frequentemente empregado para avaliar fatores como ambientes, tratamentos, manejos ou covariáveis. Apesar de sua ampla utilização, os resultados devem ser interpretados com cautela, principalmente em situações com pequeno número de observações ou modelos muito complexos, nas quais aproximações assintóticas podem comprometer a precisão das inferências.
+
+Além dos testes estatísticos, ferramentas gráficas desempenham papel essencial na avaliação da qualidade dos modelos mistos. A análise de resíduos, por exemplo, permite verificar pressupostos como normalidade, homogeneidade de variâncias e independência dos erros. Gráficos de resíduos versus valores ajustados podem indicar heterocedasticidade ou padrões sistemáticos não capturados pelo modelo, enquanto gráficos Q-Q auxiliam na identificação de desvios da normalidade. Da mesma forma, plots de BLUPs e valores preditos podem evidenciar comportamentos atípicos, estimativas excessivamente influenciadas por poucos dados ou problemas de convergência.
+
+# Desenvolvimento
+
+# Produtividade
+>>>>>>> refs/remotes/origin/main
+
+## Produtividade
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+#| include: false
+
+# Carregando as bibliotecas
+library(dplyr)
+library(asreml)
+library(ggplot2)
+library(tidyverse)
+library(ggtext)
+library(purrr)
+library(tibble)
+library(kableExtra)
+library(DT)
+
+# Carregando os dados
+data = read.csv2("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv")
+
+data <- subset(data, COUNTRY == "Malawi")
+
+data <- data %>%  mutate(
+  env = as.factor(env),
+  gen = as.factor(gen),
+  bloco = as.factor(rep),
+  check = as.factor(check),
+  SEASON = as.factor(SEASON),
+  YEAR = as.factor(YEAR),
+  loc = as.factor(loc),
+  RAINFED = as.factor(RAINFED),
+  GY = as.numeric(GY),
+  PH_R8 = as.numeric(PH_R8),
+  W100G = as.numeric(W100G))
+
+data <- droplevels(subset(data, !env %in% c("E249","E250")))
+```
+
+### Modeling
+Considerando um trial como uma combinação de local, ano e estação, primeiro vamos ajustar o modelos para um trial, o E0137. Sabemos que:
+
+- Os dados de alguns experimentos (trial) estão desbalanceados;
+
+- Não estamos interessados em fazer uma análise comparativa entre os blocos;
+
+- Queremos estimar a herdabilidade, portanto, precisamos da estimativa da variância genética;
+
+- Podemos considerar blocos e genótipos como uma amostragem de uma população dessas variáveis;
+
+Dessa forma, iremos considerar os blocos e os genótipos como aleatórios.
+
+Assim, o modelo testado é:
+
+$$y_{ij} = \mu + g_i + b_j + \epsilon_{ij}$$
+
+onde tem-se:
+
+- $\mu$ como intercepto;
+
+- $g_i$ efeito aleatório dos genótipos;
+
+- $g_i$ efeito aleatório dos blocos;
+
+- $\epsilon_{ij}$ resíduo.
+
+Dessa forma, temos que:
+
+- $E(y_{ij}) = \mu$;
+
+- $Var(y_{ij}) = \sigma_b^2 + \sigma_g^2 +\sigma_\epsilon^2$;
+
+- $Cov(y_{ij}, y_{ij'}) = \sigma_b^2$;
+
+- $Cov(y_{ij}, y_{i'j}) = \sigma_g^2$;
+
+- $Cov(y_{ij}, y_{i'j'}) = 0$
+
+Ajustando o modelo:
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+
+asreml.options(workspace = '1gb', pworkspace = '2gb')
+
+mod = asreml(fixed = GY ~ 1,
+             random = ~ gen + bloco,
+             data = subset(data, env == "E0137"))
+```
+
+### Variance component estimates
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+
+summary(mod)$varcomp
+```
+
+Assim, pelo modelo ajustado temos que:
+
+- $\sigma_b^2 = 472764.49$
+
+- $\sigma_g^2 = 71243.13$
+
+- $\sigma_\epsilon^2 = 547348.98$
+
+### Hypothesis test results
+Nesse teste de hipótese o interesse está em saber se variância dos genótipos é igual a 0. Ou seja:
+
+$$H_0 \text{:} \ \sigma_g^2 = 0 \ \text{ou} \ H_a \text{:} \ \sigma_g^2 \neq 0$$
+
+Uma forma de se testar isso é pela razão de verossimilhanças (LRT), em que eu testo o modelo completo, com efeito de genótipo, versus o modelo reduzido, sem o efeito de genótipo. Ou seja:
+
+$$\text{Modelo reduzido:} \ y_{ij} = \mu + b_j + \epsilon_{ij}$$ versus
+
+$$\text{Modelo completo:} \ y_{ij} = \mu + g_i + b_j + \epsilon_{ij}$$
+
+$$\text{LR} = -2[\text{log}_R - \text{log}_C]$$
+
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+modred <- asreml(fixed = GY ~ 1,
+             random = ~ bloco,
+             data = subset(data, env == "E0137"))
+
+logLik_full <- summary(mod)$loglik
+logLik_red  <- summary(modred)$loglik
+LR <- 2 * (logLik_full - logLik_red)
+pvalor <- 0.5 * pchisq(LR, df = 1, lower.tail = FALSE)
+```
+
+$$\text{LR} = -2[\text{log}_R - \text{log}_C] = \\
+= -2[(-1063.656) - (-1093.509)] = \\
+\therefore LR = 59.706$$
+
+O *p-valor* para um LR de $59.706$ e $01$ grau de liberdade é $5.506818e-15$.
+
+Conferindo pelo `lrt.asreml`:
+```{r}
+lrt(mod, modred)
+```
+
+Portanto, a variância dos genótipos é diferente de 0.
+
+### Broad-sense heritability
+
+Com as variâncias estimadas podemos calcular a herdabilidade no sentido amplo da seguinte forma:
+
+$$H^2 = \frac{\sigma_g^2}{\sigma_g^2 + \sigma_\epsilon^2}$$
+Ou seja,
+
+$$H^2 = \frac{718014.2}{718014.2 + 394787.7} = 0.6452$$
+
+Conferindo com a saída do `asreml`:
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+H2 <- vpredict(mod, H2 ~ V2/(V2+V3)); H2
+```
+
+### Coefficient of experimental variation
+Conseguimos também estimar o coeficiente dos blocos, que é de onde vem a variação experimental:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+mod$coefficients$random[grep("^bloco", rownames(mod$coefficients$random)),"effect"]
+```
+
+### Selection candidates' BLUPs 
+Com o modelo ajustado e os valores preditos podemos selecionar os genótipos com maiores BLUPs:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+pred <- predict.asreml(object = mod, classify = "gen")
+
+head(pred$pvals |>
+  arrange(desc(predicted.value)) |>
+  mutate(Rank = row_number()) |>
+  select(Rank, gen, predicted.value))
+```
+
+### Ranking trial E00138
+
+Também podemos visualizar o ranqueamento dos genótipos através do gráfico:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+pred$pvals <- pred$pvals |>
+  mutate(destaque = ifelse(gen == "G101", "G101", "Outros"))
+
+ggplot(data = pred$pvals, aes(x = reorder(gen, -predicted.value), y = predicted.value, fill = destaque)) +
+  geom_col(color = "white") + 
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1, colour = "gray30"),
+        axis.text.y = element_text(colour = "gray30"),
+        text = element_text(size = 16),
+        plot.tag = element_text(size = 10, face = "bold", colour = "darkred"),
+        legend.position = "none",
+        plot.tag.location = "plot") +
+  geom_errorbar(aes(ymin = predicted.value - std.error, ymax = predicted.value + std.error)) +
+  scale_fill_manual(values = c("G101" = "#b2bc63", "Outros" = "#10342d")) +
+  labs(x = "Genótipo",
+       y = "BLUP",
+       tag = "E0138")
+```
+
+### Reliabilities
+Por fim, podemos também estimar a confiabilidade do modelo através:
+
+$$R = \frac{\text{Erro padrão}^2}{\sigma_g^2}$$
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+reliability = mean(pred$pvals$std.error^2/summary(mod)$varcomp[2,1]); reliability
+```
+
+Agora fazendo o mesmo para todos os experimentos:
+
+### Rankings between trials
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| results: hide
+
+# Ambientes
+envs <- levels(data$env)
+
+# Lista para armazenar tudo
+resultados <- vector("list", length(envs))
+names(resultados) <- envs
+
+for(e in envs){
+  
+  dados_env <- subset(data, env == e)
+  
+  # Verifica se há dados suficientes
+  if(nrow(dados_env) < 5) next
+  
+  # Modelo completo
+  mod <- try(asreml(fixed = GY ~ 1,
+                    random = ~ gen + bloco,
+                    data = dados_env),
+             silent = TRUE)
+  
+  if(inherits(mod, "try-error")) next
+  
+  # Modelo reduzido
+  modred <- try(asreml(fixed = GY ~ 1,
+                       random = ~ bloco,
+                       data = dados_env),
+                silent = TRUE)
+  
+  #----------------------------------#
+  # Variâncias
+  #----------------------------------#
+  varcomp <- summary(mod)$varcomp
+  
+  #----------------------------------#
+  # LRT
+  #----------------------------------#
+  lrt <- try(lrt.asreml(mod, modred), silent = TRUE)
+  
+  signif_gen <- NA
+  if(!inherits(lrt, "try-error")){
+
+  pvalor <- lrt$`Pr(Chisq)`
+
+  signif_gen <- ifelse(
+    is.na(pvalor),
+    NA,
+    ifelse(pvalor < 0.05, "Sim", "Não"))
+}
+  
+  #----------------------------------#
+  # Herdabilidade
+  #----------------------------------#
+  H2 <- try(vpredict(mod, H2 ~ V2/(V2+V3)), silent = TRUE)
+  
+  #----------------------------------#
+  # Efeitos de bloco
+  #----------------------------------#
+  expvar <- try(mod$coefficients$random[grep("^bloco", rownames(mod$coefficients$random)), "effect"],
+                silent = TRUE)
+  
+  #----------------------------------#
+  # BLUPs
+  #----------------------------------#
+  pred <- try( predict.asreml(mod, classify = "gen"),
+    silent = TRUE)
+  
+  if(inherits(pred, "try-error")) next
+  
+  blups <- pred$pvals |>
+    arrange(desc(predicted.value)) |>
+    mutate(rank = row_number()) |>
+    select(rank, gen, predicted.value, std.error)
+  
+  #----------------------------------#
+  # Reliability
+  #----------------------------------#
+  reliability <- mean(pred$pvals$std.error^2 /
+    summary(mod)$varcomp[2,1])
+  
+  #----------------------------------#
+  # Gráfico dos BLUPs
+  #----------------------------------#
+  pred$pvals <- pred$pvals |>
+  mutate(destaque = ifelse(gen == "G101", "G101", "Outros"))
+
+  g_blup <- ggplot(data = pred$pvals, aes(x = reorder(gen, -predicted.value),
+                                          y = predicted.value,
+                                          fill = destaque)) +
+  geom_col(color = "white") + 
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1, colour = "gray30"),
+        axis.text.y = element_text(colour = "gray30"),
+        text = element_text(size = 10),
+        plot.tag = element_text(size = 8, face = "bold", colour = "darkred"),
+        legend.position = "none",
+        plot.tag.location = "plot") +
+  geom_errorbar(aes(ymin = predicted.value - std.error,
+                    ymax = predicted.value + std.error)) +
+  scale_fill_manual(values = c("G101" = "#b2bc63", "Outros" = "#10342d")) +
+  labs(x = "",
+       y = "",
+       tag = e)
+
+  #----------------------------------#
+  # Salvar tudo
+  #----------------------------------#
+  resultados[[e]] <- list(model = mod,
+                          varcomp = varcomp,
+                          lrt = lrt,
+                          significativo = signif_gen,
+                          H2 = H2,
+                          bloco = expvar,
+                          blups = blups,
+                          reliability = reliability,
+                          plot_blup = g_blup)
+}
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+tab_res <- map_dfr(names(resultados), function(e){
+
+  x <- resultados[[e]]
+
+  if(is.null(x)) return(NULL)
+
+  tibble(
+    Trial = e,
+
+    Bloco = x$varcomp$component[1],
+    Genotipo = x$varcomp$component[2],
+    Residuo = x$varcomp$component[3],
+
+    LRT = x$significativo,
+
+    H2 = x$H2$Estimate[1],
+    H2_SE = x$H2$SE[1],
+
+    Bloco1 = x$bloco[1],
+    Bloco2 = x$bloco[2],
+    Bloco3 = x$bloco[3],
+
+    Reliability = x$reliability)
+})
+
+tab_res |>
+  kbl(digits = 3,
+      align = "c",
+      escape = FALSE,
+      booktabs = TRUE,
+      caption = "Resultado de todos os experimentos (trials)",
+      col.names = c("Trial", "Bloco", "Genótipo",
+                    "$\\epsilon$", "LRT", "$H^2$",
+                    "SE", "Bloco 1", "Bloco 2",
+                    "Bloco 3", "Reliability")) |>
+  add_header_above(c(" " = 1, "Componente de variância" = 3,
+                     " " = 1, "Herdabilidade" = 2,
+                     "Variância esperada" = 3,
+                     " " = 1)) |>
+  kable_styling(full_width = FALSE, position = "center")
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+blups_all <- bind_rows(
+  lapply(names(resultados), function(e){
+    resultados[[e]]$blups |>
+      mutate(env = e)
+    }))
+
+top20 <- blups_all |>
+  group_by(gen) |>
+  summarise(mean_blup = mean(predicted.value)) |>
+  arrange(desc(mean_blup)) |>
+  slice(1:20) |>
+  pull(gen)
+
+ggplot(filter(blups_all, gen %in% top20),
+       aes(x = env, y = rank, group = gen, color = gen)) +
+  geom_line(linewidth = .8) +
+  geom_point() +
+  scale_y_reverse() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Por esse gráfico podemos ver que a posição de genótipo no rank depende do experimento.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(gridExtra)
+
+plots <- lapply(resultados, `[[`, "plot_blup")
+plots <- Filter(Negate(is.null), plots)
+
+ml <- marrangeGrob(grobs = plots,
+                   nrow = 2,
+                   ncol = 3,
+                   left = grid::textGrob("BLUP",
+                                          rot = 90,
+                                          gp = grid::gpar(fontsize = 12, fontface = "bold")),
+                   bottom = grid::textGrob("Genótipo",
+                                            gp = grid::gpar(fontsize = 12, fontface = "bold")))
+
+print(ml)
+```
+
+Aqui um genótipo foi colorido apenas para mostrar de outra forma que a posição de genótipo no rank depende do experimento.
+
+### Análise conjunta
+Podemos também analisar todos os trials conjuntamente. Assim, nosso modelo fica:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+mfGY <-  asreml(fixed = GY ~ env,
+                rcov  = ~ bloco:env,
+                data  = data)
+wald(mfGY)
+plot(mfGY)
+
+#testing for randomm efects
+#gen
+m0GY <-  asreml(fixed  = GY ~ env,
+                random = ~ gen + gen:env + env:bloco,
+                data = data)
+
+wald(m0GY)
+plot(m0GY)
+
+#gxe interaction
+m1GY <- asreml(fixed  = GY ~ 1,
+               random = ~ gen + env + gen:env + env:bloco,
+               data = data)
+
+plot(m1GY)
+```
+
+```{R ERRO}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(GGally)
+blues_mf <- predict(mfGY, classify = 'env')
+blups_m0 <- predict(m0GY, classify = "gen")
+blups_m1 <- predict(m1GY, classify = "gen")
+
+table(blups_m0$pvals$status)
+table(blups_m1$pvals$status)
+
+
+aux = cbind(blups_m0$pvals[,2], blups_m1$pvals[,2])
+colnames(aux) = c("mod2", "mod3")
+
+GGally::ggpairs(data = aux) + theme(text = element_text(size = 20))
+```
+
+<<<<<<< HEAD
+## Altura de Planta
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| results: hide
+
+# Ambientes
+envs <- levels(data$env)
+
+# Lista para armazenar tudo
+resultados <- vector("list", length(envs))
+names(resultados) <- envs
+
+for(e in envs){
+  
+  dados_env <- subset(data, env == e)
+  
+  # Verifica se há dados suficientes
+  if(nrow(dados_env) < 5) next
+  
+  # Modelo completo
+  mod <- try(asreml(fixed = PH_R8 ~ 1,
+                    random = ~ gen + bloco,
+                    data = dados_env),
+             silent = TRUE)
+  
+  if(inherits(mod, "try-error")) next
+  
+  # Modelo reduzido
+  modred <- try(asreml(fixed = PH_R8 ~ 1,
+                       random = ~ bloco,
+                       data = dados_env),
+                silent = TRUE)
+  
+  #----------------------------------#
+  # Variâncias
+  #----------------------------------#
+  varcomp <- summary(mod)$varcomp
+  
+  #----------------------------------
+  # LRT
+  #----------------------------------
+  lrt <- try(lrt.asreml(mod, modred), silent = TRUE)
+  
+  signif_gen <- NA
+  if(!inherits(lrt, "try-error")){
+
+  pvalor <- lrt$`Pr(Chisq)`
+
+  signif_gen <- ifelse(
+    is.na(pvalor),
+    NA,
+    ifelse(pvalor < 0.05, "Sim", "Não"))
+}
+  
+  #----------------------------------#
+  # Herdabilidade
+  #----------------------------------#
+  H2 <- try(vpredict(mod, H2 ~ V2/(V2+V3)), silent = TRUE)
+  
+  #----------------------------------#
+  # Efeitos de bloco
+  #----------------------------------#
+  expvar <- try(mod$coefficients$random[grep("^bloco", rownames(mod$coefficients$random)), "effect"],
+                silent = TRUE)
+  
+  #----------------------------------#
+  # BLUPs
+  #----------------------------------#
+  pred <- try( predict.asreml(mod, classify = "gen"),
+    silent = TRUE)
+  
+  if(inherits(pred, "try-error")) next
+  
+  blups <- pred$pvals |>
+    arrange(desc(predicted.value)) |>
+    mutate(rank = row_number()) |>
+    select(rank, gen, predicted.value, std.error)
+  
+  #----------------------------------#
+  # Reliability
+  #----------------------------------#
+  reliability <- mean(pred$pvals$std.error^2 /
+    summary(mod)$varcomp[2,1])
+  
+  #----------------------------------#
+  # Gráfico dos BLUPs
+  #----------------------------------#
+  pred$pvals <- pred$pvals |>
+  mutate(destaque = ifelse(gen == "G101", "G101", "Outros"))
+
+  g_blup <- ggplot(data = pred$pvals, aes(x = reorder(gen, -predicted.value),
+                                          y = predicted.value,
+                                          fill = destaque)) +
+  geom_col(color = "white") + 
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1, colour = "gray30"),
+        axis.text.y = element_text(colour = "gray30"),
+        text = element_text(size = 10),
+        plot.tag = element_text(size = 8, face = "bold", colour = "darkred"),
+        legend.position = "none",
+        plot.tag.location = "plot") +
+  geom_errorbar(aes(ymin = predicted.value - std.error,
+                    ymax = predicted.value + std.error)) +
+  scale_fill_manual(values = c("G101" = "#b2bc63", "Outros" = "#10342d")) +
+  labs(x = "",
+       y = "",
+       tag = e)
+
+  #----------------------------------#
+  # Salvar tudo
+  #----------------------------------#
+  resultados[[e]] <- list(model = mod,
+                          varcomp = varcomp,
+                          lrt = lrt,
+                          significativo = signif_gen,
+                          H2 = H2,
+                          bloco = expvar,
+                          blups = blups,
+                          reliability = reliability,
+                          plot_blup = g_blup)
+}
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+tab_res <- map_dfr(names(resultados), function(e){
+
+  x <- resultados[[e]]
+
+  if(is.null(x)) return(NULL)
+
+  tibble(
+    Trial = e,
+
+    Bloco = x$varcomp$component[1],
+    Genotipo = x$varcomp$component[2],
+    Residuo = x$varcomp$component[3],
+
+    LRT = x$significativo,
+
+    H2 = x$H2$Estimate[1],
+    H2_SE = x$H2$SE[1],
+
+    Bloco1 = x$bloco[1],
+    Bloco2 = x$bloco[2],
+    Bloco3 = x$bloco[3],
+
+    Reliability = x$reliability)
+})
+
+tab_res |>
+  kbl(digits = 3,
+      align = "c",
+      escape = FALSE,
+      booktabs = TRUE,
+      caption = "Resultado de todos os experimentos (trials)",
+      col.names = c("Trial", "Bloco", "Genótipo",
+                    "$\\epsilon$", "LRT", "$H^2$",
+                    "SE", "Bloco 1", "Bloco 2",
+                    "Bloco 3", "Reliability")) |>
+  add_header_above(c(" " = 1, "Componente de variância" = 3,
+                     " " = 1, "Herdabilidade" = 2,
+                     "Variância esperada" = 3,
+                     " " = 1)) |>
+  kable_styling(full_width = FALSE, position = "center")
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+blups_all <- bind_rows(
+  lapply(names(resultados), function(e){
+    resultados[[e]]$blups |>
+      mutate(env = e)
+    }))
+
+top20 <- blups_all |>
+  group_by(gen) |>
+  summarise(mean_blup = mean(predicted.value)) |>
+  arrange(desc(mean_blup)) |>
+  slice(1:20) |>
+  pull(gen)
+
+ggplot(filter(blups_all, gen %in% top20),
+       aes(x = env, y = rank, group = gen, color = gen)) +
+  geom_line(linewidth = .8) +
+  geom_point() +
+  scale_y_reverse() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(gridExtra)
+
+plots <- lapply(resultados, `[[`, "plot_blup")
+plots <- Filter(Negate(is.null), plots)
+
+ml <- marrangeGrob(grobs = plots,
+                   nrow = 2,
+                   ncol = 3,
+                   left = grid::textGrob("BLUP",
+                                          rot = 90,
+                                          gp = grid::gpar(fontsize = 12, fontface = "bold")),
+                   bottom = grid::textGrob("Genótipo",
+                                            gp = grid::gpar(fontsize = 12, fontface = "bold")))
+
+print(ml)
+```
+
+```{R}
+mGY <- asreml(
+  fixed  = GY ~ env + bloco:env,
+  random = ~ gen:env,
+  data   = data)
+
+```
+=======
+# Altura de Planta
+>>>>>>> refs/remotes/origin/main
+
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(asreml)
+asreml.options(workspace = '1gb', pworkspace = '2gb')
+#fix efffects
+mfPH <- asreml(
+  fixed = PH_R8 ~ env + bloco:env + check,
+  rcov  = ~ units,
+  data  = data
+)
+
+#wald test
+wald(mfPH)
+plot(mfPH)
+
+#random effects
+# efeito de genótipo
+m0PH <- asreml(
+  fixed  = PH_R8 ~ env + bloco:env,
+  random = ~ gen,
+  data   = data
+)
+plot(m0PH)
+
+# interação GxE
+
+plot(m1PH)
+```
+
+``` {R}
+#| message: false
+#| warning: false
+#| echo: false
+
+#componentes de variância
+summary(mfPH)$varcomp
+summary(m0PH)$varcomp
+summary(m1PH)$varcomp
+```
+
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+
+#Heritability
+# herdabilidade modelo m0
+vpredict(m0PH, H2 ~ V1/(V1+V2))
+
+# herdabilidade modelo m1
+vpredict(m1PH, H2 ~ V1/(V1+V2))
+```
+
+
+``` {R}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(GGally)
+
+blues_mfPH <- predict(mfPH, classify = "env")
+
+blups_m0PH <- predict(m0PH, classify = "gen")
+
+blups_m1PH <- predict(m1PH, classify = "gen")
+
+blups_m1PH_gxe <- predict(m1PH, classify = "gen:env")
+
+table(blups_m0PH$pvals$status)
+table(blups_m1PH$pvals$status)
+table(blups_m1PH_gxe$pvals$status)
+
+
+aux <- cbind(blups_m0PH$pvals[,2], blups_m1PH$pvals[,2])
+
+colnames(aux) <- c("m0", "m1")
+```
+# Conclusão

@@ -16,29 +16,43 @@ write.csv(pred, "BLUPGE_PH.csv")
 
 blup_ge <- read.csv("blup_env_GY.csv")
 
-blup_ge <- blup_ge %>% 
-  rename(GEN = gen, ENV = env, BLUP = predicted.value)
+blup_ge <- blup_ge %>%
+  rename(GEN = gen,
+         ENV = env,
+         BLUP = predicted.value)
 
 # matriz ambiente × genótipo
 mat_env <- blup_ge %>%
   select(ENV, GEN, BLUP) %>%
-  pivot_wider(names_from = GEN, values_from = BLUP)
+  pivot_wider(
+    names_from = GEN,
+    values_from = BLUP
+  )
 
-# colocar ENV como rownames
-rownames(mat_env) <- mat_env$ENV
-mat_env$ENV <- NULL
+# guardar nomes dos ambientes
+env_names <- mat_env$ENV
 
+# remover coluna ENV
+mat_env <- as.data.frame(mat_env[, -1])
+
+# atribuir rownames
+rownames(mat_env) <- env_names
+
+# remover ambientes totalmente vazios
 mat_env <- mat_env[rowSums(is.na(mat_env)) < ncol(mat_env), ]
 
+# remover genótipos sem variância
 mat_env <- mat_env[, apply(mat_env, 2, var, na.rm = TRUE) > 0]
 
-for (j in 1:ncol(mat_env)) {
+# imputação simples
+for (j in seq_len(ncol(mat_env))) {
   na_idx <- is.na(mat_env[, j])
   if (any(na_idx)) {
     mat_env[na_idx, j] <- mean(mat_env[, j], na.rm = TRUE)
   }
 }
 
+# padronização
 scale_safe <- function(x){
   sd_x <- sd(x, na.rm = TRUE)
   if (sd_x == 0) return(x - mean(x, na.rm = TRUE))
@@ -47,24 +61,35 @@ scale_safe <- function(x){
 
 mat_env_scaled <- apply(mat_env, 2, scale_safe)
 
-dist_env <- dist(mat_env_scaled, method = "euclidean")
+# garantir manutenção dos rownames
+mat_env_scaled <- as.matrix(mat_env_scaled)
+rownames(mat_env_scaled) <- rownames(mat_env)
 
-any(is.na(dist_env))
-any(is.infinite(dist_env))
-any(is.nan(dist_env))
+# distância e agrupamento
+dist_env <- dist(mat_env_scaled, method = "euclidean")
 hc_env <- hclust(dist_env, method = "ward.D2")
 
-plot(hc_env, main = "Clusterização de Ambientes (Ward.D2)", 
-     xlab = "Ambientes", sub = "")
+# plot com nomes dos ambientes
+plot(
+  hc_env,
+  labels = rownames(mat_env),
+  main = "Clusterização de Ambientes (Ward.D2)",
+  xlab = "Ambientes",
+  sub = ""
+)
 
+# grupos
 grupos <- cutree(hc_env, k = 3)
-grupos
 
 cluster_env <- data.frame(
-  Ambiente = rownames(mat_env),
-  Cluster  = grupos
+  Ambiente = names(grupos),
+  Cluster = grupos,
+  row.names = NULL
 )
-write.csv(cluster_env, "clusterswardd2.csv")
+
+write.csv(cluster_env, "clusterswardd2.csv", row.names = FALSE)
+
+head(cluster_env)
 
 
 # Componentes da variância

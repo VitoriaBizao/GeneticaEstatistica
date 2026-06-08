@@ -4,6 +4,8 @@ data = read.csv2("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_T
 #subset malawi
 data <- subset(data, COUNTRY == "Malawi")
 
+data <- data %>%
+  filter(!env %in% c("E0249", "E0250"))
 
 remover_outliers_sd <- function(data){
   
