@@ -1,0 +1,10 @@
+---
+title: "Trabalho Final"
+format: html
+---
+
+## Quarto
+
+``` {R}
+
+```
