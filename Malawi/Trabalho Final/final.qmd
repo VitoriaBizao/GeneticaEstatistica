@@ -1,0 +1,618 @@
+---
+title: "Final Project"
+author: 
+  - name: "Grupo 3 (Malawi): Juliana Oliveira, Pedro H. de Araujo e Vitória Murakami"
+    affiliation:
+      - name: Graduate Program in Genetics and Plant Breeding, Department of Genetics, ESALQ-USP
+        city: Piracicaba, São Paulo, Brazil
+format:
+  html:
+    embed-resources: true  # Imagens e scripts dentro do próprio HTML
+    code-fold: true        # Esconde o código 
+    toc: true              # Sumário?
+    toc-location: left     # Local do sumário
+    code-overflow: wrap    # Não deixa o código passar a margem
+    fig-align: center      # Centraliza no HTML
+    fig-width: 10          # Aumenta a largura padrão no HTML
+    grid:
+      sidebar-width: 250px # Tamanho da barra lateral
+      body-width: 1000px   # Tamanho do corpo do arquivo
+      margin-width: 250px  # Tamanho da margem
+      gutter-width: 1.5rem # Espaçamento entre os elementos acima
+  pdf:
+    fig-align: center      # Centraliza as imagens
+    fig-pos: 'H'           # Força a figura a ficar "Aqui"
+    include-in-header:     # Não deixa o código passar a margem
+      text: |
+        \usepackage{fvextra}
+        \usepackage{float}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  fig-width: 8             # Largura padrão global
+  fig-height: 6            # Altura padrão global
+---
+
+# Introdução
+A brief overview of the research problem.
+
+# Material e Métodos
+A detailed description of the statistical approach.
+
+## Análise exploratória
+
+## Seleção de locais (trials)
+
+## BLUPs
+
+## GGE, adaptabilidade e estabilidade
+
+# Resultados
+A clear presentation of the findings (with Figures and Tables).
+
+```{R}
+#| message: false
+#| warning: false
+#| echo: false
+#| include: false
+
+# Carregando as bibliotecas
+library(dplyr)
+library(asreml)
+library(ggplot2)
+library(tidyverse)
+library(ggtext)
+library(purrr)
+library(tibble)
+library(kableExtra)
+library(DT)
+library(metan)
+
+# Carregando os dados
+data = read.csv2("https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv")
+
+data <- subset(data, COUNTRY == "Malawi")#separando só malawi
+
+data <- data %>%  mutate(
+  env = as.factor(env),
+  gen = as.factor(gen),
+  bloco = as.factor(rep),
+  check = as.factor(check),
+  SEASON = as.factor(SEASON),
+  YEAR = as.factor(YEAR),
+  loc = as.factor(loc),
+  RAINFED = as.factor(RAINFED),
+  GY = as.numeric(GY),
+  PH_R8 = as.numeric(PH_R8),
+  W100G = as.numeric(W100G))
+
+data <- droplevels(subset(data, !env %in% c("E249","E250")))
+```
+
+## Análise exploratória de dados
+
+## Seleção de locais (trials)
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| results: hide
+
+# Carregando os pacotes de paralelização
+library(future)
+library(furrr)
+
+# Configurando o plano de paralelização
+plan(multisession, workers = parallel::detectCores() - 1)
+
+# Ambientes
+envs <- levels(data$env)
+
+# Loop
+resultados <- future_map(setNames(envs, envs), function(e) {
+  
+  dados_env <- subset(data, env == e)
+  
+  # Se não houver dados suficientes, retorna nulo em vez de 'next'
+  if(nrow(dados_env) < 5) return(NULL)
+  
+  # Modelo completo
+  mod <- try(asreml(fixed = GY ~ bloco,
+                    random = ~ gen,
+                    data = dados_env),
+             silent = TRUE)
+  
+  if(inherits(mod, "try-error")) return(NULL)
+  
+  # Modelo reduzido
+  modred <- try(asreml(fixed = GY ~ bloco,
+                       data = dados_env),
+                silent = TRUE)
+  
+  # Variâncias
+  varcomp <- summary(mod)$varcomp
+  
+  # LRT
+  lrt <- try(lrt.asreml(mod, modred), silent = TRUE)
+  
+  signif_gen <- NA
+  if(!inherits(lrt, "try-error")){
+    pvalor <- lrt$`Pr(Chisq)`
+    signif_gen <- ifelse(
+      is.na(pvalor),
+      NA,
+      ifelse(pvalor < 0.05, "Sim", "Não"))
+  }
+  
+  # Herdabilidade ampla
+  H2 <- try(vpredict(mod, H2 ~ V1/(V1+V2)), silent = TRUE)
+  
+  # Herdabilidade Cullis
+  sed_mat <- predict(mod, classify = "gen", sed = TRUE)$sed
+  mvd <- mean(sed_mat[upper.tri(sed_mat)]^2)
+  
+  H2_c <- 1 - (mvd / (2 * summary(mod)$varcomp["gen","component"]))
+  
+  # BLUPs
+  pred <- try(predict(mod, classify = "gen"), silent = TRUE)
+  
+  if(inherits(pred, "try-error")) return(NULL)
+  
+  blups <- pred$pvals |>
+    dplyr::arrange(dplyr::desc(predicted.value)) |>
+    dplyr::mutate(rank = dplyr::row_number()) |>
+    dplyr::select(rank, gen, predicted.value, std.error)
+  
+  # Reliability
+  reliability <- 1 - mean(pred$pvals$std.error^2 /
+                     summary(mod)$varcomp[2,1])
+  
+  # SALVAR:
+  return(list(model = mod,
+              varcomp = varcomp,
+              lrt = lrt,
+              significativo = signif_gen,
+              H2 = H2,
+              H2_c = H2_c,
+              blups = blups,
+              reliability = reliability))
+  
+}, .options = furrr_options(seed = TRUE, packages = c("asreml", "dplyr")))
+```
+
+
+```{r}
+# Resultados tabelados
+tab_res <- purrr::map_dfr(names(resultados), function(e){
+
+  x <- resultados[[e]]
+
+  if(is.null(x)) return(NULL)
+
+  tibble(Trial = e,
+         Genotipo = x$varcomp$component[1],
+         Residuo = x$varcomp$component[2],
+         LRT = x$significativo,
+         H2 = x$H2$Estimate[1],
+         H2_SE = x$H2$SE[1],
+         H2_Cullis = x$H2_c,
+         Reliability = x$reliability)
+})
+
+tab_res |>
+  kbl(digits = 3,
+      align = "c",
+      escape = FALSE,
+      booktabs = TRUE,
+      caption = "Resultado de todos os experimentos (trials)",
+      col.names = c("Trial", "Genótipo", "$\\epsilon$",
+                    "LRT", "$H^2$", "SE",
+                    "$H^2$ - Cullis", "Reliability")) |>
+  add_header_above(c(" " = 1,
+                     "Componente de variância" = 2,
+                     " " = 1, 
+                     "Herdabilidade" = 3, 
+                     " " = 1)) |>
+  kable_styling(full_width = FALSE, position = "center") |>
+  scroll_box(width = "100%", height = "600px")
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+blups_all <- bind_rows(
+  lapply(names(resultados), function(e){
+    resultados[[e]]$blups |>
+      mutate(env = e)
+    }))
+
+# GEI
+GEI <- blups_all %>% 
+  group_by(env, gen) %>% 
+  summarise(predicted.value = mean(as.numeric(predicted.value), na.rm = TRUE)) %>% 
+  drop_na()
+
+# Ordering
+index = order(GEI$predicted.value, decreasing = FALSE)
+GEI = GEI[index,]
+
+library(gghighlight)
+
+GEI %>% ggplot(aes(x = env, y = predicted.value)) +
+  geom_line(linewidth = 0.9, aes(group = gen, color = gen)) +
+  gghighlight(gen %in% c('G036', 'G044', 'G129', 'G121'), use_direct_label = FALSE) +
+  labs(title = "Interação entre genótipos e ambientes",
+       x = "Ambiente",
+       y = "Produção de grãos") +
+  guides(color = guide_legend(title = "Genótipo", ncol = 1)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_color_manual(values = c("#003350", "#ff6441", "#2F95CC", "#cc662f"),
+                     limits = c('G036', 'G044', 'G129', 'G121'),
+                     breaks = c('G036', 'G044', 'G129', 'G121'))
+```
+
+## Índices ambientais
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+ann <- Annicchiarico(data,
+                     env = env,
+                     gen = gen,
+                     rep = bloco,
+                     resp = GY)
+
+index <- ann$GY$environments |>
+  rename(Location = ENV)
+
+ggplot(index, aes(x = Location, y = index, colour = class, fill = class)) +
+  geom_point(aes(shape = class), size = 2.5) + 
+  geom_hline(yintercept = 0, linetype = "dashed", linewidth = 1.2) +
+  scale_shape_manual(values = c(favourable = 24, 
+                                unfavorable = 25,
+                                favorable = 24,
+                                unfavourable = 25)) +
+  scale_colour_manual(values = c(favourable = "forestgreen",
+                                 unfavorable = "firebrick",
+                                 favorable = "forestgreen",
+                                 unfavourable = "firebrick")) +
+  scale_fill_manual(values = c(favourable = "forestgreen",
+                               unfavorable = "firebrick",
+                               favorable = "forestgreen",
+                               unfavourable = "firebrick")) +
+  theme_bw() +
+  theme(text = element_text(size = 14),
+        legend.position = "top",
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Ambiente",
+       y = "Índice ambiental",
+       fill = "",
+       colour = "", 
+       shape = "")
+```
+
+## BLUPs
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| cache: true
+#| results: hide
+
+data <- droplevels(subset(data, !env %in% c("E249","E250", "E015",
+                                            "E0154", "E0155", "E023",
+                                            "E0241", "E0242", "E0248",
+                                            "E025", "E0271", "E0272",
+                                            "E0274", "E0275", "E0290",
+                                            "E031", "E035", "E092",
+                                            "E094", "E099")))
+
+### Base-line model
+asreml.options(workspace = "15gb", pworkspace = "15gb", maxit = 100)
+
+m0 = asreml(fixed = GY ~ env,
+            random = ~gen + gen:env + bloco,
+            data = data, 
+            maxiter = 100)
+sum.m0 = summary(m0)$varcomp
+aic.m0 = summary(m0)$aic
+bic.m0 = summary(m0)$bic
+loglik.m0 = summary(m0)$loglik
+
+mvd.m0 = mean(((predict.asreml(m0,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(m0,classify = "gen",sed = T)$sed)^2,diag=F)
+])
+PEV.m0 = mean(diag((predict.asreml(m0,classify = "gen",vcov = T)$vcov)))
+acc.m0 = sqrt(1-(PEV.m0/sum.m0["gen","component"]))
+her.m0 = 1-(mvd.m0/(2*sum.m0["gen","component"]))
+
+blup.m0 = predict.asreml(m0,classify = "gen")$pvals
+
+gain.m0 = (mean(blup.m0[order(blup.m0$predicted.value, 
+                              decreasing = T),]$predicted.value[1:30])-
+             mean(data$GY,na.rm=T))/mean(data$GY,na.rm=T) * 100
+
+
+### Modelling the residual effects ---------
+#### Diagonal
+asreml.options(workspace = "15gb", pworkspace = "15gb", maxit = 100)
+
+m1 = asreml(fixed = GY ~ env,
+            random = ~gen + gen:env + bloco,
+            residual = ~dsum(~id(units)|env),
+            data = data, 
+            maxiter = 100)
+sum.m1 = summary(m1)$varcomp
+aic.m1 = summary(m1)$aic
+bic.m1 = summary(m1)$bic
+loglik.m1 = summary(m1)$loglik
+
+mvd.m1 = mean(((predict.asreml(m1,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(m1,classify = "gen",sed = T)$sed)^2,diag=F)
+])
+PEV.m1 = mean(diag((predict.asreml(m1,classify = "gen",vcov = T)$vcov)))
+acc.m1 = sqrt(1-(PEV.m1/sum.m1["gen","component"]))
+her.m1 = 1-(mvd.m1/(2*sum.m1["gen","component"]))
+
+blup.m1 = predict.asreml(m1,classify = "gen")$pvals
+
+gain.m1 = (mean(blup.m1[order(blup.m1$predicted.value, 
+                              decreasing = T),]$predicted.value[1:30])-
+             mean(data$GY, na.rm=T))/mean(data$GY, na.rm=T) * 100
+
+### Modelling the block effects ---------
+#### Diagonal
+asreml.options(workspace = "15gb", pworkspace = "15gb", maxit = 100)
+
+m2 = asreml(fixed = GY ~ env,
+            random = ~gen + gen:env + at(env):bloco,
+            residual = ~dsum(~id(units)|env),
+            data = data, 
+            maxiter = 100)
+sum.m2 = summary(m2)$varcomp
+aic.m2 = summary(m2)$aic
+bic.m2 = summary(m2)$bic
+loglik.m2 = summary(m2)$loglik
+
+mvd.m2 = mean(((predict.asreml(m2,classify = "gen",sed = T)$sed)^2)[
+  upper.tri((predict.asreml(m2,classify = "gen",sed = T)$sed)^2,diag=F)
+])
+PEV.m2 = mean(diag((predict.asreml(m2,classify = "gen",vcov = T)$vcov)))
+acc.m2 = sqrt(1-(PEV.m2/sum.m2["gen","component"]))
+her.m2 = 1-(mvd.m2/(2*sum.m2["gen","component"]))
+
+blup.m2 = predict.asreml(m2,classify = "gen")$pvals
+
+gain.m2 = (mean(blup.m2[order(blup.m2$predicted.value, 
+                              decreasing = T),]$predicted.value[1:30])-
+             mean(data$GY, na.rm=T))/mean(data$GY, na.rm=T) * 100
+
+### Modelling the genetic effects ---------
+#### Heterogeneous compound symmetry
+asreml.options(workspace = "15gb", pworkspace = "15gb", maxit = 100)
+
+m3 = asreml(fixed = GY ~ env,
+            random = ~corh(env):gen + at(env):bloco,
+            residual = ~dsum(~id(units)|env),
+            data = data, 
+            maxiter = 100) 
+sum.m3 = summary(m3)$varcomp
+aic.m3 = summary(m3)$aic
+bic.m3 = summary(m3)$bic
+loglik.m3 = summary(m3)$loglik
+
+library(future)
+library(furrr)
+plan(multisession, workers = parallel::detectCores() - 1)
+
+# variâncias genéticas 
+vg_m3 <- sum.m3[grep('gen', rownames(sum.m3)), 1]
+n_ambientes <- nlevels(data$env)
+
+# loop
+res_m3 <- future_map_dfr(1:n_ambientes, function(i) {
+  
+  # Predições
+  pred_vcov = predict(m3, classify = "gen:env", level=list(env = i), vcov = TRUE)
+  pred_sed  = predict(m3, classify = "gen:env", level=list(env = i), sed = TRUE)
+  
+  PEV = mean(diag(pred_vcov$vcov))
+  mvd = mean((pred_sed$sed^2)[upper.tri(pred_sed$sed^2, diag = FALSE)])
+  
+  vg_env = vg_m3[i + 1] 
+  
+  acc = sqrt(1 - (PEV / vg_env))
+  her = 1 - (mvd / (2 * vg_env))
+  
+  return(data.frame(acc = acc, her = her))
+  
+}, .options = furrr_options(packages = "asreml", seed = TRUE, globals = c("m3", "data", "vg_m3")))
+
+# Médias de acurácia e herdabilidade
+acc.m3.mean = mean(res_m3$acc, na.rm = TRUE)
+her.m3.mean = mean(res_m3$her, na.rm = TRUE)
+
+blup.m3 = predict(m3, classify = "gen:env")$pvals
+
+blup.m3.mean = blup.m3 %>% 
+  group_by(gen) %>%
+  summarise(blup = mean(predicted.value))
+
+gain.m3 = (mean(blup.m3.mean[order(blup.m3.mean$blup, 
+                                   decreasing = TRUE),]$blup[1:30]) -
+             mean(data$GY, na.rm=TRUE)) / mean(data$GY, na.rm=TRUE) * 100
+```
+
+
+```{r}
+# Organized results ----
+aic <- round(c(aic.m0, aic.m1, aic.m2, aic.m3), 2)
+bic <- round(c(bic.m0, bic.m1, bic.m2, bic.m3), 2)
+
+tab_modelos <- data.frame("Modelo"= c("M0", "M1", "M2", "M3"),
+                          "$G = \\Sigma_g \\otimes \\Sigma_b$" =
+                            c("Id x Id", "Id x Id", "Id x Diag", "CSH x Diag"),
+                          "$R = \\Sigma_r$"= c("Id", "Diag", "Diag", "Diag"),
+                          "AIC" = c(aic),
+                          "BIC" = c(bic),
+                          "Herdabilidade" = round(c(her.m0, her.m1, her.m2, her.m3.mean),3),
+                          "Acurácia" = round(c(acc.m0, acc.m1, acc.m2, acc.m3.mean),3),
+                          "Ganho de seleção" = round(c(gain.m0, gain.m1, gain.m2, gain.m3),3)) 
+
+tab_modelos |>
+  kbl(align = "c",
+      booktabs = TRUE,
+      digits = 3,
+      col.names = c("Modelo", "$\\Sigma_g \\otimes \\Sigma_b$", "$\\Sigma_r$", "AIC",
+                    "BIC", "Herdabilidade", "Acurácia", 
+                    "Ganho de seleção"),
+      escape = FALSE) |>
+  add_header_above(c(" " = 1, 
+                     "G" = 1,
+                     "R" = 1, 
+                     " " = 5),
+                   escape = FALSE) |> 
+  kable_styling(full_width = FALSE, position = "center")
+```
+
+```{r}
+## Ranking comparison plot ----
+#| message: false
+#| warning: false
+#| echo: false
+
+base = blup.m0[,1:2]
+colnames(base) = c('gen','blup.base')
+chosen = blup.m3.mean
+comparison = cbind(base, blup.chosen = chosen$blup)
+
+plotly::ggplotly(comparison |>
+                   arrange(-blup.base) |>
+                   mutate(rank.base = 1:nlevels(data$gen)) |>
+                   arrange(-blup.chosen) |> 
+                   mutate(rank.chosen = 1:nlevels(data$gen)) |> 
+    ggplot(aes(x = rank.base, y = rank.chosen)) +
+    geom_point(aes(color = gen), size = 2)+
+    theme(axis.line = element_line(colour = 'black'),
+          legend.position = 'none',
+          panel.background = element_blank(),
+          text = element_text(size = 14))+
+    labs(x = "Modelo inicial (M0) - Ranking",
+         y = "Modelo escolhido (M3) - Ranking", 
+         color = "Genótipos", 
+         caption = paste("Correlação do ranking =",
+                         round(cor(comparison$blup.base,
+                                   comparison$blup.chosen,
+                                   method = 'spearman'), 4)))+
+    scale_x_reverse(breaks = c(1,seq(5, nlevels(data$gen), by = 5))) + 
+    scale_y_reverse(breaks = c(1,seq(5, nlevels(data$gen), by = 5))))
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+## VCOV (G) - CSH ----
+make_csh <- function(n, rho_csh, var){
+  sigma = sqrt(var)
+  varcomp = sapply(sigma[1:n], function(x) x*sigma[1:n])
+  varcomp = rho_csh*varcomp
+  diag(varcomp) = var
+  return(varcomp)
+}
+
+Gvcov.m3 <- round(make_csh(nlevels(data$env), sum.m3[51,1], sum.m3[52:101,1]), 3)
+rownames(Gvcov.m3) <- levels(data$env)
+colnames(Gvcov.m3) <- levels(data$env)
+Gcorr.m3 <- cov2cor(Gvcov.m3)
+rownames(Gcorr.m3) <- levels(data$env)
+colnames(Gcorr.m3) <- levels(data$env)
+
+mat <- Gvcov.m3
+mat[lower.tri(mat)] <- Gcorr.m3[lower.tri(Gcorr.m3)]
+
+library(kableExtra)
+
+mat |>
+  as.data.frame() |>
+  tibble::rownames_to_column("Env") |>
+  kbl(digits = 2,
+      align = "c",
+      caption = "Covariâncias (triângulo superior) e correlações (triângulo inferior)",
+      booktabs = TRUE) |>
+  kable_styling(full_width = FALSE,
+                position = "center",
+                font_size = 12) |>
+  scroll_box(width = "100%", height = "600px")
+```
+
+## Interação genótipos por ambientes
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| cache: true
+
+asreml.options(workspace = "15gb", pworkspace = "15gb", maxit = 100)
+pred = predict.asreml(object = m3, classify = "gen:env")$pvals
+
+pred |> ggplot(aes(x = reorder(env, -predicted.value), 
+                   y = reorder(gen, predicted.value), 
+                   fill = predicted.value)) + 
+  geom_tile() + 
+  theme_minimal(base_size = 18) + 
+  theme(legend.position = "right", axis.text.y = element_text(size = 12)) + 
+  scale_fill_gradient(low = "#10342d", high = '#b2bc63') + 
+  labs(x = "Ambiente", y = "Genótipo", fill = "GY")
+```
+
+## Índices de estabilidade
+### Lin & Binns (1988): Distância para o melhor em cada ambiente
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+ge_table = pivot_wider(pred[,c("gen", "env", "predicted.value")], 
+                       names_from = 'env', values_from = 'predicted.value') |> 
+  column_to_rownames("gen")
+
+Pi = apply(ge_table, 1, function(x) sum((x - apply(ge_table, 2, max))^2)/(2*ncol(ge_table)))
+
+ggplot(data = data.frame(geno = names(Pi), Pi = Pi), 
+       aes(x = reorder(geno, Pi), y = Pi)) + 
+  geom_col(color = 'black', aes(fill = Pi)) + 
+  scale_fill_gradient(high = "#10342d", low = '#b2bc63') + 
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        text = element_text(size = 14), legend.position = 'none') + 
+  labs(y = expression(P[i]), x = "Genótipos")
+```
+
+### Eskridge (1990): Índice de segurança
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+alpha = .10
+SF = apply(ge_table, 1, function(x) mean(x) - qnorm(1-alpha) * sd(x))
+ggplot(data = data.frame(geno = names(Pi), SF = SF),
+       aes(x = reorder(geno, -SF), y = SF))  + 
+  geom_col(color = 'black', aes(fill = SF)) + 
+  scale_fill_gradient(low = "#10342d", high = '#b2bc63') + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1),
+        text = element_text(size = 14), legend.position = 'none') + 
+  labs(y = "Índice de segurança", x = "Genótipos")
+```
+
+# Discussão
+A concise interpretation of the results in the context of the study.
