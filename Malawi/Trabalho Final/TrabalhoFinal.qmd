@@ -6,5 +6,31 @@ format: html
 ## Quarto
 
 ``` {R}
+data <- read.csv('https://raw.githubusercontent.com/mauricioaraujj/Pan_African_Trials_Network/refs/heads/main/data/data.csv', sep = ';')
+data <- data |> subset(data$COUNTRY == "Malawi")
+
+data <- data %>%    mutate(
+  env = as.factor(env),
+  gen = as.factor(gen),
+  bloco = as.factor(rep),
+  check = as.factor(check),
+  SEASON= as.factor(SEASON),
+  YEAR= as.factor(YEAR),
+  loc = as.factor(loc),
+  RAINFED = as.factor(RAINFED),
+  
+  GY = as.numeric(GY),
+  NDM = as.numeric(NDM),
+  PROT = as.numeric(PROT),
+  
+)
+
+```
+Retirada de valores sem sentido
+```{R}
+#valor negativo
+data$GY[data$GY < 0] <- NA
+visual = subset(data, GY > 8000)
+
 
 ```
