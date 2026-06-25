@@ -48,25 +48,25 @@ execute:
   fig-height: 6            # Altura padrão global
 ---
 
-# **RESUMO
+# **RESUMO**
 
-  A interação genótipo × ambiente (G×E) constitui um dos principais desafios dos programas de melhoramento de plantas, por dificultar a identificação de materiais superiores com desempenho consistente em diferentes condições de cultivo. Este estudo, buscou caracterizar essa interazação para a produtividade de grãos de genótipos de soja em múltiplos ambientes do Malawi, utilizando dados da rede Pan-African Soybean Variety Trials (PAT), conduzidos entre 2017 e 2024, em DBC com 3 repetições. O objetivo foi caracterizar a interação G×E, comparar diferentes modelos mistos para sua modelagem e identificar genótipos produtivos, adaptados e estáveis.foram realizadas análises individuais dos ambientes por meio de modelos mistos ajustados via  Verossimilhança Restrita(REML), estimando componentes de variância, herdabilidade, herdabilidade generalizada de Cullis e confiabilidade A análise conjunta foi conduzida utilizando quatro modelos mistos com diferentes estruturas de variância e covariância, modelo M3, baseado em simetria composta heterogênea (CORH), apresentou o melhor ajuste segundo o AIC e o maior ganho esperado com a seleção. As análises de adaptabilidade e estabilidade foram realizadas com os métodos de Lin & Binns (1988) e Eskridge (1990), ambos baseados nos BLUPs obtidos pelo modelo selecionado. Os dois métodos apresentaram elevada concordância, destacando os genótipos G238, G194, G148, G017 e G214 como os mais estáveis, amplamente adaptados e previsíveis. Os resultados demonstram que a utilização de modelos mistos associados a métodos de estabilidade constitui uma estratégia eficiente para a identificação de genótipos superiores e para a recomendação de cultivares adaptadas às condições ambientais heterogêneas do Malawi.
+A interação genótipo × ambiente (G×E) constitui um dos principais desafios dos programas de melhoramento de plantas, por dificultar a identificação de materiais superiores com desempenho consistente em diferentes condições de cultivo. Este estudo, buscou caracterizar essa interazação para a produtividade de grãos de genótipos de soja em múltiplos ambientes do Malawi, utilizando dados da rede Pan-African Soybean Variety Trials (PAT), conduzidos entre 2017 e 2024, em DBC com 3 repetições. O objetivo foi caracterizar a interação G×E, comparar diferentes modelos mistos para sua modelagem e identificar genótipos produtivos, adaptados e estáveis. Foram realizadas análises individuais dos ambientes por meio de modelos mistos ajustados via Verossimilhança Restrita (REML), estimando componentes de variância, herdabilidade, herdabilidade generalizada de Cullis e confiabilidade. A análise conjunta foi conduzida utilizando quatro modelos mistos com diferentes estruturas de variância e covariância, modelo M3, baseado em simetria composta heterogênea (CORH), apresentou o melhor ajuste segundo o AIC e o maior ganho esperado com a seleção. As análises de adaptabilidade e estabilidade foram realizadas com os métodos de Lin & Binns (1988) e Eskridge (1990), ambos baseados nos BLUPs obtidos pelo modelo selecionado. Os dois métodos apresentaram elevada concordância, destacando os genótipos G238, G194, G148, G017 e G214 como os mais estáveis, amplamente adaptados e previsíveis. Os resultados demonstram que a utilização de modelos mistos associados a métodos de estabilidade constitui uma estratégia eficiente para a identificação de genótipos superiores e para a recomendação de cultivares adaptadas às condições ambientais heterogêneas do Malawi.
   
 # **INTRODUÇÃO**
 
-    desempenho fenotípico de um genótipo resulta da ação conjunta de fatores genéticos e ambientais, bem como da interação entre eles. Assim, características ambientais como precipitação, temperatura, umidade relativa, propriedades químicas,  físicas e biológicas do solo, práticas de manejo e ocorrência de estresses bióticos e abióticos podem influenciar substancialmente a expressão dos caracteres agronômicos (Borém; Miranda; Fritsche-Neto, 2017). Como consequência, um mesmo genótipo frequentemente apresenta respostas distintas quando avaliado sob diferentes condições edafoclimáticas e de cultivo, dando origem à interação genótipos × ambientes (G×A),Esse fenômeno constitui um dos principais desafios enfrentados pelos programas de melhoramento de plantas, uma vez que reduz a correlação entre o desempenho observado em ambientes específicos e o desempenho esperado em uma ampla gama de condições de cultivo, dificultando a identificação e a recomendação de genótipos superiores (Teressa *et al.*, 2021; Egea-Gilabert *et al.*, 2021).
+O desempenho fenotípico de um genótipo resulta da ação conjunta de fatores genéticos e ambientais, bem como da interação entre eles. Assim, características ambientais como precipitação, temperatura, umidade relativa, propriedades químicas, físicas e biológicas do solo, práticas de manejo e ocorrência de estresses bióticos e abióticos podem influenciar substancialmente a expressão dos caracteres agronômicos (Borém; Miranda; Fritsche-Neto, 2017). Como consequência, um mesmo genótipo frequentemente apresenta respostas distintas quando avaliado sob diferentes condições edafoclimáticas e de cultivo, dando origem à interação genótipos × ambientes (G×A). Esse fenômeno constitui um dos principais desafios enfrentados pelos programas de melhoramento de plantas, uma vez que reduz a correlação entre o desempenho observado em ambientes específicos e o desempenho esperado em uma ampla gama de condições de cultivo, dificultando a identificação e a recomendação de genótipos superiores (Teressa *et al.*, 2021; Egea-Gilabert *et al.*, 2021).
+
+A interação G×E pode ser decomposta em componentes simples e complexos. A porção simples ocorre quando as diferenças entre genótipos variam apenas em magnitude entre os ambientes, sem alterações em sua classificação relativa. Em contraste, a interação complexa caracteriza-se pela mudança no posicionamento dos genótipos ao longo dos ambientes, de modo que materiais superiores em determinadas condições podem apresentar desempenho inferior em outras (van Eeuwijk *et. al.*, 2016). Esse tipo de interação possui especial relevância para o melhoramento vegetal, pois reduz a eficiência da seleção e compromete a extrapolação dos resultados obtidos em ambientes específicos. Dessa forma, torna-se necessária a condução de ensaios em múltiplos ambientes, abrangendo diferentes locais, anos e condições de cultivo, com o objetivo de caracterizar adequadamente a magnitude da interação G×A e compreender os padrões de adaptação dos genótipos.
   
-    A interação G×E pode ser decomposta em componentes simples e complexos. A porção simples ocorre quando as diferenças entre genótipos variam apenas em magnitude entre os ambientes, sem alterações em sua classificação relativa. Em contraste, a interação complexa caracteriza-se pela mudança no posicionamento dos genótipos ao longo dos ambientes, de modo que materiais superiores em determinadas condições podem apresentar desempenho inferior em outras (van Eeuwijk et. al., 2016). Esse tipo de interação possui especial relevância para o melhoramento vegetal, pois reduz a eficiência da seleção e compromete a extrapolação dos resultados obtidos em ambientes específicos. Dessa forma, torna-se necessária a condução de ensaios em múltiplos ambientes, abrangendo diferentes locais, anos e condições de cultivo, com o objetivo de caracterizar adequadamente a magnitude da interação G×E e compreender os padrões de adaptação dos genótipos.
-  
-    Nesse contexto, os modelos mistos têm se consolidado como uma das principais abordagens para a análise de ensaios multiambientais (Piepho, 2008). Diferentemente dos métodos tradicionais baseados em análise de variância, os modelos mistos permitem trabalhar com dados desbalanceados(Piepho, 1998), certo grau de flexibilidade na heterosdacidade de variâncias e permitir (Gilmour *et al.*, 1970) a inclusão de matriz de parentesco (Crossa *et al.* 2017; Crossa *et al.* 2004) e diferentes estruturas de variância e covâriancia.  . Além disso, essas metodologias consideram a herdabilidade do carácter e a acurácia de seleção ao aplicar o encolhimento. Outra vantagem, é que quando trabalhando com dados balanceados, modelos mistos tendem a apresentar desempenho identinco à análise de variância (Piepho *et al.* 2006, Piepho e Buschese 2003).
+Nesse contexto, os modelos mistos têm se consolidado como uma das principais abordagens para a análise de ensaios multiambientais (Piepho, 2008). Diferentemente dos métodos tradicionais baseados em análise de variância, os modelos mistos permitem trabalhar com dados desbalanceados (Piepho, 1998), certo grau de flexibilidade na heterosdacidade de variâncias e permitir (Gilmour *et al.*, 1970) a inclusão de matriz de parentesco (Crossa *et al.* 2017; Crossa *et al.* 2004) e diferentes estruturas de variância e covâriancia. Além disso, essas metodologias consideram a herdabilidade do carácter e a acurácia de seleção ao aplicar o encolhimento. Outra vantagem, é que quando trabalhando com dados balanceados, modelos mistos tendem a apresentar desempenho identinco à análise de variância (Piepho *et al.* 2006; Piepho e Buschese, 2003).
     
-    Além de a caracterizar a interação GxA, através da uitlização de experimentos em rede, é possível avaliar o desempenho dos genótips frente as variações ambientais, e a conscistência desse desempenho, atraves de indicadores de adaptabilidade e estabilidadeA adaptabilidade refere-se à capacidade de um genótipo responder favoravelmente às melhorias das condições ambientais ou manter desempenho satisfatório em ambientes restritivos, enquanto a estabilidade está associada à previsibilidade de sua resposta diante das flutuações ambientais (Cruz; Regazzi; Carneiro, 2012).  
+Além de a caracterizar a interação GxA, através da uitlização de experimentos em rede, é possível avaliar o desempenho dos genótipos frente as variações ambientais, e a conscistência desse desempenho, através de indicadores de adaptabilidade e estabilidade. A adaptabilidade refere-se à capacidade de um genótipo responder favoravelmente às melhorias das condições ambientais ou manter desempenho satisfatório em ambientes restritivos, enquanto a estabilidade está associada à previsibilidade de sua resposta diante das flutuações ambientais (Cruz; Regazzi; Carneiro, 2012).  
     
-    Entre os métodos para avaliação simultânea dessas caracteristicas destaca-se o de Lin e Binns (1988), Essa metodologia baseia-se na estatística de superioridade genética (Pi), que quantifica o desvio quadrático entre o desempenho de um genótipo e o melhor desempenho observado em cada ambiente. Dessa forma, genótipos com menores valores de Pi apresentam simultaneamente elevada produtividade, ampla adaptação e maior estabilidade, sendo considerados mais desejáveis para recomendação. Outra abordagem amplamente empregada é a proposta por Eskridge (1990), que utiliza limites inferiores de confiança para integrar desempenho, estabilidade e risco de recomendação.  Diferentemente dos métodos baseados exclusivamente em médias ou parâmetros de regressão, essa metodologia incorpora explicitamente a incerteza associada às estimativas, permitindo identificar genótipos com desempenho consistente e menor probabilidade de apresentar resultados inferiores aos esperados quando cultivados em diferentes condições ambientais. Tal característica torna a abordagem particularmente atrativa em programas de melhoramento que buscam maximizar os ganhos genéticos ao mesmo tempo em que minimizam os riscos associados à recomendação de novas cultivares.
+Entre os métodos para avaliação simultânea dessas caracteristicas destaca-se o de Lin e Binns (1988). Essa metodologia baseia-se na estatística de superioridade genética (Pi), que quantifica o desvio quadrático entre o desempenho de um genótipo e o melhor desempenho observado em cada ambiente. Dessa forma, genótipos com menores valores de Pi apresentam simultaneamente elevada produtividade, ampla adaptação e maior estabilidade, sendo considerados mais desejáveis para recomendação. Outra abordagem amplamente empregada é a proposta por Eskridge (1990), que utiliza limites inferiores de confiança para integrar desempenho, estabilidade e risco de recomendação. Diferentemente dos métodos baseados exclusivamente em médias ou parâmetros de regressão, essa metodologia incorpora explicitamente a incerteza associada às estimativas, permitindo identificar genótipos com desempenho consistente e menor probabilidade de apresentar resultados inferiores aos esperados quando cultivados em diferentes condições ambientais. Tal característica torna a abordagem particularmente atrativa em programas de melhoramento que buscam maximizar os ganhos genéticos ao mesmo tempo em que minimizam os riscos associados à recomendação de novas cultivares.
     
-    Apesar dos avanços metodológicos disponíveis para a análise da interação G×A, a efetividade dos programas de melhoramento depende da validação dos genótipos em condições representativas dos sistemas de produção aos quais serão destinados. Essa necessidade torna-se ainda mais evidente em regiões caracterizadas por elevada heterogeneidade ambiental e forte dependência das condições climáticas para a produção agrícola (Becker e Léon, 1988). Nesses cenários, a identificação de genótipos produtivos, adaptados e estáveis constitui um componente essencial para aumentar a segurança da produção e reduzir os riscos associados às variações ambientais(Eskridge, 1990).
+Apesar dos avanços metodológicos disponíveis para a análise da interação G×A, a efetividade dos programas de melhoramento depende da validação dos genótipos em condições representativas dos sistemas de produção aos quais serão destinados. Essa necessidade torna-se ainda mais evidente em regiões caracterizadas por elevada heterogeneidade ambiental e forte dependência das condições climáticas para a produção agrícola (Becker e Léon, 1988). Nesses cenários, a identificação de genótipos produtivos, adaptados e estáveis constitui um componente essencial para aumentar a segurança da produção e reduzir os riscos associados às variações ambientais (Eskridge, 1990).
     
-    O Malawi destaca-se nesse contexto por apresentar sistemas agrícolas predominantemente dependentes da precipitação pluvial, elevada variabilidade climática entre regiões e frequente ocorrência de estresses abióticos que afetam o desempenho das culturas (Tufa *et al.*, 2019; Van Vugt, Franke & Giller, 2018). Além disso, a agricultura desempenha papel fundamental na economia nacional e na segurança alimentar da população, tornando a disponibilização de cultivares amplamente adaptadas uma prioridade para os programas de melhoramento. Dessa forma, a avaliação do comportamento dos genótipos em múltiplos ambientes do Malawi representa uma oportunidade impar para compreender os padrões de interação G×E e subsidiar a recomendação de materiais adaptados e estáveis.
+O Malawi destaca-se nesse contexto por apresentar sistemas agrícolas predominantemente dependentes da precipitação pluvial, elevada variabilidade climática entre regiões e frequente ocorrência de estresses abióticos que afetam o desempenho das culturas (Tufa *et al.*, 2019; Van Vugt, Franke & Giller, 2018). Além disso, a agricultura desempenha papel fundamental na economia nacional e na segurança alimentar da população, tornando a disponibilização de cultivares amplamente adaptadas uma prioridade para os programas de melhoramento. Dessa forma, a avaliação do comportamento dos genótipos em múltiplos ambientes do Malawi representa uma oportunidade impar para compreender os padrões de interação G×E e subsidiar a recomendação de materiais adaptados e estáveis.
 
 # **OBJETIVOS**
 
@@ -76,17 +76,17 @@ Avaliar a interação genótipo × ambiente para produtividade de grãos em gen�
 
 ## Objetivos Específicos
 
-1.  Avaliar a qualidade experimental e a capacidade discriminatória dos ambientes da rede de ensaios por meio de parâmetros genéticos, herdabilidade e significância do efeito genotípico;
+1. Avaliar a qualidade experimental e a capacidade discriminatória dos ambientes da rede de ensaios por meio de parâmetros genéticos, herdabilidade e significância do efeito genotípico;
 
-2.  Caracterizar a heterogeneidade ambiental e a natureza da interação genótipos x ambientes para produtividade de grãos;
+2. Caracterizar a heterogeneidade ambiental e a natureza da interação genótipos x ambientes para produtividade de grãos;
 
-3.  Comparar diferentes modelos mistos e estruturas de covariância genética quanto à sua capacidade de descrever a interação G×E;
+3. Comparar diferentes modelos mistos e estruturas de covariância genética quanto à sua capacidade de descrever a interação G×E;
 
-4.  Estimar valores genotípicos preditos (BLUPs), componentes de variância e correlações genéticas entre ambientes;
+4. Estimar valores genotípicos preditos (BLUPs), componentes de variância e correlações genéticas entre ambientes;
 
-5.  Avaliar a adaptabilidade e a estabilidade dos genótipos pelos métodos de Lin & Binns (1988) e Eskridge (1990);
+5. Avaliar a adaptabilidade e a estabilidade dos genótipos pelos métodos de Lin & Binns (1988) e Eskridge (1990);
 
-6.  Identificar genótipos superiores quanto à produtividade, estabilidade e previsibilidade de desempenho para as condições de cultivo do Malawi.
+6. Identificar genótipos superiores quanto à produtividade, estabilidade e previsibilidade de desempenho para as condições de cultivo do Malawi.
 
 # **MATERIAL E MÉTODOS**
 
@@ -146,7 +146,7 @@ $$\mathbf{y}= \mathbf{1}\mu + \mathbf{Xb} + \mathbf{Zg} + \boldsymbol{\varepsilo
 
 Os efeitos de genótipos foram considerados aleatórios por haver um elevado número de materiais testados, além do interesse na estimação de parâmetros genéticos, especialmente a herdabilidade. Contudo, o efeito de bloco foi considerado como fixo devido ao baixo número de repetições por ensaio e a ocorrência de desbalanceamento em alguns ambientes, decorrente da perda de parcelas experimentais, limitando a precisão da estimativa de um componente de variância associado a esse fator.
 
-Os componentes de variância genética ($\sigma_g^2$) e residual ($\sigma_\boldsymbol{\varepsilon}^2$) foram estimados por meio do método da Máxima Verossimilhança Restritra (REML) (Patterson; Thompson, 1971), utilizando o pacote *asreml* (The VSNi Team, 2026).
+Os componentes de variância genética ($\sigma_g^2$) e residual ($\sigma_\boldsymbol{\varepsilon}^2$) foram estimados por meio do método da Máxima Verossimilhança Restritra (REML) (Patterson; Thompson, 1971), utilizando o pacote `asreml` (The VSNi Team, 2026).
 
 A significância do efeito genotípico foi avaliada por meio do Teste de Razão de Verossimilhança (*Likelihood Radio Test* - LRT), comparando o modelo completo com um modelo reduzido sem o efeito de genótipos:
 
@@ -156,40 +156,50 @@ A estatística do teste foi obida por:
 
 $$\text{LRT} = -2[\text{log}_R - \text{log}_C]$$ em que $\text{log}_R$ representa o logarítimo da verossimilhança do modelo restrito e $\text{log}_C$ o o logarítimo da verossimilhança do modelo completo.
 
-Para cada ambiente foram estimadas a herdabiliade no sentido amplo ($H^2$) e a herdabilidade de Cullis *et al.* (2006) ($H^2_{Cullis}$), obtidas por, respectivamente: $$H^2 = \frac{\sigma_g^2}{\sigma_g^2 + \sigma_\epsilon^2} \ \  \text{e} \ \ \ H^2_{Cullis} = 1 - \frac{\bar{SED}^2}{2\sigma_{g}^2}$$ onde $\bar{SED}^2$ é a variância do erro médio de predição entre genótipos.
+Para cada ambiente foram estimadas a herdabilidade no sentido amplo ($H^2$) e a herdabilidade de Cullis *et al.* (2006) ($H^2_\text{Cullis}$), obtidas por, respectivamente: $$H^2 = \frac{\sigma_g^2}{\sigma_g^2 + \sigma_\epsilon^2} \ \  \text{e} \ \ \ H^2_{Cullis} = 1 - \frac{\bar{SED}^2}{2\sigma_{g}^2}$$ onde $\bar{SED}^2$ é a variância do erro médio de predição entre genótipos.
 
 Como os genótipos foram modelados como efeitos aleatórios, as estimativas dos valores genéticos preditos foram obtidas por meio dos BLUPs (*Best Linear Unbiased Predictions*). A *reliability* foi utilizada como medida da precisão dos BLUPs, permitindo avaliar a capacidade de cada ambiente em fornecer estimativas confiáveis para a seleção de genótipos.
 
-Assim, após a avaliação individual dos ambientes, foram excluídos das análises de interação G x E os ambientes que não apresentaram variabilidade significativa para genótipo no teste LRT.
+Assim, após a avaliação individual dos ambientes, foram excluídos das análises de interação G x A os ambientes que não apresentaram variabilidade significativa para genótipo no teste LRT.
 
 ## Análise Interação Genótipos x Ambientes
 
-A fim de caracterizar os ambientes quanto ao seu potencial produtivo, foi utilizado o índice ambiental proposto por Annicchiarico (1992), por meio da função *Annicchiarico()* do pacote *metan* (Olivoto & Lúcio, 2020). O índice foi calculado a partir da diferença entre a média de produtividade de cada ambiente e a média geral dos ensaios, permitindo classificar os ambientes em favoráveis (($I_j > 0$) ou desfavoráveis ($I_j < 0$). Os resultados foram apresentados graficamente utilizando o pacote *ggplot2* (Wickham, 2016), com o objetivo de fornecer uma caracterização inicial dos ambientes avaliados e auxiliar na interpretação da interação genótipo × ambiente.
+A fim de caracterizar os ambientes quanto ao seu potencial produtivo, foi utilizado o índice ambiental proposto por Annicchiarico (1992), por meio da função `Annicchiarico()` do pacote `metan` (Olivoto & Lúcio, 2020). O índice ambiental ($I_j$) foi calculado a partir da diferença entre a média de produtividade de cada ambiente e a média geral dos ensaios, ou seja:
 
-Em seguida, os valores dos BLUPs dos genótipos foram reunidos em uma matriz contendo o desempenho de cada genótipo em cada ambiente. Esses valores foram obtidos a partir dos modelos mistos ajustados individualmente para cada ensaio, conforme descrito anteriormente, e utilizados como estimativas dos valores genéticos dos genótipos, minimizando a influência dos efeitos ambientais e do erro experimental. Essa análise teve como objetivo avaliar visualmente se ocorre e qual a natureza da interação G×E, diferenciando entre interações simples e complexas, Assim, foi construído um gráfico de perfis de resposta (*reaction norm plots*), no qual o desempenho dos genótipos foi representado ao longo dos ambientes de avaliação. O gráfico foi elaborado utilizando o pacote *ggplot2* (Wickham, 2016), sendo alguns genótipos destacados aleatoriamente por meio do pacote *gghighlight* (Yutani, 2025), apenas para facilitar a visualização dos padrões de resposta e dos possíveis cruzamentos entre as curvas.
+$$I_j = \frac{\bar{y}_j - \bar{y}}{\bar{y}}$$
 
-A análise conjunta dos ambientes foi realizada utilizando modelos mistos através do pacote *asreml* (The VSNi Team, 2026). Foram comparados quatro modelos mistos com diferentes estruturas de variância e covariância para os efeitos genéticos e residuais, como demonstrado a seguir.
+em que $\bar{y}_j$ é a média do ambiente $j$, e $\bar{y}$ é a média geral do experimento.
 
-**Modelo M0: Simetria Composta** *(compound symmetry)*
+Isso permite a classificação dos ambientes em favoráveis ($I_j > 0$) ou desfavoráveis ($I_j < 0$). Os resultados foram apresentados graficamente utilizando o pacote `ggplot2` (Wickham, 2016), com o objetivo de fornecer uma caracterização inicial dos ambientes avaliados e auxiliar na interpretação da interação genótipo × ambiente.
 
-Inicialmente, foi ajustado um modelo base (M0) de simetria composta, assumindo variâncias homogêneas entre ambientes para os efeitos genéticos e residuais:
+Em seguida, os valores dos BLUPs dos genótipos foram reunidos em uma matriz contendo o desempenho de cada genótipo em cada ambiente. Esses valores foram obtidos a partir dos modelos mistos ajustados individualmente para cada ensaio, conforme descrito anteriormente, e utilizados como estimativas dos valores genéticos dos genótipos, minimizando a influência dos efeitos ambientais e do erro experimental. Essa análise teve como objetivo avaliar visualmente se ocorre e qual a natureza da interação G×E, diferenciando entre interações simples e complexas. Assim, foi construído um gráfico de perfis de resposta (*reaction norm plots*), no qual o desempenho dos genótipos foi representado ao longo dos ambientes de avaliação. O gráfico foi elaborado utilizando o pacote `ggplot2` (Wickham, 2016), sendo alguns genótipos destacados aleatoriamente por meio do pacote `gghighlight` (Yutani, 2025), apenas para facilitar a visualização dos padrões de resposta e dos possíveis cruzamentos entre as curvas.
+
+A análise conjunta dos ambientes foi realizada utilizando modelos mistos através do pacote `asreml` (The VSNi Team, 2026). Foram comparados quatro modelos mistos com diferentes estruturas de variância e covariância para os efeitos genéticos e residuais, como demonstrado a seguir.
+
+**Modelo M0: Identidade** *(Id)*
+
+Inicialmente, foi ajustado um modelo base (M0), assumindo variâncias homogêneas entre ambientes para os efeitos genéticos e residuais; e covariância igual a zero:
 
 $$GY_{ijk} = \mu + E_i + G_j + GE_{ij} + B_k + \varepsilon_{ijk}$$ em que: $$\mathbf{g}\sim N\left[\mathbf{0},\left(
 \sigma_g^2 \mathbf{J}_p +
 \sigma_{ge}^2 \mathbf{I}_p
-\right)\otimes\mathbf{I}_t\right]$$ $$\boldsymbol{\varepsilon}\sim N\left(\mathbf{0},\sigma_e^2\mathbf{I}_p\otimes\mathbf{I}_{n_j}\right)$$ Esse modelo assume que todos os ambientes apresentam a mesma variância genética, a mesma variância residual e a mesma covariância genética entre pares de ambientes. Dessa forma, ele serve como modelo de referência para avaliar se estruturas mais complexas são necessárias.
+\right)\otimes\mathbf{I}_t\right]$$ $$\boldsymbol{\varepsilon}\sim N\left(\mathbf{0},\sigma_e^2\mathbf{I}_p\otimes\mathbf{I}_{n_j}\right)$$
 
-No código, esse modelo foi ajustado por:n *m0 = asreml(fixed = GY \~ env, random = \~ gen + gen:env + bloco, data = data)*.
+Esse modelo assume que todos os ambientes apresentam a mesma variância genética, a mesma variância residual e a covariância genética entre pares de ambientes igual a zero. Dessa forma, ele serve como modelo de referência para avaliar se estruturas mais complexas são necessárias.
 
-**Modelo M1: Heterogeneidade Residual entre Ambientes** *(heteroscedasticity in residual variances)*
+No código, esse modelo foi ajustado por:
 
-Em ensaios multiambientais é comum possuir heterogeneidade entre os diferentes locais. Assim, foi ajustado um segundo modelo permitindo que cada ambiente possuísse sua própria variância residual:
+`m0 = asreml(fixed = GY \~ env, random = \~ gen + gen:env + bloco, data = data)`
 
-$$\boldsymbol{\varepsilon} \sim N(\mathbf{0},\bigoplus_{j=1}^{p}\sigma_{\varepsilon_j}^{2}\mathbf{I}_{n_j})$$ onde ⊕ representa a soma direta das matrizes residuais.
+**Modelo M1: Heterogeneidade Residual entre ambientes** *(heteroscedasticity in residual variances)*
 
-Isso indica que alguns ambientes podem apresentar maior variabilidade experimental do que outros devido a diferenças de manejo,irrigação, clima, fertilidade do solo, entre outros.
+Em ensaios multiambientais é comum possuir heterogeneidade entre os diferentes ambientes. Ou seja, a pressuposição que cada ambiente tenha uma variância é mais plausível que eles variem de forma igual. Portanto, foi ajustado um segundo modelo permitindo que cada ambiente possuísse sua própria variância residual:
 
-No código, essa estrtura foi ajustada como: *residual = \~ dsum(\~id(units)\|env)*, onde *dsum()* permite estimar uma variância residual específica para cada ambiente.
+$$\boldsymbol{\varepsilon} \sim N(\mathbf{0},\bigoplus_{j=1}^{p}\sigma_{\varepsilon_j}^{2}\mathbf{I}_{n_j})$$ onde ⊕ representa a soma direta das matrizes residuais. Resultando em uma matriz bloco diagonal, em que cada bloco representa a variância de um ambiente.
+
+Isso indica que alguns ambientes podem apresentar maior variabilidade experimental do que outros devido a diferenças de manejo, irrigação, clima, fertilidade do solo, entre outros.
+
+No código, essa estrtura foi ajustada como: `residual = \~ dsum(\~id(units)\|env)`, onde `dsum()` permite estimar uma variância residual específica para cada ambiente.
 
 **Modelo M2: Blocos Específicos por Ambiente** *(block diagonal structure)*
 
@@ -199,32 +209,34 @@ $$\mathbf{b} \sim N(\mathbf{0},  {\bigoplus_{j=1}^{p}\sigma_{b_j}^{2}\mathbf{I}}
 
 Essa modificação permite que a importância dos blocos varie entre locais, melhorando a representação da estrutura experimental de cada ensaio.
 
-No código, essa estrtura foi ajustada como: *random = \~ gen + gen:env + at(env):bloco*, onde *at(env):bloco* estima uma variância distinta para os blocos de cada ambiente.
+No código, essa estrtura foi ajustada como: `random = \~ gen + gen:env + at(env):bloco`, onde `at(env):bloco` estima uma variância distinta para os blocos de cada ambiente.
 
 **Modelo M3: Simetria Composta Heterogênea** *(heterogeneous compound symmetry)*
 
-Após modelar adequadamente os efeitos residuais e de blocos, buscou-se representar de forma mais realista a interação G×E. Nos modelos anteriores assumia-se uma única variância genética para todos os ambientes. Entretanto, ambientes distintos frequentemente apresentam diferentes magnitudes de variabilidade genética. Assim, foi ajustado um modelo de simetria composta heterogênea: $$\mathbf{g}\sim N(\mathbf{0},\mathbf{D}\left[\mathbf{I}_{p}+
+Após modelar adequadamente os efeitos residuais e de blocos, buscou-se representar de forma mais realista a interação G×A. Nos modelos anteriores assumia-se uma única variância genética para todos os ambientes. Entretanto, ambientes distintos frequentemente apresentam diferentes magnitudes de variabilidade genética. Assim, foi ajustado um modelo de simetria composta heterogênea:
+
+$$\mathbf{g}\sim N(\mathbf{0},\mathbf{D}\left[\mathbf{I}_{p}+
 \rho\left(\mathbf{J}_{p}-\mathbf{I}_{p}\right)\right]\mathbf{D}\otimes\mathbf{I}_{t})$$ onde: $$\mathbf{D}=\text{diag}\left(\sigma_{g1},\sigma_{g2},\ldots,\sigma_{gp}\right)$$
 
 Nessa estrutura, cada ambiente possui sua própria variância genética, enquanto uma única correlação genética ($\rho$) é estimada para todos os pares de ambientes. Na prática, isso significa que a expressão da variabilidade genética pode ser maior em alguns ambientes do que em outros, embora a associação genética média entre ambientes permaneça constante.
 
-No código, essa estrtura foi ajustada como: *random = \~ corh(env):gen + at(env):bloco*, em que *corh()* corresponde à estrutura *heterogeneous compound symmetry*.
+No código, essa estrtura foi ajustada como: `random = \~ corh(env):gen + at(env):bloco`, em que `corh()` corresponde à estrutura *heterogeneous compound symmetry*.
 
 Os modelos foram comparados por meio dos critérios de informação de Akaike (AIC) e Bayesiano (BIC), calculados a partir da máxima verossimilhança restrita (REML). Além disso, foram obtidos a herdabilidade generalizada de Cullis, acurácia seletiva e o ganho esperado com a seleção dos 30 melhores genótipos.
 
-Após a escolha do modelo mais adequado, os rankings dos genótipos obtidos pelo modelo selecionado e pelo modelo base (M0) foram comparados por meio dos BLUPs e da correlação de Spearman. Também foi estimada a matriz de variâncias, covariâncias e correlações genéticas entre ambientes, a partir da estrutura de covariância genética do modelo selecionado. Por fim, a interação genótipo × ambiente foi explorada por meio de *heatmap* construído com os BLUPs preditos para cada combinação genótipo × ambiente, permitindo visualizar padrões de desempenho e a magnitude da interação G × E. Todas as análises gráficas foram realizadas utilizando os pacotes *ggplot2* (Wickham, 2016) e *plotly* (Sievert, 2020) no Software R.
+Após a escolha do modelo mais adequado, os rankings dos genótipos obtidos pelo modelo selecionado e pelo modelo base (M0) foram comparados por meio dos BLUPs e da correlação de Spearman. Também foi estimada a matriz de variâncias, covariâncias e correlações genéticas entre ambientes, a partir da estrutura de covariância genética do modelo selecionado. Por fim, a interação genótipo × ambiente foi explorada por meio de `heatmap` construído com os BLUPs preditos para cada combinação genótipo × ambiente, permitindo visualizar padrões de desempenho e a magnitude da interação G × A. Todas as análises gráficas foram realizadas utilizando os pacotes `ggplot2` (Wickham, 2016) e `plotly` (Sievert, 2020) no Software R.
 
 ## Adaptabilidade e Estabilidade dos Genótipos
 
 Após a identificação da interação genótipo × ambiente, a adaptabilidade e a estabilidade dos genótipos foram avaliadas a partir dos valores genotípicos preditos (BLUPs) obtidos pelo modelo M3. O método de Lin e Binns (1988) foi utilizado para calcular o índice de superioridade (*Pi*), que quantifica a distância entre o desempenho de cada genótipo e o melhor desempenho observado em cada ambiente. Genótipos com menores valores de *Pi* foram considerados mais adaptados e estáveis.
 
-Também foi calculado o índice de segurança proposto por Eskridge (1990), obtido a partir da produtividade média e da variabilidade do desempenho dos genótipos entre ambientes. Genótipos com maiores valores desse índice foram considerados mais estáveis e previsíveis. Os resultados foram apresentados graficamente utilizando os pacotes *ggplot2* (Wickham, 2016).
+Também foi calculado o índice de segurança proposto por Eskridge (1990), obtido a partir da produtividade média e da variabilidade do desempenho dos genótipos entre ambientes. Genótipos com maiores valores desse índice foram considerados mais estáveis e previsíveis. Os resultados foram apresentados graficamente utilizando os pacotes `ggplot2` (Wickham, 2016).
 
 # **RESULTADOS**
 
 ## Análise Individual dos Ambientes
 
-Os parâmetros genéticos estimados para os ambientes avaliados no Malawi evidenciaram ampla variação na capacidade dos ensaios em discriminar os genótipos de soja. As estimativas de variância genética ($\sigma_g^2$) variaram de valores próximos de zero à 1.400.539,162 $kg^2 ha^{-2}$ (Tabela 1). Assim, as maiores variâncias genéticas foram observadas nos ambientes E0251 ($\sigma_g^2= 1.400.539,162 \  kg^2 ha^{-2}$), E0138 ($\sigma_g^2= 1.070.907,823 \  kg^2 ha^{-2}$), E0250 ($\sigma_g^2= 1.060.707,066 \  kg^2 ha^{-2}$), E0201 ($\sigma_g^2= 993.528,130 \  kg^2 ha^{-2}$) e E075 ($\sigma_g^2= 969.083,364 \  kg^2 ha^{-2}$) (Tabela 1).
+Os parâmetros genéticos estimados para os ambientes avaliados no Malawi evidenciaram ampla variação na capacidade dos ensaios em discriminar os genótipos de soja. As estimativas de variância genética ($\sigma_g^2$) variaram de valores próximos de zero à $1.400.539,162 \ \text{kg}^2 \text{ha}^{-2}$ (Tabela 1). Assim, as maiores variâncias genéticas foram observadas nos ambientes E0251 ($\sigma_g^2= 1.400.539,162 \  \text{kg}^2 \text{ha}^{-2}$), E0138 ($\sigma_g^2= 1.070.907,823 \ \text{kg}^2 \text{ha}^{-2}$), E0250 ($\sigma_g^2= 1.060.707,066 \  \text{kg}^2 \text{ha}^{-2}$), E0201 ($\sigma_g^2= 993.528,130 \  \text{kg}^2 \text{ha}^{-2}$) e E075 ($\sigma_g^2= 969.083,364 \ \text{kg}^2 \text{ha}^{-2}$) (Tabela 1).
 
 ```{r}
 #| echo: true
@@ -369,7 +381,7 @@ A significância do efeito genotípico foi avaliada por meio do teste LRT. Dos a
 
 As estimativas de herdabilidade em sentido amplo ($H^2$) variaram de 0,00 a 0,83 (Tabela 1). Os maiores valores foram observados nos ambientes E075 ($H^2 = 0,827$), E0156 ($H^2 = 0,823$), E0251 ($H^2 = 0,759$), E0201 ($H^2 = 0,741$) e E030 ($H^2 = 0,735$), enquanto os menores valores foram observados nos ambientes E0275 ($H^2 = 0,021$), E0274 ($H^2 = 0,026$) e E0241 ($H^2 = 0,063$) (Tabela 1). Nos ambientes E094 e E0242 a herdabilidade foi nula (Tabela 1).
 
-A herdabilidade de Cullis apresentou comportamento similar, variando de 0,00 a 0,93 (Tabela 1). Os ambientes E075 ($H^2_{Cullis} = 0,934$), E0156 ($H^2_{Cullis} = 0,933$), E0201 ($H^2_{Cullis} = 0,896$), E030 ($H^2_{Cullis} = 0,893$) e E021 ($H^2_{Cullis} = 0,859$) (Tabela 1). Em contraste, os ambientes E0242, E094, E0275 e E0274 ainda apresentaram valores próximos de zero (Tabela 1).
+A herdabilidade de Cullis apresentou comportamento similar, variando de 0,00 a 0,93 (Tabela 1). Os ambientes E075 ($H^2_\text{Cullis} = 0,934$), E0156 ($H^2_\text{Cullis} = 0,933$), E0201 ($H^2_\text{Cullis} = 0,896$), E030 ($H^2_\text{Cullis} = 0,893$) e E021 ($H^2_\text{Cullis} = 0,859$) (Tabela 1). Em contraste, os ambientes E0242, E094, E0275 e E0274 ainda apresentaram valores próximos de zero (Tabela 1).
 
 Os valores de *reliability* variaram de 0,393 a 0,989 (Tabela 1). Os menores valores foram observados nos ambientes E0249 (0,393) e E0251 (0,540), enquanto os maiores valores foram observados nos ambientes E0242 e E094 (0,989) (Tabela 1).
 
@@ -377,7 +389,7 @@ Com base na combinação dos resultados da análise individual, foram excluídos
 
 ## Análise Interação genótipos x ambientes
 
-A classificação dos ambietes por meio do índice ambiental indicou a presença de ambientes com diferentes potenciais produtivos, ocorrendo tanto ambientes classificados como favoráveis ($I_j > 0$) quato desfavoráveis ($I_j < 0$), distribuídos ao longo de toda a rede experimental (Figura 1). Os índices ambientais variaram de -1.400 à 2.600 $kg \ ha^{-1}$, entretanto a maioria dos ambientes apresentou valores relativamente próximos ao índice nulo (Figura 1).
+A classificação dos ambietes por meio do índice ambiental indicou a presença de ambientes com diferentes potenciais produtivos, ocorrendo tanto ambientes classificados como favoráveis ($I_j > 0$) quato desfavoráveis ($I_j < 0$), distribuídos ao longo de toda a rede experimental (Figura 1). Os índices ambientais variaram de -1.400 à 2.600 $\text{kg} \ \text{ha}^{-1}$, entretanto a maioria dos ambientes apresentou valores relativamente próximos ao índice nulo (Figura 1).
 
 ```{r}
 #| echo: true
@@ -406,69 +418,37 @@ library(gghighlight)
 
 FIGURA2 <- GEI %>% 
   ggplot(aes(x = env, y = predicted.value)) +
-
-  geom_line(
-    linewidth = 0.9,
-    aes(group = gen, color = gen)
-  ) +
-
-  gghighlight(
-    gen %in% c('G036', 'G044', 'G129', 'G121'),
-    use_direct_label = FALSE
-  ) +
-
-  labs(
-    title = "Figura 2. Resposta de genótipos de soja nos ambientes avaliados do Malawi.",
-    x = "Ambientes",
-    y = expression("Produtividade de Grãos (kg ha"^{-1}*")")
-  ) +
-
-  guides(
-    color = guide_legend(
-      title = "Genótipos",
-      nrow = 1
-    )
-  ) +
-
-  scale_color_manual(
-    values = c("#003350", "#ff6441", "#2F95CC", "#2E8B57"),
-    limits = c("G036", "G044", "G129", "G121"),
-    breaks = c("G036", "G044", "G129", "G121")
-  ) +
-
+  geom_line(linewidth = 0.9,
+            aes(group = gen, color = gen)) +
+  gghighlight(gen %in% c('G036', 'G044', 'G129', 'G121'),use_direct_label = FALSE) +
+  labs(title = "Figura 2. Resposta de genótipos de soja nos ambientes avaliados do Malawi",
+       x = "Ambientes",
+       y = expression("Produtividade de Grãos (kg ha"^{-1}*")")) +
+  guides(color = guide_legend(title = "Genótipos", nrow = 1)) +
+  scale_color_manual(values = c("#003350", "#ff6441", "#2F95CC", "#2E8B57"),
+                     limits = c("G036", "G044", "G129", "G121"),
+                     breaks = c("G036", "G044", "G129", "G121")) +
   theme_bw() +
+  theme(plot.title = element_text(size = 16, 
+                                  hjust = 0,
+                                  margin = margin(b = 5)),
 
-  theme(
-
-    # título da figura
-    plot.title = element_text(
-      size = 16,
-      hjust = 0,
-      margin = margin(b = 5)
-    ),
-
-    # títulos dos eixos
+    # eixos
     axis.title.x = element_text(size = 16),
     axis.title.y = element_text(size = 16),
-
-    # remove nomes dos ambientes
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
 
     # legenda
     legend.position = "bottom",
     legend.direction = "horizontal",
-
     legend.title = element_text(size = 16),
     legend.text = element_text(size = 16),
-
-    # aproxima legenda do gráfico
     legend.margin = margin(t = 0),
     legend.box.margin = margin(t = 0),
 
-    # reduz margens gerais
-    plot.margin = margin(5, 5, 5, 5)
-  ) 
+    # margens gerais
+    plot.margin = margin(5, 5, 5, 5)) 
 ```
 
 ```{r}
@@ -490,24 +470,34 @@ index <- ann$GY$environments |>
 FIGURA1 <- ggplot(index, aes(x = Location, y = index, colour = class, fill = class)) +
   geom_point(aes(shape = class), size = 2.5) + 
   geom_hline(yintercept = 0, linetype = "dashed", linewidth = 1.2) +
-  scale_shape_manual(values = c(favourable = 24, 
-                                unfavorable = 25,
-                                favorable = 24,
-                                unfavourable = 25)) +
+  scale_shape_manual(values = c(favourable = 24, unfavorable = 25,
+                                favorable = 24, unfavourable = 25),
+                     labels = c(favourable = "favorável",
+                                favorable = "favorável",
+                                unfavorable = "desfavorável",
+                                unfavourable = "desfavorável")) +
   scale_colour_manual(values = c(favourable = "forestgreen",
                                  unfavorable = "firebrick",
                                  favorable = "forestgreen",
-                                 unfavourable = "firebrick")) +
+                                 unfavourable = "firebrick"),
+                     labels = c(favourable = "favorável",
+                                favorable = "favorável",
+                                unfavorable = "desfavorável",
+                                unfavourable = "desfavorável")) +
   scale_fill_manual(values = c(favourable = "forestgreen",
                                unfavorable = "firebrick",
                                favorable = "forestgreen",
-                               unfavourable = "firebrick")) +
+                               unfavourable = "firebrick"),
+                     labels = c(favourable = "favorável",
+                                favorable = "favorável",
+                                unfavorable = "desfavorável",
+                                unfavourable = "desfavorável")) +
   theme_bw() +
   theme(text = element_text(size = 14),
         legend.position = "top",
         axis.text.x = element_text(angle = 90, hjust = 1),
         plot.title = element_text(hjust = 0)) +
-  labs( title = "Figura 1. Índices ambientais dos ambientes avaliados no Malawi.",
+  labs(title = "Figura 1. Índices ambientais dos ambientes avaliados no Malawi",
         x = "Ambientes",
        y = "Índice Ambiental",
        fill = "",
@@ -524,7 +514,7 @@ FIGURA1 <- ggplot(index, aes(x = Location, y = index, colour = class, fill = cla
 FIGURA1
 ```
 
-Posteriormente, na análise gráfica preliminar da interação G x E, observou-se variação no desempenho dos genótipos entre os ambientes avaliados, bem como frequentes cruzamentos entre as curvas de resposta (Figura 2). Entre os genótipos destacados, verificaram-se padrões distintos de comportamento, com G121 e G036 apresentando maior amplitude de variação ao longo dos ambientes, enquanto G044 e G129 exibiram respostas relativamente mais uniformes (Figura 2).
+Posteriormente, na análise gráfica preliminar da interação G x A, observou-se variação no desempenho dos genótipos entre os ambientes avaliados, bem como frequentes cruzamentos entre as curvas de resposta (Figura 2). Entre os genótipos destacados, verificaram-se padrões distintos de comportamento, com G121 e G036 apresentando maior amplitude de variação ao longo dos ambientes, enquanto G044 e G129 exibiram respostas relativamente mais uniformes (Figura 2).
 
 ```{r}
 #| echo: true
@@ -535,9 +525,9 @@ Posteriormente, na análise gráfica preliminar da interação G x E, observou-s
 FIGURA2
 ```
 
-Os modelos avaliados, a partir da análise por modelos mistos, diferiram quanto aos critérios de ajuste, herdabilidade, acurácia e ganho esperado com a seleção (Tabela 2). Observou-se redução progressiva dos valores de AIC à medida que estruturas mais complexas foram incorporadas ao modelo, sendo que o modelo M3 apresentou o menor valor de AIC (73.937,03), contudo o menor valor de BIC foi observado em M1 (74.166,16) (Tabela 2).
+Os modelos avaliados, a partir da análise por modelos mistos, diferiram quanto aos critérios de ajuste, herdabilidade, acurácia e ganho esperado com a seleção (Tabela 2). Observou-se redução progressiva dos valores de AIC à medida que estruturas mais complexas foram incorporadas ao modelo, sendo que o modelo M3 apresentou o menor valor de AIC ($73.937,03$), contudo o menor valor de BIC foi observado em M1 ($74.166,16$) (Tabela 2).
 
-As maiores estimativas de herdabilidade foram observadas nos modelos M1 e M2 (0,782), enquanto o modelo M3 apresentou a menor estimativa (0,474) (Tabela 2). Comportamento semelhante foi observado para a acurácia seletiva, que variou de 0,621 a 0,884 (Tabela 2). Em contrapartida, o ganho esperado com a seleção aumentou gradualmente entre os modelos, passando de 16,234% em M0 para 17,356% em M3 (Tabela 2).
+As maiores estimativas de herdabilidade foram observadas nos modelos M1 e M2 ($0,782$), enquanto o modelo M3 apresentou a menor estimativa ($0,474$) (Tabela 2). Comportamento semelhante foi observado para a acurácia seletiva, que variou de $0,621$ a $0,884$ (Tabela 2). Em contrapartida, o ganho esperado com a seleção aumentou gradualmente entre os modelos, passando de $16,234\%$ em M0 para $17,356\%$ em M3 (Tabela 2).
 
 ```{r}
 #| echo: true
@@ -748,7 +738,7 @@ plotly::ggplotly(comparison |>
           panel.background = element_blank(),
           text = element_text(size = 14),
           plot.title = element_text(hjust = 0))+
-    labs(title = "Figura 3. Comparação do ranking dos genótipos obtido pelos modelos M0 e M3.",
+    labs(title = "Figura 3. Comparação do ranking dos genótipos obtido pelos modelos M0 e M3",
          x = "Modelo Inicial (M0) - Ranking",
          y = "Modelo Escolhido (M3) - Ranking", 
          color = "Genótipos", 
@@ -760,7 +750,7 @@ plotly::ggplotly(comparison |>
     scale_y_reverse(breaks = c(1,seq(5, nlevels(data$gen), by = 5))))
 ```
 
-A matriz de variâncias e covariâncias genéticas estimada pelo modelo M3 evidenciou expressiva heterogeneidade da variância genética entre os ambientes avaliados (Tabela 3). As variâncias genéticas apresentaram ampla amplitude, variando de 36.427,40 no ambiente E017 até 2.028.458,20 no ambiente E0251 (Tabela 3). As correlações genéticas entre os ambientes permaneceram constantes, com valor aproximado de 0,50 para todas as combinações de ambientes (Tabela 3).
+A matriz de variâncias e covariâncias genéticas estimada pelo modelo M3 evidenciou expressiva heterogeneidade da variância genética entre os ambientes avaliados (Tabela 3). As variâncias genéticas apresentaram ampla amplitude, variando de $36.427,40$ no ambiente E017 até $2.028.458,20$ no ambiente E0251 (Tabela 3). As correlações genéticas entre os ambientes permaneceram constantes, com valor aproximado de $0,50$ para todas as combinações de ambientes (Tabela 3).
 
 ```{r}
 #| echo: true
@@ -819,27 +809,21 @@ pred |> ggplot(aes(x = reorder(env, -predicted.value),
                    fill = predicted.value)) + 
   geom_tile() + 
   scale_fill_gradient(low = "#10342d", high = '#b2bc63') + 
-  labs(title = "Figura 4. Heatmap dos valores genotípicos preditos das combinações G × E no Malawi.", x = "Ambientes", y = "Genótipos", fill = "GY")+ 
+  labs(title = "Figura 4. Heatmap dos valores genotípicos preditos das combinações G × E no Malawi",
+       x = "Ambientes",
+       y = "Genótipos",
+       fill = "GY")+ 
   theme_minimal(base_size = 18) +
-  theme(
-  legend.position = "right",
-  axis.text.y = element_blank(),
-  axis.ticks.y = element_blank(),
-  axis.text.x = element_text(
-    angle = 90,
-    vjust = 0.5,
-    hjust = 1
-  ),
-    plot.title = element_text(
-      size = 14,
-      hjust = 0
-    )
-  )
+  theme(legend.position = "right", 
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    plot.title = element_text(size = 14, hjust = 0))
 ```
 
 ## Índices de Estabilidade
 
-No método de Lin & Binns (1988), os menores valores de *Pi* foram observados para os genótipos G238 (16871.43), G194 (88522.73), G148 (109309.21), G017 (121206.88) e G214 (129923.87) indicando maior estabilidade geral de produção nos ambientes avaliados (Figura 5). Em contraste, os genótipos G275 (3052882), G156 (2933088), G131 (2916565), G287 (2630921) e G031 (2591032) apresentaram os maiores valores de *Pi* indicando menor estabilidade de produção nos ambientes avaliados (Figura 5).
+No método de Lin & Binns (1988), os menores valores de *Pi* foram observados para os genótipos G238 ($16871.43$), G194 ($88522.73$), G148 ($109309.21$), G017 ($121206.88$) e G214 ($129923.87$) indicando maior estabilidade geral de produção nos ambientes avaliados (Figura 5). Em contraste, os genótipos G275 ($3052882$), G156 ($2933088$), G131 ($2916565$), G287 ($2630921$) e G031 ($2591032$) apresentaram os maiores valores de *Pi* indicando menor estabilidade de produção nos ambientes avaliados (Figura 5).
 
 ```{r}
 #| echo: true
@@ -876,7 +860,7 @@ sort(Pi, decreasing = TRUE)[1:10]# menos estaveis
 sort(Pi, decreasing = FALSE)[1:10] # mais estaveis
 ```
 
-Pelo índice de segurança proposto por Eskridge (1990), os maiores valores foram observados para os genótipos G238 (2105,70), G194 (1992,90), G148 (1976,68), G214 (1971,70) e G017 (1939,07), indicando maior estabilidade (Figura 6). Por outro lado, os menores índices de segurança foram observados para os genótipos G275 (278,80), G156 (325,22), G131 (333,05), G287 (460,07) e G031 (464,81), evidenciando maior instabilidade (Figura 6).
+Pelo índice de segurança proposto por Eskridge (1990), os maiores valores foram observados para os genótipos G238 ($2105,70$), G194 ($1992,90$), G148 ($1976,68$), G214 ($1971,70$) e G017 ($1939,07$), indicando maior estabilidade (Figura 6). Por outro lado, os menores índices de segurança foram observados para os genótipos G275 ($278,80$), G156 ($325,22$), G131 ($333,05$), G287 ($460,07$) e G031 ($464,81$), evidenciando maior instabilidade (Figura 6).
 
 ```{r}
 #| echo: true
@@ -915,37 +899,37 @@ sort(SF, decreasing = FALSE)[1:10] # mais estaveis
 
 ## Análise Individual dos Ambientes
 
-A amplitude da variância genética observada é o primeiro indício de que os ambientes avaliados diferiram em relação à expressão dos genótipos na população estudada. Os ambientes que apresentaram maiores estimativas de variância genética, apresentaram condições mais favoráveis para a diferenciação dos genótipos estudados neles (Tabela 1). De acordo com Piepho *et al.* (2008), ambientes capazes de maximizar a expressão da variabilidade genética contribuem diretamente para a precisão da seleção e para a obtenção de ganhos genéticos superiores (Piepho et al., 2008; Smith et al., 2005; Cullis et al., 2006).A ampla variação das estimativas de variância genética entre os ambientes que encontra par no padrão encontrado por Araújo *et al.* (2025) em ensaios malawis e zambianos da rede Pan African.
+A amplitude da variância genética observada é o primeiro indício de que os ambientes avaliados diferiram em relação à expressão dos genótipos na população estudada. Os ambientes que apresentaram maiores estimativas de variância genética, apresentaram condições mais favoráveis para a diferenciação dos genótipos estudados neles (Tabela 1). De acordo com Piepho *et al.* (2008), ambientes capazes de maximizar a expressão da variabilidade genética contribuem diretamente para a precisão da seleção e para a obtenção de ganhos genéticos superiores (Piepho et al., 2008; Smith et al., 2005; Cullis et al., 2006). A ampla variação das estimativas de variância genética entre os ambientes que encontra par no padrão encontrado por Araújo *et al.* (2025) em ensaios malawis e zambianos da rede Pan African.
 
 Os resultados obtidos no teste LRT mostram o mesmo comportamento, ou seja, corroboram com as estimativas dos componentes de variância (Tabela 1). Em todos os ambientes posteriormente removidos da análise conjunta, o efeito genotípico não foi significativo, indicando ausência de diferenças estatísticas entre os materiais avaliados (Tabela 1). Esses resultado sugere que a variabilidade observada nesses ensaios foi predominantemente atribuída aos efeitos ambientais e ao erro experimental, reduzindo sua utilidade para fins de seleção.
 
-A baixa herdabilidade observada nos ambientes excluídos confirma essa interpretação, pois ela indica a proporção da variabilidade fenotípica atribuída aos efeitos genéticos e constitui um dos principais indicadores da eficiência da seleção (Tabela 1) (Yan & Holland). Ambientes com herdabilidade reduzida tendem a apresentar menor capacidade de identificar genótipos superiores, pois possuem uma alta variância residual em relação à genotípica(Resende & Duarte, 2007; Cullis et al., 2006). Resultados semelhantes foram observados para a herdabilidade de Cullis  (Tabela 1).Tolley *et al.* (2023), em estudo de ensaios multiambientais com milho, avaliando estratégias de seleção genomica, dicute que ambientes com baixa herdabilidade e fraca correlação genética com os demais foram identificados como aqueles onde condições ambientais limitantes restringiram a expressão da variabilidade genética dos genótipos superiores, justificando sua exclusão das análises conjuntas.
+A baixa herdabilidade observada nos ambientes excluídos confirma essa interpretação, pois ela indica a proporção da variabilidade fenotípica atribuída aos efeitos genéticos e constitui um dos principais indicadores da eficiência da seleção (Tabela 1) (Yan & Holland). Ambientes com herdabilidade reduzida tendem a apresentar menor capacidade de identificar genótipos superiores, pois possuem uma alta variância residual em relação à genotípica (Resende & Duarte, 2007; Cullis et al., 2006). Resultados semelhantes foram observados para a herdabilidade de Cullis (Tabela 1). Tolley *et al.* (2023), em estudo de ensaios multiambientais com milho, avaliando estratégias de seleção genomica, dicute que ambientes com baixa herdabilidade e fraca correlação genética com os demais foram identificados como aqueles onde condições ambientais limitantes restringiram a expressão da variabilidade genética dos genótipos superiores, justificando sua exclusão das análises conjuntas.
 
-Embora algum dos ambientes removidos tenham apresentado alta *reliability*, ela expressa a precisão de predição dos BLUPs, não necessarimanete a existência de variabilidade genética para a seleção (Tabela 1). Portanto, a herdabilidade e a herdabilidade de Cullis tornam-se mais adequados para avaliar a utilidade do ambiente em programas de melhoramento para a discriminação de genótipos (Cullis BR et al. 2006; Resende & Duarte, 2007).
+Embora algum dos ambientes removidos tenham apresentado alta *reliability*, ela expressa a precisão de predição dos BLUPs, não necessarimanete a existência de variabilidade genética para a seleção (Tabela 1). Portanto, a herdabilidade ampla e a herdabilidade de Cullis tornam-se mais adequados para avaliar a utilidade do ambiente em programas de melhoramento para a discriminação de genótipos (Cullis BR et al. 2006; Resende & Duarte, 2007).
 
 A remoção dos ambientes com baixa capacidade discriminativa é uma prática amplamente recomendada em análises de ensaios multiambientais. Ambientes com reduzida informação genética podem introduzir ruído na estimação dos componentes de variância e comprometer a qualidade das inferências sobre interação genótipos x ambientes (Mengesha *et al.*, 2019, Smith AB *et al.* 2001.).
 
 ## Análise Interação Genótipos x Ambientes
 
-A ampla variação dos índices ambientais confirma a existência de heterogeneidade entre os ambientes avaliados no Malawi (Figura 1). Embora a maioria dos ensaios tenha apresentado índices próximos de zero, indicando condições produtivas semelhantes à média da rede experimental, alguns ambientes apresentaram valores extremos, caracterizando condições altamente favoráveis ou desfavoráveis ao cultivo da soja (Figura 1). Essa heterogeneidade ambiental pode favorecer diferentes respostas produtivas dos materiais e, consequentemente, da interação genótipo × ambiente (Cooper & Hammer, 1996; van Eeuwijk et al., 2016).A heterogeneidade dos índices ambientais observada na rede experimental do Malawi é consistente com o padrão descrito em estudos conduzidos em condições similares da África Subsaariana (Araujo *et al.* 2025 Retore *et al.* 2025).
+A ampla variação dos índices ambientais confirma a existência de heterogeneidade entre os ambientes avaliados no Malawi (Figura 1). Embora a maioria dos ensaios tenha apresentado índices próximos de zero, indicando condições produtivas semelhantes à média da rede experimental, alguns ambientes apresentaram valores extremos, caracterizando condições altamente favoráveis ou desfavoráveis ao cultivo da soja (Figura 1). Essa heterogeneidade ambiental pode favorecer diferentes respostas produtivas dos materiais e, consequentemente, da interação genótipo × ambiente (Cooper & Hammer, 1996; van Eeuwijk et al., 2016). A heterogeneidade dos índices ambientais observada na rede experimental do Malawi é consistente com o padrão descrito em estudos conduzidos em condições similares da África Subsaariana (Araujo *et al.* 2025 Retore *et al.* 2025).
 
-Nesse contexto, o gráfico de perfis de resposta (Figura 2) revelou a ocorrência de múltiplos cruzamentos entre as linhas de resposta dos genótipos indica a predominância de interação G x E do tipo complexa. Esse tipo de interação ocorre quando há alteração no posicionamento relativo dos genótipos entre ambientes, de modo que materiais superiores em determinados ambientes deixam de apresentar o mesmo desempenho em outros locais ou condições de cultivo (Cruz *et al.*, 2012; van Eeuwijk et al., 2016; Allard & Bradshaw, 1964)). Esse comportamento foi evidenciado nos genótipos destacados, pois eles apresentaram diferentes padrões de resposta ao longo dos ambientes avaliados, com G121 e G036 exibindo maior amplitude de variação e G044 e G129 apresentando comportamento relativamente mais uniforme (Figura 2).
+Nesse contexto, o gráfico de perfis de resposta (Figura 2) revelou a ocorrência de múltiplos cruzamentos entre as linhas de resposta dos genótipos indica a predominância de interação G x A do tipo complexa. Esse tipo de interação ocorre quando há alteração no posicionamento relativo dos genótipos entre ambientes, de modo que materiais superiores em determinados ambientes deixam de apresentar o mesmo desempenho em outros locais ou condições de cultivo (Cruz *et al.*, 2012; van Eeuwijk et al., 2016; Allard & Bradshaw, 1964)). Esse comportamento foi evidenciado nos genótipos destacados, pois eles apresentaram diferentes padrões de resposta ao longo dos ambientes avaliados, com G121 e G036 exibindo maior amplitude de variação e G044 e G129 apresentando comportamento relativamente mais uniforme (Figura 2).
 
-A ampla variação dos índices ambientais e os frequentes cruzamentos observados nos perfis de resposta dos genótipos forneceram evidências iniciais da existência de heterogeneidade ambiental e de interação G × E do tipo complexa na rede de ensaios do Malawi (Figura 1; Figura 2). Entretanto, embora essas análises permitam visualizar a ocorrência da interação, elas não possibilitam quantificar sua magnitude nem avaliar adequadamente sua estrutura de variâncias e covariâncias. Por esse motivo, foi necessária a realização de uma análise conjunta dos ambientes por meio de modelos mistos com diferentes estruturas de variância.
+A ampla variação dos índices ambientais e os frequentes cruzamentos observados nos perfis de resposta dos genótipos forneceram evidências iniciais da existência de heterogeneidade ambiental e de interação G × A do tipo complexa na rede de ensaios do Malawi (Figura 1; Figura 2). Entretanto, embora essas análises permitam visualizar a ocorrência da interação, elas não possibilitam quantificar sua magnitude nem avaliar adequadamente sua estrutura de variâncias e covariâncias. Por esse motivo, foi necessária a realização de uma análise conjunta dos ambientes por meio de modelos mistos com diferentes estruturas de variância.
 
-A comparação entre os modelos analisados revelou que a incorporação de componentes de variância menos restritivos nos modelos permite representar de forma mais adequada a heterogeneidade presente entre os ambientes. Assim, enquanto os modelos mais simples assumem variâncias genéticas e residuais homogêneas entre ambientes, os modelos mais complexos permitem que essas variâncias variem entre os ambientes, portanto essa estrutura mais "flexível" reflete de maneira mais realista as condições observadas nos ensaios (Piepho et al., 2008; Burgueño et al., 2008) . Isto fica evidente quando observamos a redução dos valores de AIC de M0 para M3, que indica que as pressuposições simplificadoras do modelo base não foram suficientes para descrever adequadamente a variabilidade observada entre os ambientes e as diferentes respostas dos genótipos(Tabela 2).
+A comparação entre os modelos analisados revelou que a incorporação de componentes de variância menos restritivos nos modelos permite representar de forma mais adequada a heterogeneidade presente entre os ambientes. Assim, enquanto os modelos mais simples assumem variâncias genéticas e residuais homogêneas entre ambientes, os modelos mais complexos permitem que essas variâncias variem entre os ambientes, portanto essa estrutura mais "flexível" reflete de maneira mais realista as condições observadas nos ensaios (Piepho et al., 2008; Burgueño et al., 2008). Isto fica evidente quando observamos a redução dos valores de AIC de M0 para M3, que indica que as pressuposições simplificadoras do modelo base não foram suficientes para descrever adequadamente a variabilidade observada entre os ambientes e as diferentes respostas dos genótipos (Tabela 2).
 
 A principal melhoria ocorreu com a adoção da estrutura de simetria composta heterogênea em M3. Enquanto os modelos M0, M1 e M2 pressupõe uma variância genética relativamente uniforme entre os ambientes, M3 permite admitir que cada ambiente tem sua própria variância genética (Tabela 2). Este modelo é agronomicamente mais plausível para ensaios multiambientais, especialmente quando análises prévias indicam a existência de ambientes contrastantes e interação G × E complexa, como observado neste estudo (Figura 1; Figura 2). Ou seja, o modelo reconhece que a magnitude da variabilidade genética pode mudar entre ambientes, refletindo de forma mais realista o comportamento dos genótipos sob diferentes condições de cultivo.
 
-Entretanto, embora M3 tenha apresentado o menor valor de AIC, o menor valor de BIC foi obtido em M1. Essa divergência ocorre porque o BIC penaliza de forma mais severa modelos com elevado número de parâmetros, favorecendo estruturas mais simples. Assim, enquanto o BIC sugere que parte do ganho obtido em M3 ocorreu à custa de maior complexidade, o AIC indica que essa complexidade adicional foi "compensada" por uma melhora substancial no ajuste dos dados. Em estudos de interação G × E, essa situação é relativamente comum, uma vez que estruturas geneticamente mais realistas frequentemente demandam maior parametrização.
+Entretanto, embora M3 tenha apresentado o menor valor de AIC, o menor valor de BIC foi obtido em M1. Essa divergência ocorre porque o BIC penaliza de forma mais severa modelos com elevado número de parâmetros, favorecendo estruturas mais simples. Assim, enquanto o BIC sugere que parte do ganho obtido em M3 ocorreu à custa de maior complexidade, o AIC indica que essa complexidade adicional foi "compensada" por uma melhora substancial no ajuste dos dados. Em estudos de interação G × A, essa situação é relativamente comum, uma vez que estruturas geneticamente mais realistas frequentemente demandam maior parametrização.
 
-As estimativas de herdabilidade e acurácia apresentaram comportamento inverso ao observado para o AIC (Tabela 2). Os maiores valores foram obtidos nos modelos M1 e M2, enquanto M3 apresentou herdabilidade de 0,474 e acurácia de 0,621 (Tabela 2). Contudo, essa redução não deve ser interpretada somente como evidência de pior qualidade do modelo. Modelos mais simples tendem a "absorver" parte da variabilidade causada pela interação G × E na variância genética principal, o que pode resultar em "superestimação" da herdabilidade. Ao considerar que a variabilidade genética pode mudar entre os ambientes, o modelo M3 descreve melhor a realidade observada nos ensaios, evitando que parte da variação associada à interação G × E seja atribuída indevidamente aos efeitos genéticos.
+As estimativas de herdabilidade e acurácia apresentaram comportamento inverso ao observado para o AIC (Tabela 2). Os maiores valores foram obtidos nos modelos M1 e M2, enquanto M3 apresentou herdabilidade de $0,474$ e acurácia de $0,621$ (Tabela 2). Contudo, essa redução não deve ser interpretada somente como evidência de pior qualidade do modelo. Modelos mais simples tendem a "absorver" parte da variabilidade causada pela interação G × A na variância genética principal, o que pode resultar em "superestimação" da herdabilidade. Ao considerar que a variabilidade genética pode mudar entre os ambientes, o modelo M3 descreve melhor a realidade observada nos ensaios, evitando que parte da variação associada à interação G × A seja atribuída indevidamente aos efeitos genéticos.
 
-A redução da acurácia também é coerente com a maior especificidade do M3. Como o modelo estima variâncias genéticas particulares para cada ambiente, as predições tornam-se mais dependentes da quantidade de informação disponível em cada ensaio. Consequentemente, a capacidade preditiva média tende a diminuir em comparação com modelos mais generalistas, que compartilham uma mesma variância genética para todos os ambientes. Na prática, isso significa que o modelo possui menor capacidade de extrapolar informações de um ambiente para outro, uma vez que reconhece que a expressão da variabilidade genética pode ser diferente entre eles. Assim, a ausência de informações para determinado genótipo em um ambiente específico tende a impactar mais fortemente sua predição do que em modelos que assumem uma estrutura genética comum para todos os ambientes. Apesar disso, essa abordagem permite representar com maior fidelidade os padrões de resposta dos genótipos e a própria estrutura da interação G × E.
+A redução da acurácia também é coerente com a maior especificidade do M3. Como o modelo estima variâncias genéticas particulares para cada ambiente, as predições tornam-se mais dependentes da quantidade de informação disponível em cada ensaio. Consequentemente, a capacidade preditiva média tende a diminuir em comparação com modelos mais generalistas, que compartilham uma mesma variância genética para todos os ambientes. Na prática, isso significa que o modelo possui menor capacidade de extrapolar informações de um ambiente para outro, uma vez que reconhece que a expressão da variabilidade genética pode ser diferente entre eles. Assim, a ausência de informações para determinado genótipo em um ambiente específico tende a impactar mais fortemente sua predição do que em modelos que assumem uma estrutura genética comum para todos os ambientes. Apesar disso, essa abordagem permite representar com maior fidelidade os padrões de resposta dos genótipos e a própria estrutura da interação G × A.
 
-Apesar de apresentar menores estimativas de herdabilidade e acurácia, o modelo M3 proporcionou o maior ganho esperado com a seleção (17,356%). Isso indica que a modelagem mais detalhada da interação genótipo × ambiente permitiu identificar de forma mais eficiente os genótipos superiores, aumentando o potencial de ganho genético com a seleção.
+Apesar de apresentar menores estimativas de herdabilidade e acurácia, o modelo M3 proporcionou o maior ganho esperado com a seleção ($17,356\%$). Isso indica que a modelagem mais detalhada da interação genótipo × ambiente permitiu identificar de forma mais eficiente os genótipos superiores, aumentando o potencial de ganho genético com a seleção.
 
-De modo geral, o modelo M3 mostrou-se o mais adequado para a continuidade das análises. Além de apresentar o menor valor de AIC e o maior ganho de seleção, sua estrutura do modelo permitiu representar de forma mais realista as diferenças entre os ambientes avaliados e a interação G × E observada nos ambientes do Malawi. Dessa forma, o modelo foi capaz de descrever melhor a complexidade dos dados e fornecer estimativas mais confiáveis para a seleção dos genótipos.
+De modo geral, o modelo M3 mostrou-se o mais adequado para a continuidade das análises. Além de apresentar o menor valor de AIC e o maior ganho de seleção, sua estrutura do modelo permitiu representar de forma mais realista as diferenças entre os ambientes avaliados e a interação G × A observada nos ambientes do Malawi. Dessa forma, o modelo foi capaz de descrever melhor a complexidade dos dados e fornecer estimativas mais confiáveis para a seleção dos genótipos.
 
 A classificação geral dos genótipos (*ranking*) não foi substancialmente alterada entre M0 e M3 (Figura 3). Esse resultado indica que a escolha do M3 não alterou substancialmente a identificação dos materiais superiores. Assim, seu principal benefício não foi modificar drasticamente o *ranking* dos genótipos, mas fornecer estimativas obtidas a partir de pressupostos mais adequados à heterogeneidade ambiental observada. Portanto, o modelo M3 aumentou a confiabilidade das inferências sem alterar de forma substancial as conclusões práticas de seleção.
 
@@ -953,7 +937,7 @@ Assim, a aplicação do modelo M3 permitiu identificar elevada variação das va
 
 A Tabela 3 evidencia que os ambientes diferiram quanto à magnitude da variância genética, indicando que a capacidade de discriminar os genótipos não foi a mesma em toda a rede experimental. As maiores variâncias genéticas foram observadas nos ambientes E0251, E0250, E0214 e E0138, enquanto ambientes como E017, E076 e E036 apresentaram valores menores (Tabela 3). Portanto, nos primeiros ambientes as diferenças genéticas entre os genótipos foram mais evidentes, favorecendo a identificação de materiais superiores. O valor constante de 0,5 para todas as correlações genéticas entre os ambientes é resultado direto da estrutura utilizada no modelo M3, em que uma única correlação genética é estimada para todos os pares de ambientes, enquanto as variâncias podem variar entre eles (Tabela 3).
 
-Esse padrão também pode ser observado visualmente no *heatmap* dos valores genotípicos preditos (Figura 4). Ambientes com maiores variâncias genéticas, como E0251 e E0250, apresentam maior contraste entre as cores, evidenciando diferenças mais acentuadas no desempenho dos genótipos (Figura 4). por outro lado, ambientes com menores variâncias genéticas, como E017 e E076, tendem a apresentar colorações mais homogêneas, indicando menor diferenciação entre os materiais avaliados. Além disso, a variação das cores ao longo das linhas demonstra que os genótipos não mantiveram o mesmo padrão de desempenho em todos os ambientes, sustentando os resultados evidenciando a ocorrência da interação genótipo × ambiente observada nas análises anteriores.
+Esse padrão também pode ser observado visualmente no `heatmap` dos valores genotípicos preditos (Figura 4). Ambientes com maiores variâncias genéticas, como E0251 e E0250, apresentam maior contraste entre as cores, evidenciando diferenças mais acentuadas no desempenho dos genótipos (Figura 4). por outro lado, ambientes com menores variâncias genéticas, como E017 e E076, tendem a apresentar colorações mais homogêneas, indicando menor diferenciação entre os materiais avaliados. Além disso, a variação das cores ao longo das linhas demonstra que os genótipos não mantiveram o mesmo padrão de desempenho em todos os ambientes, sustentando os resultados evidenciando a ocorrência da interação genótipo × ambiente observada nas análises anteriores.
 
 ## Índices de Estabilidade
 
@@ -963,9 +947,9 @@ Os resultados do índice de segurança de Eskridge (1990) também evidenciaram d
 
 De modo geral, os métodos de Lin & Binns (1988) e Eskridge (1990) apresentaram resultados similares. Os cinco genótipos mais estáveis foram o G238, G194, G148 e G017 nas duas metodologias, indicando ampla adaptação e desempenho estável nos diferentes ambientes avaliados (Figura 5; Figura 6). Por outro lado, G275, G156, G131, G287 e G031 foram classificados entre os menos estáveis por ambos os métodos, confirmando sua maior sensibilidade às variações ambientais (Figura 5; Figura 6). Contudo, esses resultados não implicam necessariamente que esses materiais sejam os mais produtivos da população, mas sim que combinam bom e consistente desempenho ao longo dos diferentes ambientes. Portanto, esses genótipos apresentam maior previsibilidade de resposta e menor risco de redução de produtividade frente às variações ambientais.
 
-Considerando os resultados de todas as análises realizadas, e evidente a existência de heterogeneidade ambiental entre os locais avaliados no Malawi e a presença de interação genótipo × ambiente do tipo complexa, caracterizada pela alteração do desempenho relativo dos genótipos entre ambientes. A comparação entre diferentes estruturas de modelos mistos demonstrou que o modelo M3, baseado na estrutura de simetria composta heterogênea, foi o mais adequado para representar os dados, uma vez que apresentou o menor valor de AIC e o maior ganho esperado com a seleção, além de incorporar de forma mais realista as diferenças de variância genética entre os ambientes. Embora tenha apresentado valores ligeiramente inferiores de herdabilidade e acurácia em comparação aos modelos mais simples, essas estimativas provavelmente refletem de maneira mais fiel a variabilidade presente na rede experimental, evitando possíveis superestimações dos parâmetros genéticos. As análises de adaptabilidade e estabilidade pelos métodos de Lin e Binns (1988) e Eskridge (1990) apresentaram elevada concordância, destacando os genótipos G238, G194, G148, G017 e G214 entre os materiais mais estáveis e amplamente adaptados aos ambientes avaliados. Esses genótipos apresentaram desempenho consistente ao longo dos diferentes ambientes, combinando elevada produtividade relativa e menor sensibilidade às variações ambientais. Em síntese, os resultados demonstram que a adequada modelagem da interação G × E é fundamental para aumentar a confiabilidade das inferências e permitir a identificação de genótipos superiores, contribuindo para recomendações mais seguras e eficientes para as condições de cultivo do Malawi.
+Considerando os resultados de todas as análises realizadas, e evidente a existência de heterogeneidade ambiental entre os locais avaliados no Malawi e a presença de interação genótipo × ambiente do tipo complexa, caracterizada pela alteração do desempenho relativo dos genótipos entre ambientes. A comparação entre diferentes estruturas de modelos mistos demonstrou que o modelo M3, baseado na estrutura de simetria composta heterogênea, foi o mais adequado para representar os dados, uma vez que apresentou o menor valor de AIC e o maior ganho esperado com a seleção, além de incorporar de forma mais realista as diferenças de variância genética entre os ambientes. Embora tenha apresentado valores ligeiramente inferiores de herdabilidade e acurácia em comparação aos modelos mais simples, essas estimativas provavelmente refletem de maneira mais fiel a variabilidade presente na rede experimental, evitando possíveis superestimações dos parâmetros genéticos. As análises de adaptabilidade e estabilidade pelos métodos de Lin e Binns (1988) e Eskridge (1990) apresentaram elevada concordância, destacando os genótipos G238, G194, G148, G017 e G214 entre os materiais mais estáveis e amplamente adaptados aos ambientes avaliados. Esses genótipos apresentaram desempenho consistente ao longo dos diferentes ambientes, combinando elevada produtividade relativa e menor sensibilidade às variações ambientais. Em síntese, os resultados demonstram que a adequada modelagem da interação G × A é fundamental para aumentar a confiabilidade das inferências e permitir a identificação de genótipos superiores, contribuindo para recomendações mais seguras e eficientes para as condições de cultivo do Malawi.
 
-# CONCLUSÃO
+# **CONCLUSÃO**
 
 A produtividade de grãos dos genótipos de soja avaliados no Malawi foi influenciada pela interação genótipo × ambiente, evidenciando a importância de considerar a heterogeneidade ambiental na seleção de materiais superiores. O modelo M3 foi o mais adequado para descrever essa interação, enquanto as análises de adaptabilidade e estabilidade destacaram os genótipos G238, G194, G148, G017 e G214 como os mais promissores. Assim, a combinação de modelos mistos e métodos de estabilidade mostrou-se eficiente para identificar genótipos com elevado desempenho e ampla adaptação às condições de cultivo do Malawi.
 
